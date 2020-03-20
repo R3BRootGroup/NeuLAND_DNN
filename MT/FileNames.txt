@@ -1,0 +1,11 @@
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT0.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT1.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT2.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT3.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT4.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT5.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT6.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT7.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT8.root
+/media/christiaan/DATA/DNN_Data/NeuLAND_23dp_600MeV/INCLXX//DNN_Validation/Par_File_nT10_cT9.root
