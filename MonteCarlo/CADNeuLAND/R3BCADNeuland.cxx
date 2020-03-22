@@ -37,7 +37,7 @@ R3BCADNeuland::R3BCADNeuland(const TString& geoFile, const TGeoTranslation& tran
 }
 
 R3BCADNeuland::R3BCADNeuland(const TString& geoFile, const TGeoCombiTrans& combi)
-    : R3BCADDetector("R3BCADNeuland", kCADNEULAND, geoFile, combi)
+    : R3BCADDetector("R3BCADNeuland", kDNNNEULAND, geoFile, combi)
     , fNeulandPoints(new TClonesArray("R3BCADNeulandPoint"))
     , fNeulandPrimaryNeutronInteractionPoints(new TClonesArray("FairMCPoint"))
     , fNeulandPrimaryNeutrons(new TClonesArray("R3BNeulandCADNeutron"))
@@ -141,7 +141,7 @@ Bool_t R3BCADNeuland::ProcessHits(FairVolume*)
 
         // Increment number of LandPoints for this track
         auto stack = (R3BStack*)gMC->GetStack();
-        stack->AddPoint(kCADNEULAND);
+        stack->AddPoint(kDNNNEULAND);
         ResetValues();
     }
 

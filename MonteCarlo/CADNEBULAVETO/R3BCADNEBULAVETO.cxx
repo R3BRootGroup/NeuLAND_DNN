@@ -37,7 +37,7 @@ R3BCADNEBULAVETO::R3BCADNEBULAVETO(const TString& geoFile, const TGeoTranslation
 }
 
 R3BCADNEBULAVETO::R3BCADNEBULAVETO(const TString& geoFile, const TGeoCombiTrans& combi)
-    : R3BCADDetector("R3BCADNEBULAVETO", kCADNEBULAVETO, geoFile, combi)
+    : R3BCADDetector("R3BCADNEBULAVETO", kDNNNEBULAVETO, geoFile, combi)
     , fNEBULAVETOPoints(new TClonesArray("R3BCADNEBULAVETOPoint"))
 {
 }
@@ -119,7 +119,7 @@ Bool_t R3BCADNEBULAVETO::ProcessHits(FairVolume*)
 
         // Increment number of LandPoints for this track
         auto stack = (R3BStack*)gMC->GetStack();
-        stack->AddPoint(kCADNEBULAVETO);
+        stack->AddPoint(kDNNNEBULAVETO);
         ResetValues();
     }
 

@@ -37,7 +37,7 @@ R3BCADVETO::R3BCADVETO(const TString& geoFile, const TGeoTranslation& trans, con
 }
 
 R3BCADVETO::R3BCADVETO(const TString& geoFile, const TGeoCombiTrans& combi)
-    : R3BCADDetector("R3BCADVETO", kCADVETO, geoFile, combi)
+    : R3BCADDetector("R3BCADVETO", kDNNVETO, geoFile, combi)
     , fVETOPoints(new TClonesArray("R3BCADVETOPoint"))
 {
 }
@@ -119,7 +119,7 @@ Bool_t R3BCADVETO::ProcessHits(FairVolume*)
 
         // Increment number of LandPoints for this track
         auto stack = (R3BStack*)gMC->GetStack();
-        stack->AddPoint(kCADVETO);
+        stack->AddPoint(kDNNVETO);
         ResetValues();
     }
 

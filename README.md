@@ -8,7 +8,7 @@ Step 2: Open the master CMakeLists.txt file of R3BRoot. Add a
         command add_subdirectory to the list of add_subdirectory-commands
         near lines 378-421 (approximately) if it is not there yet.
         Also, go to R3BDetectorList.h in r3bdata and add the following 
-        detectors: kCADNEULAND, kCADVETO, kCADNEBULA and kCADNEBULAVETO
+        detectors: kDNNNEULAND, kDNNVETO, kDNNNEBULA and kDNNNEBULAVETO
         if they are not yet there.
         
 Step 3: Recompile R3BRoot.

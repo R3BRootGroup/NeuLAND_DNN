@@ -37,7 +37,7 @@ R3BCADNEBULA::R3BCADNEBULA(const TString& geoFile, const TGeoTranslation& trans,
 }
 
 R3BCADNEBULA::R3BCADNEBULA(const TString& geoFile, const TGeoCombiTrans& combi)
-    : R3BCADDetector("R3BCADNEBULA", kCADNEBULA, geoFile, combi)
+    : R3BCADDetector("R3BCADNEBULA", kDNNNEBULA, geoFile, combi)
     , fNEBULAPoints(new TClonesArray("R3BCADNEBULAPoint"))
 {
 }
@@ -119,7 +119,7 @@ Bool_t R3BCADNEBULA::ProcessHits(FairVolume*)
 
         // Increment number of LandPoints for this track
         auto stack = (R3BStack*)gMC->GetStack();
-        stack->AddPoint(kCADNEBULA);
+        stack->AddPoint(kDNNNEBULA);
         ResetValues();
     }
 
