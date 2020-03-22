@@ -137,7 +137,7 @@ void MCtransport(Int_t const TotalNumberOfThreads = 1, Int_t const CurrentThread
         Double_t SAMURAI_xpos = Inputs->GetInputDouble("SAMURAI_SETUP_center_x_position","cm");
         Double_t SAMURAI_ypos = Inputs->GetInputDouble("SAMURAI_SETUP_center_y_position","cm");
         Double_t SAMURAI_zpos = Inputs->GetInputDouble("SAMURAI_SETUP_center_z_position","cm");
-        run->AddModule(new R3BGeoGDML(TheVMC + "/DNN/Geometry/SAMURAI_MagnetSystem.gdml", TGeoTranslation(SAMURAI_xpos,SAMURAI_ypos,SAMURAI_zpos)));
+        run->AddModule(new R3BGeoGDML(TheVMC + "/NeuLAND_DNN/Geometry/SAMURAI_MagnetSystem.gdml", TGeoTranslation(SAMURAI_xpos,SAMURAI_ypos,SAMURAI_zpos)));
     }
     
     // GLAD magnet; This should not be moved or rotated, since one then has to

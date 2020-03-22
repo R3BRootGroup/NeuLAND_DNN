@@ -539,7 +539,7 @@ void R3BNeuLANDTranslator::Finish()
     WriteMultMatrix();
     
     // Save histograms also in inputs-file:
-    TString FileName = TheVMCFolder + "/DNN/InputFiles/Multiplicities.root";
+    TString FileName = TheVMCFolder + "/NeuLAND_DNN/InputFiles/Multiplicities.root";
     
     // First, see if our output-file already exists or not:
     FileStat_t stom;

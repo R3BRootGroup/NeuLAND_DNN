@@ -14,7 +14,7 @@ void R3BASCIIFileGenerator::InitializeSnFiles()
     else
     {
         // Then, obtain the required inputs:
-        TString SnFilePath = Inputs->GetInputString("TheVMCFolder") + "/DNN/SnFiles/";
+        TString SnFilePath = Inputs->GetInputString("TheVMCFolder") + "/NeuLAND_DNN/SnFiles/";
         TString GunType = Inputs->GetInputString("ParticleGun_ASCII_GunChoice");
         Double_t BeamEnergy = Inputs->GetAvgBeamEnergyPerNucleon();
         TString DesignatedEnergy = "";
