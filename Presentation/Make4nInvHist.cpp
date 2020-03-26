@@ -3,7 +3,7 @@
 void Make4nInvHist()
 {
     // NOTE: Makes a 4n Invariant Mass spectrum plot.
-    TString Case = "23dp_600MeV";
+    TString Case = "23dp_1000MeV";
     TString ThePath = "/media/christiaan/DATA/Christiaan/ENSAR/Scenario_Summary/";
     Bool_t PlotScoring = kFALSE;
     Bool_t PlotDDNMult = kFALSE;
@@ -12,7 +12,7 @@ void Make4nInvHist()
     if (Case=="30dp_1000MeV") {ScaleDef[0] = 0.847; ScaleDef[1] = 0.844; ScaleDef[2] = 0.842; ScaleDef[3] = 0.845; ScaleDef[4] = 0.841;}
     if (Case=="30dp_600MeV")  {ScaleDef[0] = 0.829; ScaleDef[1] = 0.830; ScaleDef[2] = 0.823; ScaleDef[3] = 0.832; ScaleDef[4] = 0.822;}
     if (Case=="30dp_200MeV")  {ScaleDef[0] = 0.804; ScaleDef[1] = 0.803; ScaleDef[2] = 0.748; ScaleDef[3] = 0.803; ScaleDef[4] = 0.746;}
-    // if (Case=="23dp_1000MeV") {ScaleDef[0] = 0.847; ScaleDef[1] = 0.844; ScaleDef[2] = 0.842; ScaleDef[3] = 0.845; ScaleDef[4] = 0.841;}
+    if (Case=="23dp_1000MeV") {ScaleDef[0] = 0.769; ScaleDef[1] = 0.770; ScaleDef[2] = 0.769; ScaleDef[3] = 0.770; ScaleDef[4] = 0.768;}
     if (Case=="23dp_600MeV")  {ScaleDef[0] = 0.732; ScaleDef[1] = 0.730; ScaleDef[2] = 0.726; ScaleDef[3] = 0.730; ScaleDef[4] = 0.725;}
     // if (Case=="23dp_200MeV")  {ScaleDef[0] = 0.804; ScaleDef[1] = 0.803; ScaleDef[2] = 0.748; ScaleDef[3] = 0.803; ScaleDef[4] = 0.746;}
     if (Case=="16dp_1000MeV") {ScaleDef[0] = 0.587; ScaleDef[1] = 0.588; ScaleDef[2] = 0.580; ScaleDef[3] = 0.586; ScaleDef[4] = 0.583;}
