@@ -181,5 +181,182 @@ void DNNDataGraph::PrintGraph()
     cout << "\n\n";
 }
 
+void DNNDataGraph::AddDNNGraph(DNNDataGraph* OtherGraph, Double_t const Scale)
+{
+    // Adds andother graph to this one.
+    if ((TheData==0)||(TheData==nullptr)||(PhysError==0)||(PhysError==nullptr))
+    {
+        cout << "### FATAL: You need to compute the graph of this class before adding something else to it!\n\n";
+    }
+    else
+    {
+        if ((OtherGraph->GetDataGraph()==0)||(OtherGraph->GetDataGraph()==nullptr)||(OtherGraph->GetPhysGraph()==0)||(OtherGraph->GetPhysGraph()==nullptr))
+        {
+            cout << "### FATAL: You need to compute the graph to be added before you can add it to this graph!\n\n";
+        }
+        else
+        {
+            if (TheData->GetN()!=OtherGraph->GetDataGraph()->GetN())
+            {
+                cout << "### FATAL: Graphs that have to be added must have the same number of points!\n\n";
+            }
+            else
+            {
+                // Generate arrays:
+                Int_t Size = TheData->GetN();
+                Double_t* Xval = new Double_t[Size];
+                Double_t* Xerr = new Double_t[Size];
+                Double_t* Yval = new Double_t[Size];
+                Double_t* Yerr = new Double_t[Size];
+                Double_t* Yphys = new Double_t[Size];
+                Double_t* Yphval = new Double_t[Size];
+            
+                // Declare what we need:
+                Double_t ThisX;
+                Double_t ThisY;
+                Double_t ErrorX;
+                Double_t ErrorY;
+                Double_t PhysValY;
+                Double_t PhysErrY;
+            
+                // Fill the arrays with the current graph:
+                for (Int_t k = 0; k<Size; ++k)
+                {
+                    PhysError->GetPoint(k,ThisX,PhysValY);
+                    TheData->GetPoint(k,ThisX,ThisY);
+                    ErrorX = TheData->GetErrorX(k);
+                    ErrorY = TheData->GetErrorY(k);
+                    PhysErrY = PhysError->GetErrorY(k);
+                    
+                    Xval[k] = ThisX;
+                    Xerr[k] = ErrorX;
+                    Yval[k] = ThisY;
+                    Yerr[k] = ErrorY;
+                    Yphys[k] = PhysErrY;
+                    Yphval[k] = PhysValY;
+                }
+                
+                // Next, retrieve the other values and add them:
+                Bool_t Xequal = kTRUE;
+                
+                for (Int_t k = 0; k<Size; ++k)
+                {
+                    OtherGraph->GetPhysGraph()->GetPoint(k,ThisX,PhysValY);
+                    OtherGraph->GetDataGraph()->GetPoint(k,ThisX,ThisY);
+                    ErrorX = OtherGraph->GetDataGraph()->GetErrorX(k);
+                    ErrorY = OtherGraph->GetDataGraph()->GetErrorY(k);
+                    PhysErrY = OtherGraph->GetPhysGraph()->GetErrorY(k);
+                    
+                    // Compare x-values:
+                    if (TMath::Abs((Xval[k]-ThisX)/(Xval[k]+ThisX))>1e-6) {Xequal = kFALSE;}
+                    if (TMath::Abs((Xerr[k]-ErrorX)/(Xerr[k]+ErrorX))>1e-6) {Xequal = kFALSE;}
+                    
+                    // Add Y-values:
+                    Yval[k] = Yval[k] + Scale*ThisY;
+                    Yerr[k] = TMath::Sqrt(TMath::Abs(Yerr[k]*Yerr[k] + Scale*Scale*ErrorY*ErrorY));
+                    Yphval[k] = (Yphval[k]+TMath::Abs(Scale)*PhysValY)/(1.0+TMath::Abs(Scale));
+                    Yphys[k] = TMath::Sqrt(TMath::Abs(Yphys[k]*Yphys[k] + Scale*Scale*PhysErrY*PhysErrY));
+                }
+                
+                // Next, clean the current graphs and rebuild them:
+                TheData = new TGraphErrors(Size,&Xval[0],&Yval[0],&Xerr[0],&Yerr[0]);
+                PhysError = new TGraphErrors(Size,&Xval[0],&Yphval[0],&Xerr[0],&Yphys[0]);
+                
+                // Done.
+                if (Xequal==kFALSE) {cout << "### FATAL: All X-values need to be the same!\n\n";}
+            }
+        }
+    }
+}
+
+void DNNDataGraph::GetRelativeGraph(DNNDataGraph* OtherGraph, Double_t const NewPhysVal)
+{
+    // Adds andother graph to this one.
+    if ((TheData==0)||(TheData==nullptr)||(PhysError==0)||(PhysError==nullptr))
+    {
+        cout << "### FATAL: You need to compute the graph of this class before adding something else to it!\n\n";
+    }
+    else
+    {
+        if ((OtherGraph->GetDataGraph()==0)||(OtherGraph->GetDataGraph()==nullptr)||(OtherGraph->GetPhysGraph()==0)||(OtherGraph->GetPhysGraph()==nullptr))
+        {
+            cout << "### FATAL: You need to compute the graph to be added before you can add it to this graph!\n\n";
+        }
+        else
+        {
+            if (TheData->GetN()!=OtherGraph->GetDataGraph()->GetN())
+            {
+                cout << "### FATAL: Graphs that have to be added must have the same number of points!\n\n";
+            }
+            else
+            {
+                // Generate arrays:
+                Int_t Size = TheData->GetN();
+                Double_t* Xval = new Double_t[Size];
+                Double_t* Xerr = new Double_t[Size];
+                Double_t* Yval = new Double_t[Size];
+                Double_t* Yerr = new Double_t[Size];
+                Double_t* Yphys = new Double_t[Size];
+                Double_t* Yphval = new Double_t[Size];
+            
+                // Declare what we need:
+                Double_t ThisX;
+                Double_t ThisY;
+                Double_t ErrorX;
+                Double_t ErrorY;
+                Double_t PhysValY;
+                Double_t PhysErrY;
+            
+                // Fill the arrays with the current graph:
+                for (Int_t k = 0; k<Size; ++k)
+                {
+                    PhysError->GetPoint(k,ThisX,PhysValY);
+                    TheData->GetPoint(k,ThisX,ThisY);
+                    ErrorX = TheData->GetErrorX(k);
+                    ErrorY = TheData->GetErrorY(k);
+                    PhysErrY = PhysError->GetErrorY(k);
+                    
+                    Xval[k] = ThisX;
+                    Xerr[k] = ErrorX;
+                    Yval[k] = ThisY;
+                    Yerr[k] = ErrorY;
+                    Yphys[k] = PhysErrY;
+                    Yphval[k] = PhysValY;
+                }
+                
+                // Next, retrieve the other values and process them.
+                // This=Total; Other=Restricted. hence: do (This-Other)/Other
+                Bool_t Xequal = kTRUE;
+                
+                for (Int_t k = 0; k<Size; ++k)
+                {
+                    OtherGraph->GetPhysGraph()->GetPoint(k,ThisX,PhysValY);
+                    OtherGraph->GetDataGraph()->GetPoint(k,ThisX,ThisY);
+                    ErrorX = OtherGraph->GetDataGraph()->GetErrorX(k);
+                    ErrorY = OtherGraph->GetDataGraph()->GetErrorY(k);
+                    PhysErrY = OtherGraph->GetPhysGraph()->GetErrorY(k);
+                    
+                    // Compare x-values:
+                    if (TMath::Abs((Xval[k]-ThisX)/(Xval[k]+ThisX))>1e-6) {Xequal = kFALSE;}
+                    if (TMath::Abs((Xerr[k]-ErrorX)/(Xerr[k]+ErrorX))>1e-6) {Xequal = kFALSE;}
+                    
+                    // Process Y-values:
+                    Yval[k] = (Yval[k] - ThisY)/ThisY;
+                    Yerr[k] = TMath::Sqrt(TMath::Abs((Yerr[k]*Yerr[k])/(ThisY*ThisY) + (Yval[k]*Yval[k]*ErrorY*ErrorY)/(ThisY*ThisY*ThisY*ThisY)));
+                    Yphval[k] = NewPhysVal;
+                    Yphys[k] = TMath::Sqrt(TMath::Abs((Yphys[k]*Yphys[k])/(ThisY*ThisY) + (Yval[k]*Yval[k]*PhysErrY*PhysErrY)/(ThisY*ThisY*ThisY*ThisY)));
+                }
+                
+                // Next, clean the current graphs and rebuild them:
+                TheData = new TGraphErrors(Size,&Xval[0],&Yval[0],&Xerr[0],&Yerr[0]);
+                PhysError = new TGraphErrors(Size,&Xval[0],&Yphval[0],&Xerr[0],&Yphys[0]);
+                
+                // Done.
+                if (Xequal==kFALSE) {cout << "### FATAL: All X-values need to be the same!\n\n";}
+            }
+        }
+    }
+}
+
 // Generate ROOT dictionary:
 ClassImp(DNNDataGraph);

@@ -51,6 +51,10 @@ public:
     TGraphErrors* GetDataGraph() {return TheData;}
     TGraphErrors* GetPhysGraph() {return PhysError;}
     
+    // Graph addition:
+    void AddDNNGraph(DNNDataGraph* OtherGraph, Double_t const Scale);
+    void GetRelativeGraph(DNNDataGraph* OtherGraph, Double_t const NewPhysVal);
+    
 private:
     // Points in the Graphs:
     std::vector<Double_t> Xpoints;

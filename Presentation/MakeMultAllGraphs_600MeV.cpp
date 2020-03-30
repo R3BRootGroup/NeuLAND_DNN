@@ -1,4 +1,5 @@
 #include "DrawGraphDoumaArray.h"
+#include "DrawGraphDoumaArray3.h"
 
 void MakeMultAllGraphs_600MeV()
 {
@@ -219,4 +220,56 @@ void MakeMultAllGraphs_600MeV()
     // Save & Close:
     c1->SaveAs("./AllMult_600MeV.png");
     c1->Close();
+    
+    // ----------------------------------------------------------------------
+    
+    // Generate Relative graphs:
+    Double_t DNN_RelPhsheight = 3.0;
+    Double_t TDR_RelPhsheight = 2.5;
+    
+    DNN_1n->GetRelativeGraph(DNN_Res_1n,DNN_RelPhsheight);
+    DNN_2n->GetRelativeGraph(DNN_Res_2n,DNN_RelPhsheight);
+    DNN_3n->GetRelativeGraph(DNN_Res_3n,DNN_RelPhsheight);
+    DNN_4n->GetRelativeGraph(DNN_Res_4n,DNN_RelPhsheight);
+    DNN_5n->GetRelativeGraph(DNN_Res_5n,DNN_RelPhsheight);
+    
+    TDR_1n->GetRelativeGraph(TDR_Res_1n,TDR_RelPhsheight);
+    TDR_2n->GetRelativeGraph(TDR_Res_2n,TDR_RelPhsheight);
+    TDR_3n->GetRelativeGraph(TDR_Res_3n,TDR_RelPhsheight);
+    TDR_4n->GetRelativeGraph(TDR_Res_4n,TDR_RelPhsheight);
+    TDR_5n->GetRelativeGraph(TDR_Res_5n,TDR_RelPhsheight);
+    
+    // Make the next painting:
+    TCanvas* c2 = DrawGraphDoumaArray3(5,3,2,PerfectGraphs,Titles,"Nr. of NeuLAND dp","False Pos./True Pos. [dim. less]",ScaleFactor,0,"AP");
+    
+    // Draw DNN Physics Errors:
+    DNN_1n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); DNN_1n->GetPhysGraph()->SetLineColor(kRed);   DNN_1n->GetPhysGraph()->SetFillStyle(3000); DNN_1n->GetPhysGraph()->SetFillColor(kRed-7);   c2->cd(1); DNN_1n->GetPhysGraph()->Draw("3same");
+    DNN_2n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); DNN_2n->GetPhysGraph()->SetLineColor(kRed);   DNN_2n->GetPhysGraph()->SetFillStyle(3000); DNN_2n->GetPhysGraph()->SetFillColor(kRed-7);   c2->cd(2); DNN_2n->GetPhysGraph()->Draw("3same");
+    DNN_3n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); DNN_3n->GetPhysGraph()->SetLineColor(kRed);   DNN_3n->GetPhysGraph()->SetFillStyle(3000); DNN_3n->GetPhysGraph()->SetFillColor(kRed-7);   c2->cd(3); DNN_3n->GetPhysGraph()->Draw("3same");
+    DNN_4n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); DNN_4n->GetPhysGraph()->SetLineColor(kRed);   DNN_4n->GetPhysGraph()->SetFillStyle(3000); DNN_4n->GetPhysGraph()->SetFillColor(kRed-7);   c2->cd(4); DNN_4n->GetPhysGraph()->Draw("3same");
+    DNN_5n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); DNN_5n->GetPhysGraph()->SetLineColor(kRed);   DNN_5n->GetPhysGraph()->SetFillStyle(3000); DNN_5n->GetPhysGraph()->SetFillColor(kRed-7);   c2->cd(5); DNN_5n->GetPhysGraph()->Draw("3same");
+
+    // Draw TDR Physics Errors:
+    TDR_1n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); TDR_1n->GetPhysGraph()->SetLineColor(kBlue);  TDR_1n->GetPhysGraph()->SetFillStyle(3000); TDR_1n->GetPhysGraph()->SetFillColor(kAzure-2); c2->cd(1); TDR_1n->GetPhysGraph()->Draw("3same");
+    TDR_2n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); TDR_2n->GetPhysGraph()->SetLineColor(kBlue);  TDR_2n->GetPhysGraph()->SetFillStyle(3000); TDR_2n->GetPhysGraph()->SetFillColor(kAzure-2); c2->cd(2); TDR_2n->GetPhysGraph()->Draw("3same");
+    TDR_3n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); TDR_3n->GetPhysGraph()->SetLineColor(kBlue);  TDR_3n->GetPhysGraph()->SetFillStyle(3000); TDR_3n->GetPhysGraph()->SetFillColor(kAzure-2); c2->cd(3); TDR_3n->GetPhysGraph()->Draw("3same");
+    TDR_4n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); TDR_4n->GetPhysGraph()->SetLineColor(kBlue);  TDR_4n->GetPhysGraph()->SetFillStyle(3000); TDR_4n->GetPhysGraph()->SetFillColor(kAzure-2); c2->cd(4); TDR_4n->GetPhysGraph()->Draw("3same");
+    TDR_5n->GetPhysGraph()->SetLineWidth(ScaleFactor*1.5); TDR_5n->GetPhysGraph()->SetLineColor(kBlue);  TDR_5n->GetPhysGraph()->SetFillStyle(3000); TDR_5n->GetPhysGraph()->SetFillColor(kAzure-2); c2->cd(5); TDR_5n->GetPhysGraph()->Draw("3same");
+    
+    // Draw DNN graphs:
+    DNN_1n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); DNN_1n->GetDataGraph()->SetLineColor(kRed);   c2->cd(1); DNN_1n->GetDataGraph()->Draw("PLsame");
+    DNN_2n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); DNN_2n->GetDataGraph()->SetLineColor(kRed);   c2->cd(2); DNN_2n->GetDataGraph()->Draw("PLsame");
+    DNN_3n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); DNN_3n->GetDataGraph()->SetLineColor(kRed);   c2->cd(3); DNN_3n->GetDataGraph()->Draw("PLsame");
+    DNN_4n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); DNN_4n->GetDataGraph()->SetLineColor(kRed);   c2->cd(4); DNN_4n->GetDataGraph()->Draw("PLsame");
+    DNN_5n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); DNN_5n->GetDataGraph()->SetLineColor(kRed);   c2->cd(5); DNN_5n->GetDataGraph()->Draw("PLsame");
+
+    // Draw TDR graphs:
+    TDR_1n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); TDR_1n->GetDataGraph()->SetLineColor(kBlue);  c2->cd(1); TDR_1n->GetDataGraph()->Draw("PLsame");
+    TDR_2n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); TDR_2n->GetDataGraph()->SetLineColor(kBlue);  c2->cd(2); TDR_2n->GetDataGraph()->Draw("PLsame");
+    TDR_3n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); TDR_3n->GetDataGraph()->SetLineColor(kBlue);  c2->cd(3); TDR_3n->GetDataGraph()->Draw("PLsame");
+    TDR_4n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); TDR_4n->GetDataGraph()->SetLineColor(kBlue);  c2->cd(4); TDR_4n->GetDataGraph()->Draw("PLsame");
+    TDR_5n->GetDataGraph()->SetLineWidth(ScaleFactor*1.5); TDR_5n->GetDataGraph()->SetLineColor(kBlue);  c2->cd(5); TDR_5n->GetDataGraph()->Draw("PLsame");
+      
+    c2->SaveAs("./Mult_SignalToNoise_600MeV.png");
+    c2->Close();
 }
