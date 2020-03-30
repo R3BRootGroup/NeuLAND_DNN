@@ -142,6 +142,47 @@ void MakeStep2Tables()
                Secondary_RvalueSort->AddYpoint(8,74.17,74.04,73.38,71.44,69.84);
                   Secondary_FullTDR->AddYpoint(8,73.84,73.87,73.07,70.58,69.70);
                   
+    // -------------------------------------------------------------------------              
+                  
+    // Scenario 12dp_1000MeV:
+            Primary_DNNScoring_True->AddYpoint(9,82.51,82.36,82.38,79.02,80.45);
+      Primary_DNNScoring_UpperBound->AddYpoint(9,89.57,89.69,89.66,86.97,88.16);
+                Primary_ScoringPlus->AddYpoint(9,71.59,71.71,72.89,68.18,70.60);
+                 Primary_RvalueSort->AddYpoint(9,62.31,62.46,61.70,59.08,59.36);
+                    Primary_FullTDR->AddYpoint(9,63.34,63.21,64.12,60.01,60.67);
+    
+          Secondary_DNNScoring_True->AddYpoint(9,93.88,93.82,93.82,94.64,94.43);
+    Secondary_DNNScoring_UpperBound->AddYpoint(9,94.89,94.87,94.68,95.78,95.34);
+              Secondary_ScoringPlus->AddYpoint(9,92.32,92.30,92.70,93.10,93.27);
+               Secondary_RvalueSort->AddYpoint(9,91.00,90.99,91.39,91.80,91.95);
+                  Secondary_FullTDR->AddYpoint(9,90.31,90.33,90.58,91.12,91.37); // Done till here.
+                  
+    // Scenario 12dp_600MeV:
+            Primary_DNNScoring_True->AddYpoint(10,87.29,87.79,86.38,86.61,85.99);
+      Primary_DNNScoring_UpperBound->AddYpoint(10,94.02,89.40,93.71,93.52,93.41);
+                Primary_ScoringPlus->AddYpoint(10,80.74,81.34,80.44,80.09,79.92);
+                 Primary_RvalueSort->AddYpoint(10,72.30,72.95,71.50,71.62,70.99);
+                    Primary_FullTDR->AddYpoint(10,73.29,73.79,71.83,74.30,72.84);
+    
+          Secondary_DNNScoring_True->AddYpoint(10,87.63,87.01,86.78,87.87,86.90);
+    Secondary_DNNScoring_UpperBound->AddYpoint(10,90.11,94.28,89.42,90.42,89.56);
+              Secondary_ScoringPlus->AddYpoint(10,85.21,84.63,84.64,85.46,84.72);
+               Secondary_RvalueSort->AddYpoint(10,82.29,81.77,81.69,82.53,81.77);
+                  Secondary_FullTDR->AddYpoint(10,80.30,80.11,80.12,79.79,79.59);
+                  
+    // Scenario 12dp_200MeV:
+            Primary_DNNScoring_True->AddYpoint(11,88.20,87.91,82.32,89.97,85.83);
+      Primary_DNNScoring_UpperBound->AddYpoint(11,96.09,96.07,93.42,96.96,95.48);
+                Primary_ScoringPlus->AddYpoint(11,85.03,85.16,79.17,86.94,82.61);
+                 Primary_RvalueSort->AddYpoint(11,80.35,80.54,73.88,82.30,76.61);
+                    Primary_FullTDR->AddYpoint(11,78.35,78.42,71.47,81.34,74.38);
+    
+          Secondary_DNNScoring_True->AddYpoint(11,80.04,79.52,79.23,76.82,75.72);
+    Secondary_DNNScoring_UpperBound->AddYpoint(11,86.68,86.38,88.24,82.70,83.55);
+              Secondary_ScoringPlus->AddYpoint(11,77.38,77.20,76.67,74.27,73.11);
+               Secondary_RvalueSort->AddYpoint(11,74.17,74.04,73.38,71.44,69.84);
+                  Secondary_FullTDR->AddYpoint(11,73.84,73.87,73.07,70.58,69.70);
+                  
     // -------------------------------------------------------------------------
                   
     // Add all Errors:
@@ -253,6 +294,42 @@ void MakeStep2Tables()
                Secondary_RvalueSort->AddYerror(8,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
                   Secondary_FullTDR->AddYerror(8,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
                   
+            Primary_DNNScoring_True->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+      Primary_DNNScoring_UpperBound->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                Primary_ScoringPlus->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                 Primary_RvalueSort->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                    Primary_FullTDR->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+    
+          Secondary_DNNScoring_True->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+    Secondary_DNNScoring_UpperBound->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+              Secondary_ScoringPlus->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+               Secondary_RvalueSort->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                  Secondary_FullTDR->AddYerror(9,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                  
+            Primary_DNNScoring_True->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+      Primary_DNNScoring_UpperBound->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                Primary_ScoringPlus->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                 Primary_RvalueSort->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                    Primary_FullTDR->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+    
+          Secondary_DNNScoring_True->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+    Secondary_DNNScoring_UpperBound->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+              Secondary_ScoringPlus->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+               Secondary_RvalueSort->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                  Secondary_FullTDR->AddYerror(10,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                  
+            Primary_DNNScoring_True->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+      Primary_DNNScoring_UpperBound->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                Primary_ScoringPlus->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                 Primary_RvalueSort->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                    Primary_FullTDR->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+    
+          Secondary_DNNScoring_True->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+    Secondary_DNNScoring_UpperBound->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+              Secondary_ScoringPlus->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+               Secondary_RvalueSort->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                  Secondary_FullTDR->AddYerror(11,SqrtN,SqrtN,SqrtN,SqrtN,SqrtN);
+                  
     // -------------------------------------------------------------------------
                   
     // Add X-values:
@@ -363,6 +440,42 @@ void MakeStep2Tables()
               Secondary_ScoringPlus->AddXpoint(8,9.0);
                Secondary_RvalueSort->AddXpoint(8,9.0);
                   Secondary_FullTDR->AddXpoint(8,9.0);
+                  
+            Primary_DNNScoring_True->AddXpoint(9,9.0);
+      Primary_DNNScoring_UpperBound->AddXpoint(9,9.0);
+                Primary_ScoringPlus->AddXpoint(9,9.0);
+                 Primary_RvalueSort->AddXpoint(9,9.0);
+                    Primary_FullTDR->AddXpoint(9,9.0);
+    
+          Secondary_DNNScoring_True->AddXpoint(9,9.0);
+    Secondary_DNNScoring_UpperBound->AddXpoint(9,9.0);
+              Secondary_ScoringPlus->AddXpoint(9,9.0);
+               Secondary_RvalueSort->AddXpoint(9,9.0);
+                  Secondary_FullTDR->AddXpoint(9,9.0);
+                  
+            Primary_DNNScoring_True->AddXpoint(10,9.0);
+      Primary_DNNScoring_UpperBound->AddXpoint(10,9.0);
+                Primary_ScoringPlus->AddXpoint(10,9.0);
+                 Primary_RvalueSort->AddXpoint(10,9.0);
+                    Primary_FullTDR->AddXpoint(10,9.0);
+    
+          Secondary_DNNScoring_True->AddXpoint(10,9.0);
+    Secondary_DNNScoring_UpperBound->AddXpoint(10,9.0);
+              Secondary_ScoringPlus->AddXpoint(10,9.0);
+               Secondary_RvalueSort->AddXpoint(10,9.0);
+                  Secondary_FullTDR->AddXpoint(10,9.0);
+                  
+            Primary_DNNScoring_True->AddXpoint(11,9.0);
+      Primary_DNNScoring_UpperBound->AddXpoint(11,9.0);
+                Primary_ScoringPlus->AddXpoint(11,9.0);
+                 Primary_RvalueSort->AddXpoint(11,9.0);
+                    Primary_FullTDR->AddXpoint(11,9.0);
+    
+          Secondary_DNNScoring_True->AddXpoint(11,9.0);
+    Secondary_DNNScoring_UpperBound->AddXpoint(11,9.0);
+              Secondary_ScoringPlus->AddXpoint(11,9.0);
+               Secondary_RvalueSort->AddXpoint(11,9.0);
+                  Secondary_FullTDR->AddXpoint(11,9.0);
                   
     // -------------------------------------------------------------------------
                   
