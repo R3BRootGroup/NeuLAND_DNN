@@ -132,7 +132,7 @@ Presentation/DNNDataHist.cxx
 CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
 
 Set(LINKDEF NeuLAND_DNNLinkDef.h)
-Set(LIBRARY_NAME DNN)
+Set(LIBRARY_NAME NeuLAND_DNN)
 set(DEPENDENCIES Base FairTools Physics)
 
 GENERATE_LIBRARY()
