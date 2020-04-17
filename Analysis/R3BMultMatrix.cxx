@@ -3,6 +3,7 @@
 
 // Give it access to the traditional method multiplicities:
 #include "TradMedMultiplicityTest.h"
+#include "NEBULA_TradMedMultiplicityTest.h"
 #include "RoundOffMult.h"
 #include "DrawHistDouma_2D_flat.h"
 #include "PlotMultMatrix.h"
@@ -16,12 +17,15 @@ R3BMultMatrix::R3BMultMatrix() : FairTask("R3BMultMatrix")
     // Create arrays:
     fArrayMCNeutronTracks = new TClonesArray("TLorentzVector");    
     fArraySignals = new TClonesArray("R3BSignal");
+    fArrayNEBULASignals = new TClonesArray("R3BSignal");
     fArrayMult = new TClonesArray("ObjInteger");
+    fArrayNEBDNNMult = new TClonesArray("ObjInteger");
     fArrayCluster = new TClonesArray("R3BSignalCluster");
     fArrayNEBULACluster = new TClonesArray("R3BSignalCluster");
     fArrayNeuMult = new TClonesArray("ObjInteger");
     fArrayNEBMult = new TClonesArray("ObjInteger");
     fArrayNEBDetMult = new TClonesArray("ObjInteger");
+    fArrayNeuDetMult = new TClonesArray("ObjInteger");
     fArrayBetaPrimHits_NeuLAND = new TClonesArray("R3BSignal");
     fArrayBetaPrimHits_NEBULA = new TClonesArray("R3BSignal");
     fArrayBetaPrimHits_Combined = new TClonesArray("R3BSignal");
@@ -33,15 +37,36 @@ R3BMultMatrix::R3BMultMatrix() : FairTask("R3BMultMatrix")
     MultMatrix_Max = 0;
     MultMatrix_Max_NEBULA = 0;
     MultMatrix_Max_Combined = 0;
+    
     MultMatrix_TDR_AlignedEvents = 0;
     MultMatrix_TDR_UnFolded = 0;
     MultMatrix_TDR_Folded = 0;
     MultMatrix_TDR_Folded_Restricted = 0;
+    MultMatrix_TDR_NEBULA_AlignedEvents = 0;
+    MultMatrix_TDR_NEBULA_UnFolded = 0;
+    MultMatrix_TDR_NEBULA_Folded = 0;
+    MultMatrix_TDR_NEBULA_Folded_Restricted = 0;
+    MultMatrix_TDR_Combined_AlignedEvents = 0;
+    MultMatrix_TDR_Combined_UnFolded = 0;
+    MultMatrix_TDR_Combined_Folded = 0;
+    MultMatrix_TDR_Combined_Folded_Restricted = 0;
+    
     MultMatrix_DNN_AlignedEvents = 0;
     MultMatrix_DNN_ElenaEvents = 0;
     MultMatrix_DNN_UnFolded = 0;
     MultMatrix_DNN_Folded = 0;
     MultMatrix_DNN_Folded_Restricted = 0;
+    MultMatrix_DNN_NEBULA_AlignedEvents = 0;
+    MultMatrix_DNN_NEBULA_ElenaEvents = 0;
+    MultMatrix_DNN_NEBULA_UnFolded = 0;
+    MultMatrix_DNN_NEBULA_Folded = 0;
+    MultMatrix_DNN_NEBULA_Folded_Restricted = 0;
+    MultMatrix_DNN_Combined_AlignedEvents = 0;
+    MultMatrix_DNN_Combined_ElenaEvents = 0;
+    MultMatrix_DNN_Combined_UnFolded = 0;
+    MultMatrix_DNN_Combined_Folded = 0;
+    MultMatrix_DNN_Combined_Folded_Restricted = 0;
+    
     MultMatrix_Beta_Aligned = 0;
     MultMatrix_Beta_UnFolded = 0;
     MultMatrix_Beta_Folded = 0;
@@ -54,6 +79,7 @@ R3BMultMatrix::R3BMultMatrix() : FairTask("R3BMultMatrix")
     MultMatrix_Beta_UnFolded_Combined = 0;
     MultMatrix_Beta_Folded_Combined = 0;
     MultMatrix_Beta_Folded_Restricted_Combined = 0;
+    
     MultMatrix_Single_Aligned = 0;
     MultMatrix_Single_UnFolded = 0;
     MultMatrix_Single_Folded = 0;
@@ -84,11 +110,17 @@ R3BMultMatrix::R3BMultMatrix() : FairTask("R3BMultMatrix")
     SingleCombinedMultiplicity = 0;
     GunMultiplicity = 0;
     TDRMultiplicity = 0;
+    NEBTDRMultiplicity = 0;
+    CombinedTDRMultiplicity = 0;
     DNNMultiplicity = 0;
+    NEBDNNMultiplicity = 0;
+    CombinedDNNMultiplicity = 0;
     DetectedMultiplicity = 0;
     NeuLANDMultiplicity = 0;
     NEBULAMultiplicity = 0;
     NEBDetectedMultiplicity = 0;
+    CombinedInteractionMultiplicity = 0;
+    CombinedDetectedMultiplicity = 0;
     
     // TDR calibration cuts:
     fKappa = -0.1;
@@ -108,12 +140,15 @@ R3BMultMatrix::~R3BMultMatrix()
 {
     // Delete the arrays:
     if(fArrayMult) {fArrayMult->Clear(); delete fArrayMult;}
+    if(fArrayNEBDNNMult) {fArrayNEBDNNMult->Clear(); delete fArrayNEBDNNMult;}
     if(fArrayCluster) {fArrayCluster->Clear(); delete fArrayCluster;}
     if(fArrayNEBULACluster) {fArrayNEBULACluster->Clear(); delete fArrayNEBULACluster;}
     if(fArrayMCNeutronTracks) {fArrayMCNeutronTracks->Clear(); delete fArrayMCNeutronTracks;}
     if(fArraySignals) {fArraySignals->Clear(); delete fArraySignals;}
+    if(fArrayNEBULASignals) {fArrayNEBULASignals->Clear(); delete fArrayNEBULASignals;}
     if(fArrayNeuMult) {fArrayNeuMult->Clear(); delete fArrayNeuMult;}
     if(fArrayNEBDetMult) {fArrayNEBDetMult->Clear(); delete fArrayNEBDetMult;}
+    if(fArrayNeuDetMult) {fArrayNeuDetMult->Clear(); delete fArrayNeuDetMult;}
     if(fArrayNEBMult) {fArrayNEBMult->Clear(); delete fArrayNEBMult;}
     if(fArrayBetaPrimHits_NeuLAND) {fArrayBetaPrimHits_NeuLAND->Clear(); delete fArrayBetaPrimHits_NeuLAND;}
     if(fArrayBetaPrimHits_NEBULA) {fArrayBetaPrimHits_NEBULA->Clear(); delete fArrayBetaPrimHits_NEBULA;}
@@ -126,15 +161,36 @@ R3BMultMatrix::~R3BMultMatrix()
     delete MultMatrix_Max;
     delete MultMatrix_Max_Combined;
     delete MultMatrix_Max_NEBULA;
+    
     delete MultMatrix_TDR_AlignedEvents;
     delete MultMatrix_TDR_UnFolded;
     delete MultMatrix_TDR_Folded;
     delete MultMatrix_TDR_Folded_Restricted;
+    delete MultMatrix_TDR_NEBULA_AlignedEvents;
+    delete MultMatrix_TDR_NEBULA_UnFolded;
+    delete MultMatrix_TDR_NEBULA_Folded;
+    delete MultMatrix_TDR_NEBULA_Folded_Restricted;
+    delete MultMatrix_TDR_Combined_AlignedEvents;
+    delete MultMatrix_TDR_Combined_UnFolded;
+    delete MultMatrix_TDR_Combined_Folded;
+    delete MultMatrix_TDR_Combined_Folded_Restricted;
+    
     delete MultMatrix_DNN_AlignedEvents;
     delete MultMatrix_DNN_ElenaEvents;
     delete MultMatrix_DNN_UnFolded;
     delete MultMatrix_DNN_Folded;
     delete MultMatrix_DNN_Folded_Restricted;
+    delete MultMatrix_DNN_NEBULA_AlignedEvents;
+    delete MultMatrix_DNN_NEBULA_ElenaEvents;
+    delete MultMatrix_DNN_NEBULA_UnFolded;
+    delete MultMatrix_DNN_NEBULA_Folded;
+    delete MultMatrix_DNN_NEBULA_Folded_Restricted;
+    delete MultMatrix_DNN_Combined_AlignedEvents;
+    delete MultMatrix_DNN_Combined_ElenaEvents;
+    delete MultMatrix_DNN_Combined_UnFolded;
+    delete MultMatrix_DNN_Combined_Folded;
+    delete MultMatrix_DNN_Combined_Folded_Restricted;
+    
     delete MultMatrix_Beta_Aligned;
     delete MultMatrix_Beta_UnFolded;
     delete MultMatrix_Beta_Folded;
@@ -147,6 +203,7 @@ R3BMultMatrix::~R3BMultMatrix()
     delete MultMatrix_Beta_UnFolded_Combined;
     delete MultMatrix_Beta_Folded_Combined;
     delete MultMatrix_Beta_Folded_Restricted_Combined;
+    
     delete MultMatrix_Single_Aligned;
     delete MultMatrix_Single_UnFolded;
     delete MultMatrix_Single_Folded;
@@ -231,24 +288,40 @@ InitStatus R3BMultMatrix::Init()
     fArrayNeuMult = (TClonesArray*)ioman->GetObject("NeuLAND_Multiplicity");
     
     // Obtain NeuLAND Beta reconstruction:
-    if ((TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits_NeuLAND") == nullptr)
+    if ((TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits") == nullptr)
     {
-        cout << "I/O-manager FATAL: R3BMultMatrix::Init No BetaReconstructed_PrimHits_NeuLAND!\n\n";
+        cout << "I/O-manager FATAL: R3BMultMatrix::Init No BetaReconstructed_PrimHits!\n\n";
         return kFATAL;
     }
-    fArrayBetaPrimHits_NeuLAND = (TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits_NeuLAND");
+    fArrayBetaPrimHits_NeuLAND = (TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits");
     
     // Obtain NeuLAND Single reconstruction:
-    if ((TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits_NeuLAND") == nullptr)
+    if ((TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits") == nullptr)
     {
-        cout << "I/O-manager FATAL: R3BMultMatrix::Init No SingleReconstructed_PrimHits_NeuLAND!\n\n";
+        cout << "I/O-manager FATAL: R3BMultMatrix::Init No SingleReconstructed_PrimHits!\n\n";
         return kFATAL;
     }
-    fArraySinglePrimHits_NeuLAND = (TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits_NeuLAND");
+    fArraySinglePrimHits_NeuLAND = (TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits");
+    
+    // Retrieve detected multiplicity:
+    if ((TClonesArray*)ioman->GetObject("Detected_Multiplicity") == nullptr)
+    {
+        cout << "I/O-manager FATAL: R3BMultMatrix::Init No Detected_Multiplicity!\n\n";
+        return kFATAL;
+    }
+    fArrayNeuDetMult = (TClonesArray*)ioman->GetObject("Detected_Multiplicity");
     
     // Same for NEBULA:
     if (UseNEBULA==kTRUE)
     {
+        // Retrieve the signals:
+        if ((TClonesArray*)ioman->GetObject("NEBULASignals") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BMultMatrix::Init No NEBULASignals!\n\n";
+            return kFATAL;
+        }
+        fArrayNEBULASignals = (TClonesArray*)ioman->GetObject("NEBULASignals");
+        
         // Retrieve the clusters:
         if ((TClonesArray*)ioman->GetObject("NEBULAClusters") == nullptr)
         {
@@ -257,33 +330,43 @@ InitStatus R3BMultMatrix::Init()
         }
         fArrayNEBULACluster = (TClonesArray*)ioman->GetObject("NEBULAClusters");
         
-        if ((TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits_NEBULA") == nullptr)
+        // Obtain the DNN multiplicity:
+        if ((TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity") == nullptr)
         {
-            cout << "I/O-manager FATAL: R3BMultMatrix::Init No BetaReconstructed_PrimHits_NEBULA!\n\n";
+            cout << "I/O-manager FATAL: R3BMultMatrix::Init No NEBULA DNN Multiplicity!\n\n";
             return kFATAL;
         }
-        fArrayBetaPrimHits_NEBULA = (TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits_NEBULA");
+        fArrayNEBDNNMult = (TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity");
         
-        if ((TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits_Combined") == nullptr)
+        // Retrieve Beta-stuff:
+        if ((TClonesArray*)ioman->GetObject("NEBULA_BetaReconstructed_PrimHits") == nullptr)
         {
-            cout << "I/O-manager FATAL: R3BMultMatrix::Init No BetaReconstructed_PrimHits_Combined!\n\n";
+            cout << "I/O-manager FATAL: R3BMultMatrix::Init No NEBULA_BetaReconstructed_PrimHits!\n\n";
             return kFATAL;
         }
-        fArrayBetaPrimHits_Combined = (TClonesArray*)ioman->GetObject("BetaReconstructed_PrimHits_Combined");
+        fArrayBetaPrimHits_NEBULA = (TClonesArray*)ioman->GetObject("NEBULA_BetaReconstructed_PrimHits");
         
-        if ((TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits_NEBULA") == nullptr)
+        if ((TClonesArray*)ioman->GetObject("Combined_BetaReconstructed_PrimHits") == nullptr)
         {
-            cout << "I/O-manager FATAL: R3BMultMatrix::Init No SingleReconstructed_PrimHits_NEBULA!\n\n";
+            cout << "I/O-manager FATAL: R3BMultMatrix::Init No Combined_BetaReconstructed_PrimHits!\n\n";
             return kFATAL;
         }
-        fArraySinglePrimHits_NEBULA = (TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits_NEBULA");
+        fArrayBetaPrimHits_Combined = (TClonesArray*)ioman->GetObject("Combined_BetaReconstructed_PrimHits");
         
-        if ((TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits_Combined") == nullptr)
+        // Retrieve single-stuff:
+        if ((TClonesArray*)ioman->GetObject("NEBULA_SingleReconstructed_PrimHits") == nullptr)
         {
-            cout << "I/O-manager FATAL: R3BMultMatrix::Init No SingleReconstructed_PrimHits_Combined!\n\n";
+            cout << "I/O-manager FATAL: R3BMultMatrix::Init No NEBULA_SingleReconstructed_PrimHits!\n\n";
             return kFATAL;
         }
-        fArraySinglePrimHits_Combined = (TClonesArray*)ioman->GetObject("SingleReconstructed_PrimHits_Combined");
+        fArraySinglePrimHits_NEBULA = (TClonesArray*)ioman->GetObject("NEBULA_SingleReconstructed_PrimHits");
+        
+        if ((TClonesArray*)ioman->GetObject("Combined_SingleReconstructed_PrimHits") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BMultMatrix::Init No Combined_SingleReconstructed_PrimHits!\n\n";
+            return kFATAL;
+        }
+        fArraySinglePrimHits_Combined = (TClonesArray*)ioman->GetObject("Combined_SingleReconstructed_PrimHits");
         
         if ((TClonesArray*)ioman->GetObject("NEBULA_Multiplicity") == nullptr)
         {
@@ -292,6 +375,7 @@ InitStatus R3BMultMatrix::Init()
         }
         fArrayNEBMult = (TClonesArray*)ioman->GetObject("NEBULA_Multiplicity");
         
+        // Retrieve detected multiplicity:
         if ((TClonesArray*)ioman->GetObject("NEBULA_Detected_Multiplicity") == nullptr)
         {
             cout << "I/O-manager FATAL: R3BMultMatrix::Init No NEBULA_Detected_Multiplicity!\n\n";
@@ -304,15 +388,36 @@ InitStatus R3BMultMatrix::Init()
     MultMatrix_Max = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Max_Combined = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Max_NEBULA = new Double_t*[MaxMultiplicity+2];
+    
     MultMatrix_TDR_AlignedEvents = new Double_t*[MaxMultiplicity+2];
     MultMatrix_TDR_UnFolded = new Double_t*[MaxMultiplicity+2];
     MultMatrix_TDR_Folded = new Double_t*[MaxMultiplicity+2];
     MultMatrix_TDR_Folded_Restricted = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_NEBULA_AlignedEvents = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_NEBULA_UnFolded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_NEBULA_Folded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_NEBULA_Folded_Restricted = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_Combined_AlignedEvents = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_Combined_UnFolded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_Combined_Folded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_TDR_Combined_Folded_Restricted = new Double_t*[MaxMultiplicity+2];
+    
     MultMatrix_DNN_AlignedEvents = new Double_t*[MaxMultiplicity+2];
     MultMatrix_DNN_ElenaEvents = new Double_t*[MaxMultiplicity+2];
     MultMatrix_DNN_UnFolded = new Double_t*[MaxMultiplicity+2];
     MultMatrix_DNN_Folded = new Double_t*[MaxMultiplicity+2];
     MultMatrix_DNN_Folded_Restricted = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_NEBULA_AlignedEvents = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_NEBULA_ElenaEvents = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_NEBULA_UnFolded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_NEBULA_Folded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_NEBULA_Folded_Restricted = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_Combined_AlignedEvents = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_Combined_ElenaEvents = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_Combined_UnFolded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_Combined_Folded = new Double_t*[MaxMultiplicity+2];
+    MultMatrix_DNN_Combined_Folded_Restricted = new Double_t*[MaxMultiplicity+2];
+    
     MultMatrix_Beta_Aligned = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Beta_UnFolded = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Beta_Folded = new Double_t*[MaxMultiplicity+2];
@@ -325,6 +430,7 @@ InitStatus R3BMultMatrix::Init()
     MultMatrix_Beta_UnFolded_Combined = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Beta_Folded_Combined = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Beta_Folded_Restricted_Combined = new Double_t*[MaxMultiplicity+2];
+    
     MultMatrix_Single_Aligned = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Single_UnFolded = new Double_t*[MaxMultiplicity+2];
     MultMatrix_Single_Folded = new Double_t*[MaxMultiplicity+2];
@@ -343,15 +449,36 @@ InitStatus R3BMultMatrix::Init()
         MultMatrix_Max[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Max_NEBULA[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Max_Combined[krow] = new Double_t[MaxMultiplicity+1];
+        
         MultMatrix_TDR_AlignedEvents[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_TDR_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_TDR_Folded[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_TDR_Folded_Restricted[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_NEBULA_AlignedEvents[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_NEBULA_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_NEBULA_Folded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_NEBULA_Folded_Restricted[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_Combined_AlignedEvents[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_Combined_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_Combined_Folded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_TDR_Combined_Folded_Restricted[krow] = new Double_t[MaxMultiplicity+1];
+        
         MultMatrix_DNN_AlignedEvents[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_DNN_ElenaEvents[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_DNN_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_DNN_Folded[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_DNN_Folded_Restricted[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_NEBULA_AlignedEvents[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_NEBULA_ElenaEvents[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_NEBULA_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_NEBULA_Folded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_NEBULA_Folded_Restricted[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_Combined_AlignedEvents[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_Combined_ElenaEvents[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_Combined_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_Combined_Folded[krow] = new Double_t[MaxMultiplicity+1];
+        MultMatrix_DNN_Combined_Folded_Restricted[krow] = new Double_t[MaxMultiplicity+1];
+        
         MultMatrix_Beta_Aligned[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Beta_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Beta_Folded[krow] = new Double_t[MaxMultiplicity+1];
@@ -364,6 +491,7 @@ InitStatus R3BMultMatrix::Init()
         MultMatrix_Beta_UnFolded_Combined[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Beta_Folded_Combined[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Beta_Folded_Restricted_Combined[krow] = new Double_t[MaxMultiplicity+1];
+        
         MultMatrix_Single_Aligned[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Single_UnFolded[krow] = new Double_t[MaxMultiplicity+1];
         MultMatrix_Single_Folded[krow] = new Double_t[MaxMultiplicity+1];
@@ -382,15 +510,36 @@ InitStatus R3BMultMatrix::Init()
             MultMatrix_Max[krow][kcol] = 0.0;
             MultMatrix_Max_Combined[krow][kcol] = 0.0;
             MultMatrix_Max_NEBULA[krow][kcol] = 0.0;
+            
             MultMatrix_TDR_AlignedEvents[krow][kcol] = 0.0;
             MultMatrix_TDR_UnFolded[krow][kcol] = 0.0;
             MultMatrix_TDR_Folded[krow][kcol] = 0.0;
             MultMatrix_TDR_Folded_Restricted[krow][kcol] = 0.0;
+            MultMatrix_TDR_NEBULA_AlignedEvents[krow][kcol] = 0.0;
+            MultMatrix_TDR_NEBULA_UnFolded[krow][kcol] = 0.0;
+            MultMatrix_TDR_NEBULA_Folded[krow][kcol] = 0.0;
+            MultMatrix_TDR_NEBULA_Folded_Restricted[krow][kcol] = 0.0;
+            MultMatrix_TDR_Combined_AlignedEvents[krow][kcol] = 0.0;
+            MultMatrix_TDR_Combined_UnFolded[krow][kcol] = 0.0;
+            MultMatrix_TDR_Combined_Folded[krow][kcol] = 0.0;
+            MultMatrix_TDR_Combined_Folded_Restricted[krow][kcol] = 0.0;
+            
             MultMatrix_DNN_AlignedEvents[krow][kcol] = 0.0;
             MultMatrix_DNN_ElenaEvents[krow][kcol] = 0.0;
             MultMatrix_DNN_UnFolded[krow][kcol] = 0.0;
             MultMatrix_DNN_Folded[krow][kcol] = 0.0;
             MultMatrix_DNN_Folded_Restricted[krow][kcol] = 0.0;
+            MultMatrix_DNN_NEBULA_AlignedEvents[krow][kcol] = 0.0;
+            MultMatrix_DNN_NEBULA_ElenaEvents[krow][kcol] = 0.0;
+            MultMatrix_DNN_NEBULA_UnFolded[krow][kcol] = 0.0;
+            MultMatrix_DNN_NEBULA_Folded[krow][kcol] = 0.0;
+            MultMatrix_DNN_NEBULA_Folded_Restricted[krow][kcol] = 0.0;
+            MultMatrix_DNN_Combined_AlignedEvents[krow][kcol] = 0.0;
+            MultMatrix_DNN_Combined_ElenaEvents[krow][kcol] = 0.0;
+            MultMatrix_DNN_Combined_UnFolded[krow][kcol] = 0.0;
+            MultMatrix_DNN_Combined_Folded[krow][kcol] = 0.0;
+            MultMatrix_DNN_Combined_Folded_Restricted[krow][kcol] = 0.0;
+            
             MultMatrix_Beta_Aligned[krow][kcol] = 0.0;
             MultMatrix_Beta_UnFolded[krow][kcol] = 0.0;
             MultMatrix_Beta_Folded[krow][kcol] = 0.0;
@@ -403,6 +552,7 @@ InitStatus R3BMultMatrix::Init()
             MultMatrix_Beta_UnFolded_Combined[krow][kcol] = 0.0;
             MultMatrix_Beta_Folded_Combined[krow][kcol] = 0.0;
             MultMatrix_Beta_Folded_Restricted_Combined[krow][kcol] = 0.0;
+            
             MultMatrix_Single_Aligned[krow][kcol] = 0.0;
             MultMatrix_Single_UnFolded[krow][kcol] = 0.0;
             MultMatrix_Single_Folded[krow][kcol] = 0.0;
@@ -423,6 +573,7 @@ InitStatus R3BMultMatrix::Init()
     
     // Obtain the TDR calibration cuts:
     ReadCalibrationFile();
+    if (UseNEBULA==kTRUE) {ReadNEBULACalibrationFile();}
 
     // Then, return the succes statement:
     if (Inputs->ContainsNoErrors()==kFALSE) {Inputs->PrintAllErrors(); return kFATAL;}
@@ -443,12 +594,22 @@ void R3BMultMatrix::Exec(Option_t *option)
     if (UseNEBULA==kTRUE) {SingleCombinedMultiplicity = fArraySinglePrimHits_Combined->GetEntries();} else {SingleCombinedMultiplicity = 0;}
     
     GunMultiplicity = fArrayMCNeutronTracks->GetEntries();
+    
     TDRMultiplicity = ApplyCalibrationCuts();
+    if (UseNEBULA==kTRUE) {NEBTDRMultiplicity = ApplyNEBULACalibrationCuts();}
+    if (UseNEBULA==kTRUE) {CombinedTDRMultiplicity = TDRMultiplicity + NEBTDRMultiplicity;}
+    
     DNNMultiplicity = 0;
-    DetectedMultiplicity = 0;
+    if (UseNEBULA==kTRUE) {NEBDNNMultiplicity = 0;}
+    if (UseNEBULA==kTRUE) {CombinedDNNMultiplicity = 0;}
+    
     NeuLANDMultiplicity = 0;
-    NEBULAMultiplicity = 0;
-    NEBDetectedMultiplicity = 0;
+    if (UseNEBULA==kTRUE) {NEBULAMultiplicity = 0;}
+    if (UseNEBULA==kTRUE) {CombinedInteractionMultiplicity = 0;}
+    
+    DetectedMultiplicity = 0;
+    if (UseNEBULA==kTRUE) {NEBDetectedMultiplicity = 0;}
+    if (UseNEBULA==kTRUE) {CombinedDetectedMultiplicity = 0;}
     
     Int_t nSignals = fArraySignals->GetEntries();
     R3BSignal* ThisSignal;
@@ -468,27 +629,34 @@ void R3BMultMatrix::Exec(Option_t *option)
     }
     
     if (ClusterDetMult!=DetectedMultiplicity) {cout << "Event: " << EventCounter << " | Cluster & Signal Detected multiplicities were not equal! SERIOUS ERROR!!!\n";}
+    ObjInteger* ThisObjInt;
     
-    ObjInteger* ThisObjInt = (ObjInteger*) fArrayMult->At(0);
+    ThisObjInt = (ObjInteger*) fArrayMult->At(0);
     DNNMultiplicity = ThisObjInt->GetNumber();
+    
+    ThisObjInt = (ObjInteger*) fArrayNeuMult->At(0);
+    NeuLANDMultiplicity = ThisObjInt->GetNumber();
     
     if (UseNEBULA==kTRUE)
     {
-        ThisObjInt = (ObjInteger*) fArrayNeuMult->At(0);
-        NeuLANDMultiplicity = ThisObjInt->GetNumber();
-    
+        ThisObjInt = (ObjInteger*) fArrayNEBDNNMult->At(0);
+        NEBDNNMultiplicity = ThisObjInt->GetNumber();
+        CombinedDNNMultiplicity = NEBDNNMultiplicity + DNNMultiplicity;
+        
         ThisObjInt = (ObjInteger*) fArrayNEBMult->At(0);
         NEBULAMultiplicity = ThisObjInt->GetNumber();
+        CombinedInteractionMultiplicity = NeuLANDMultiplicity + NEBULAMultiplicity;
     
         ThisObjInt = (ObjInteger*) fArrayNEBDetMult->At(0);
         NEBDetectedMultiplicity = ThisObjInt->GetNumber();
+        CombinedDetectedMultiplicity = NEBDetectedMultiplicity + DetectedMultiplicity;
     }
     
     // Update all of our matrices:
-    UpdatePerfectMatrices();
-    UpdateFoldedMatrices();
-    UpdateUnFoldedMatrices();
-    UpdateAlignedMatrices();
+    UpdatePerfectMatrices(); 
+    UpdateFoldedMatrices(); 
+    UpdateUnFoldedMatrices(); 
+    UpdateAlignedMatrices(); 
     UpdateElenaMatrices();
     
     // Log progress:
@@ -506,89 +674,120 @@ void R3BMultMatrix::Finish()
     
     // Write down the neutron separation matrices:
     WriteMultMatrix(MultMatrix_Max,"NeuLAND Perfect Reconstruction","Particle Gun Multiplicities");
-    PlotMultMatrix(MultMatrix_Max,"NeuLAND Perfect Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
+    PlotMultMatrix(MultMatrix_Max,"NeuLAND Perfect Reconstruction","Particle Gun Multiplicities");               // NOTE: Make a plot!
     
     if (UseNEBULA==kTRUE)
     {
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
         WriteMultMatrix(MultMatrix_Max_NEBULA,"NEBULA Perfect Reconstruction","Particle Gun Multiplicities");
+        PlotMultMatrix(MultMatrix_Max_NEBULA,"NEBULA Perfect Reconstruction","Particle Gun Multiplicities");     // NOTE: Make a plot!
+        
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
         WriteMultMatrix(MultMatrix_Max_Combined,"COMBINED Perfect Reconstruction","Particle Gun Multiplicities");
         PlotMultMatrix(MultMatrix_Max_Combined,"COMBINED Perfect Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
     }
     
-    WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
+    WriteTextFile << "\n\n=============================================================\n\n";
     
     WriteMultMatrix(MultMatrix_TDR_AlignedEvents,"NeuLAND TDR Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_TDR_UnFolded,"NeuLAND Unfolded TDR Reconstruction","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_TDR_Folded,"NeuLAND Folded TDR Reconstruction","Particle Gun Multiplicities");
     WriteMultMatrix(MultMatrix_TDR_Folded_Restricted,"NeuLAND Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities");
+    PlotMultMatrix(MultMatrix_TDR_Folded,"NeuLAND Folded TDR Reconstruction","Particle Gun Multiplicities");                            // NOTE: Make a plot!
+    PlotMultMatrix(MultMatrix_TDR_Folded_Restricted,"NeuLAND Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities");    // NOTE: Make a plot!
     
-    PlotMultMatrix(MultMatrix_TDR_Folded,"NeuLAND Folded TDR Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
-    PlotMultMatrix(MultMatrix_TDR_Folded_Restricted,"NeuLAND Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
+    if (UseNEBULA==kTRUE)
+    {
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
+        WriteMultMatrix(MultMatrix_TDR_NEBULA_AlignedEvents,"NEBULA TDR Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_TDR_NEBULA_UnFolded,"NEBULA Unfolded TDR Reconstruction","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_TDR_NEBULA_Folded,"NEBULA Folded TDR Reconstruction","Particle Gun Multiplicities");
+        WriteMultMatrix(MultMatrix_TDR_NEBULA_Folded_Restricted,"NEBULA Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities");
+        PlotMultMatrix(MultMatrix_TDR_NEBULA_Folded,"NEBULA Folded TDR Reconstruction","Particle Gun Multiplicities");                         // NOTE: Make a plot!
+        PlotMultMatrix(MultMatrix_TDR_NEBULA_Folded_Restricted,"NEBULA Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
+        
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
+        WriteMultMatrix(MultMatrix_TDR_Combined_AlignedEvents,"Combined TDR Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_TDR_Combined_UnFolded,"Combined Unfolded TDR Reconstruction","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_TDR_Combined_Folded,"Combined Folded TDR Reconstruction","Particle Gun Multiplicities");
+        WriteMultMatrix(MultMatrix_TDR_Combined_Folded_Restricted,"Combined Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities");
+        PlotMultMatrix(MultMatrix_TDR_Combined_Folded,"Combined Folded TDR Reconstruction","Particle Gun Multiplicities");                         // NOTE: Make a plot!
+        PlotMultMatrix(MultMatrix_TDR_Combined_Folded_Restricted,"Combined Folded & Restricted TDR Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
+    }
     
-    WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
+    WriteTextFile << "\n\n=============================================================\n\n";
     
     WriteMultMatrix(MultMatrix_DNN_AlignedEvents,"NeuLAND DNN Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_DNN_ElenaEvents,"NeuLAND DNN Rec. Int./Det. Equal Multiplicities","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_DNN_UnFolded,"NeuLAND Unfolded DNN Reconstruction","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_DNN_Folded,"NeuLAND Folded DNN Reconstruction","Particle Gun Multiplicities");
     WriteMultMatrix(MultMatrix_DNN_Folded_Restricted,"NeuLAND Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities");
-    PlotMultMatrix(MultMatrix_DNN_Folded,"NeuLAND Folded DNN Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
-    PlotMultMatrix(MultMatrix_DNN_Folded_Restricted,"NeuLAND Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
+    PlotMultMatrix(MultMatrix_DNN_Folded,"NeuLAND Folded DNN Reconstruction","Particle Gun Multiplicities");                                       // NOTE: Make a plot!
+    PlotMultMatrix(MultMatrix_DNN_Folded_Restricted,"NeuLAND Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities");               // NOTE: Make a plot!
     
-    WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
+    if (UseNEBULA==kTRUE)
+    {
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
+        WriteMultMatrix(MultMatrix_DNN_NEBULA_AlignedEvents,"NEBULA DNN Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_NEBULA_ElenaEvents,"NEBULA DNN Rec. Int./Det. Equal Multiplicities","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_NEBULA_UnFolded,"NEBULA Unfolded DNN Reconstruction","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_NEBULA_Folded,"NEBULA Folded DNN Reconstruction","Particle Gun Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_NEBULA_Folded_Restricted,"NEBULA Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities");
+        PlotMultMatrix(MultMatrix_DNN_NEBULA_Folded,"NEBULA Folded DNN Reconstruction","Particle Gun Multiplicities");                             // NOTE: Make a plot!
+        PlotMultMatrix(MultMatrix_DNN_NEBULA_Folded_Restricted,"NEBULA Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities");     // NOTE: Make a plot!
+        
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
+        WriteMultMatrix(MultMatrix_DNN_Combined_AlignedEvents,"Combined DNN Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_Combined_ElenaEvents,"Combined DNN Rec. Int./Det. Equal Multiplicities","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_Combined_UnFolded,"Combined Unfolded DNN Reconstruction","Detected Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_Combined_Folded,"Combined Folded DNN Reconstruction","Particle Gun Multiplicities");
+        WriteMultMatrix(MultMatrix_DNN_Combined_Folded_Restricted,"Combined Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities");
+        PlotMultMatrix(MultMatrix_DNN_Combined_Folded,"Combined Folded DNN Reconstruction","Particle Gun Multiplicities");                         // NOTE: Make a plot!
+        PlotMultMatrix(MultMatrix_DNN_Combined_Folded_Restricted,"Combined Folded & Restricted DNN Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
+    }
+    
+    WriteTextFile << "\n\n=============================================================\n\n";
     
     WriteMultMatrix(MultMatrix_Beta_Aligned,"NeuLAND Beta Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_Beta_UnFolded,"NeuLAND Unfolded Beta Reconstruction","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_Beta_Folded,"NeuLAND Folded Beta Reconstruction","Particle Gun Multiplicities");
     WriteMultMatrix(MultMatrix_Beta_Folded_Restricted,"NeuLAND Folded & Restricted Beta Reconstruction","Particle Gun Multiplicities");
-    PlotMultMatrix(MultMatrix_Beta_Folded,"NeuLAND Folded Beta Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
-    PlotMultMatrix(MultMatrix_Beta_Folded_Restricted,"NeuLAND Folded & Restricted Beta Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
     
     if (UseNEBULA==kTRUE)
     {
-        WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
-        
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
         WriteMultMatrix(MultMatrix_Beta_Aligned_NEBULA,"NEBULA Beta Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Beta_UnFolded_NEBULA,"NEBULA Unfolded Beta Reconstruction","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Beta_Folded_NEBULA,"NEBULA Folded Beta Reconstruction","Particle Gun Multiplicities");
         WriteMultMatrix(MultMatrix_Beta_Folded_Restricted_NEBULA,"NEBULA Folded & Restricted Beta Reconstruction","Particle Gun Multiplicities");
         
-        WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
-
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
         WriteMultMatrix(MultMatrix_Beta_Aligned_Combined,"COMBINED Beta Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Beta_UnFolded_Combined,"COMBINED Unfolded Beta Reconstruction","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Beta_Folded_Combined,"COMBINED Folded Beta Reconstruction","Particle Gun Multiplicities");
         WriteMultMatrix(MultMatrix_Beta_Folded_Restricted_Combined,"COMBINED Folded & Restricted Beta Reconstruction","Particle Gun Multiplicities");
-        PlotMultMatrix(MultMatrix_Beta_Folded_Combined,"COMBINED Folded Beta Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
-        PlotMultMatrix(MultMatrix_Beta_Folded_Restricted_Combined,"COMBINED Folded & Restricted Beta Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
     }
     
-    WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
+    WriteTextFile << "\n\n=============================================================\n\n";
     
     WriteMultMatrix(MultMatrix_Single_Aligned,"NeuLAND Single Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_Single_UnFolded,"NeuLAND Unfolded Single Reconstruction","Detected Multiplicities");
     WriteMultMatrix(MultMatrix_Single_Folded,"NeuLAND Folded Single Reconstruction","Particle Gun Multiplicities");
     WriteMultMatrix(MultMatrix_Single_Folded_Restricted,"NeuLAND Folded & Restricted Single Reconstruction","Particle Gun Multiplicities");
-    PlotMultMatrix(MultMatrix_Single_Folded,"NeuLAND Folded Single Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
-    PlotMultMatrix(MultMatrix_Single_Folded_Restricted,"NeuLAND Folded & Restricted Single Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
     
     if (UseNEBULA==kTRUE)
     {
-        WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
-        
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
         WriteMultMatrix(MultMatrix_Single_Aligned_NEBULA,"NEBULA Single Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Single_UnFolded_NEBULA,"NEBULA Unfolded Single Reconstruction","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Single_Folded_NEBULA,"NEBULA Folded Single Reconstruction","Particle Gun Multiplicities");
         WriteMultMatrix(MultMatrix_Single_Folded_Restricted_NEBULA,"NEBULA Folded & Restricted Single Reconstruction","Particle Gun Multiplicities");
         
-        WriteTextFile << "\n\n----------------------------------------------------------------------------\n\n";
-
+        WriteTextFile << "\n\n-------------------------------------------------------------\n\n";
         WriteMultMatrix(MultMatrix_Single_Aligned_Combined,"COMBINED Single Rec. Gun/Det. Equal Multiplicities","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Single_UnFolded_Combined,"COMBINED Unfolded Single Reconstruction","Detected Multiplicities");
         WriteMultMatrix(MultMatrix_Single_Folded_Combined,"COMBINED Folded Single Reconstruction","Particle Gun Multiplicities");
         WriteMultMatrix(MultMatrix_Single_Folded_Restricted_Combined,"COMBINED Folded & Restricted Single Reconstruction","Particle Gun Multiplicities");
-        PlotMultMatrix(MultMatrix_Single_Folded_Combined,"COMBINED Folded Single Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
-        PlotMultMatrix(MultMatrix_Single_Folded_Restricted_Combined,"COMBINED Folded & Restricted Single Reconstruction","Particle Gun Multiplicities"); // NOTE: Make a plot!
     }
    
     // Finish up:

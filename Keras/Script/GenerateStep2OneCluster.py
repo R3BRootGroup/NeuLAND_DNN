@@ -23,7 +23,7 @@ if __name__ == "__main__":
     TheLabelStr = str(TheLabel)
 
    # Set the parameters:
-    SetParameters.Initialize()
+    SetParameters.Initialize(False)
     SetParameters.Step2_SelectedMultiplicity = TheLabel
     SetParameters.NetworkType = SetParameters.Step2_NetworkType
     SetParameters.TextFilePath = SetParameters.TextFilePath.replace('/DNN_DataBase/','/DNN_Step2_Mult'+TheLabelStr+'/')

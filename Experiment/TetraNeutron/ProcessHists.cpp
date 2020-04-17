@@ -26,7 +26,7 @@ void ProcessHists()
     Bool_t PlotScoringPlus = kFALSE;
     
     // Define OutputPath:
-    TString OutputPath = "/media/christiaan/DATA/DNN_Data/NeuLAND_12dp_1000MeV/INCLXX/DNN_Validation/";
+    TString OutputPath = "/media/christiaan/DATA/DNN_Data/8dp_600MeV/DNN_Validation/";
     if (OutputPath.Contains("/DNN_Training/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Training/","");}
     if (OutputPath.Contains("/DNN_Validation/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Validation/","");}
     if (OutputPath.Contains("/DNN_Experiment/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Experiment/","");}

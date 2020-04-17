@@ -121,6 +121,8 @@ R3BNeuLANDTranslator::R3BNeuLANDTranslator() : FairTask("R3BNeuLANDTranslator")
     PrimLines.clear();
     AllTimes = 0;
     PrimTimes = 0;
+    AllTimes_NEBULA = 0;
+    PrimTimes_NEBULA = 0;
     
     // Initialize Nuclear dataBase:
     TheNuclei = new Nuclei();
@@ -162,6 +164,10 @@ R3BNeuLANDTranslator::~R3BNeuLANDTranslator()
     delete Multiplicity_Signal;
     delete Multiplicity_Gun;
     delete PrimToSignal_Distance;
+    delete AllTimes;
+    delete PrimTimes;
+    delete AllTimes_NEBULA;
+    delete PrimTimes_NEBULA;
 
     // clear vectors:
     PrimIntPoints.clear();
@@ -516,6 +522,12 @@ void R3BNeuLANDTranslator::Finish()
     AllTimes->Write("AllTimes"+OutputNameTag,2);
     PrimTimes->Write("PrimTimes"+OutputNameTag,2);
     
+    if (UseNEBULA==kTRUE)
+    {
+        AllTimes_NEBULA->Write("AllTimes_NEBULA"+OutputNameTag,2);
+        PrimTimes_NEBULA->Write("PrimTimes_NEBULA"+OutputNameTag,2);
+    }
+    
     if (DistanceCheck==kTRUE)
     {
         MCPrint->Write("MCPrint"+OutputNameTag);
@@ -539,7 +551,7 @@ void R3BNeuLANDTranslator::Finish()
     WriteMultMatrix();
     
     // Save histograms also in inputs-file:
-    TString FileName = TheVMCFolder + "/NeuLAND_DNN/InputFiles/Multiplicities.root";
+    TString FileName = TheVMCFolder + "/DNN/InputFiles/Multiplicities.root";
     
     // First, see if our output-file already exists or not:
     FileStat_t stom;
@@ -566,6 +578,12 @@ void R3BNeuLANDTranslator::Finish()
     PrimToSignal_Distance_Conditional->Write("PrimToSignal_Distance_Conditional"+OutputNameTag,2);
     AllTimes->Write("AllTimes"+OutputNameTag,2);
     PrimTimes->Write("PrimTimes"+OutputNameTag,2);
+    
+    if (UseNEBULA==kTRUE)
+    {
+        AllTimes_NEBULA->Write("AllTimes_NEBULA"+OutputNameTag,2);
+        PrimTimes_NEBULA->Write("PrimTimes_NEBULA"+OutputNameTag,2);
+    }
     
     // Then, finish up:
     f->Close();

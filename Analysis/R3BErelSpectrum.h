@@ -50,6 +50,7 @@ class R3BErelSpectrum : public FairTask
         // Member functions to pass parameters:
         void LinkInputClass(R3BInputClass* inp) {Inputs = inp;}
         void SetNevents(Int_t const nn) {nEvents = nn;}
+        void SetDetector(TString const det) {ThisDetector = det;}
         
         // Other member functions:
         void SetBranchName(TString const str) {BranchName = str;}
@@ -69,6 +70,8 @@ class R3BErelSpectrum : public FairTask
         TString BranchName;
         
         // Input parameters:
+        TString ThisDetector;
+        Bool_t UseNEBULA;
         TString GunType;
         Int_t MaxMultiplicity;                      
         TString FileName;                         

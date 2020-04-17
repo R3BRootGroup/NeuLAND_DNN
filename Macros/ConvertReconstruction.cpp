@@ -35,7 +35,9 @@ void ConvertReconstruction(Int_t const TotalNumberOfThreads = 1)
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
+    Bool_t UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     
     // Corrent the number of events for MT effects:
     if (TotalNumberOfThreads>1)
@@ -61,18 +63,37 @@ void ConvertReconstruction(Int_t const TotalNumberOfThreads = 1)
         run->AddFriend(TradMedFile);
         run->AddFriend(BetaFile);
         run->AddFriend(SingleFile);
+        if (UseNEBULA==kTRUE) {run->AddFriend(CombiFile);}
         run->SetOutputFile(FinalFile);
         ConnectParFileToRuntimeDb(ParFile,run->GetRuntimeDb());
   
         // Create the Reconstruction translator:
         R3BRecoTranslator* RecoTrans = new R3BRecoTranslator();
+        RecoTrans->SetDetector("NeuLAND");
         RecoTrans->LinkInputClass(Inputs);
         RecoTrans->SetNevents(nEvents);
         RecoTrans->IncludeSingleClusterEvents();
         
         // Add it to the Mother FairTask:
         run->AddTask(RecoTrans);
-
+        
+        if (UseNEBULA==kTRUE)
+        {
+            R3BRecoTranslator* RecoNEBTrans = new R3BRecoTranslator();
+            RecoNEBTrans->SetDetector("NEBULA");
+            RecoNEBTrans->LinkInputClass(Inputs);
+            RecoNEBTrans->SetNevents(nEvents);
+            RecoNEBTrans->IncludeSingleClusterEvents();
+            run->AddTask(RecoNEBTrans);
+            
+            R3BRecoTranslator* RecoCombiTrans = new R3BRecoTranslator();
+            RecoCombiTrans->SetDetector("Combined");
+            RecoCombiTrans->LinkInputClass(Inputs);
+            RecoCombiTrans->SetNevents(nEvents);
+            RecoCombiTrans->IncludeSingleClusterEvents();
+            run->AddTask(RecoCombiTrans);
+        }
+        
         // Run the FairTask:
         run->Init();
         run->Run(0,nEvents);

@@ -1,6 +1,7 @@
 // Every CXX-file includes its own header file:
 #include "R3BScoreApplier.h"
 #include "TradMedMultiplicity.h"
+#include "NEBULA_TradMedMultiplicity.h"
 
 // Auxillary structures and sorting functions:
 struct SignalSortingStructure
@@ -63,6 +64,8 @@ R3BScoreApplier::R3BScoreApplier() : FairTask("R3BScoreApplier")
     fArrayPrims_Clusters_PerfectMult = new TClonesArray("R3BSignal");
     
     // Set input parameters:
+    ThisDetector = "NeuLAND";
+    UseNEBULA = kFALSE;
     MaxMultiplicity = 1;
     TradeEff_for_Acc = kFALSE;
     Acc_Selected_Multiplicity = 4;
@@ -84,6 +87,9 @@ R3BScoreApplier::R3BScoreApplier() : FairTask("R3BScoreApplier")
     UseCalibrationCuts = kFALSE;
     fCuts = 0;
     fKappa = -0.1;
+    UseNEBULACalibrationCuts = kFALSE;
+    fNEBCuts = 0;
+    fNEBKappa = -0.1;
     
     // Create the auxillary classes:
     Inputs = 0;
@@ -132,42 +138,81 @@ InitStatus R3BScoreApplier::Init()
     }
     
     // Obtain required inputs:
+    UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     MaxMultiplicity = Inputs->GetInputInteger("ParticleGun_Multiplicity");
     TradeEff_for_Acc = Inputs->GetInputBoolian("NeuLAND_TraditionalMethod_TradeEfficiency_For_Accuracy");
     Acc_Selected_Multiplicity = Inputs->GetInputInteger("NeuLAND_TraditionalMethod_Multiplicity_BoostAccuracy");
     Acc_EnergyThreshold = Inputs->GetInputDouble("NeuLAND_TraditionalMethod_Multiplicity_EnergyThreshold","MeV");
     
     // Obtain the R3BSignals:
-    if ((TClonesArray*)ioman->GetObject("Signals") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3BScoreApplier::Init No Signals!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("NEBULASignals") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BScoreApplier::Init No NEBULA Signals!\n\n";
+            return kFATAL;
+        }
+        fArraySignals = (TClonesArray*)ioman->GetObject("NEBULASignals");
     }
-    fArraySignals = (TClonesArray*)ioman->GetObject("Signals");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("Signals") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BScoreApplier::Init No Signals!\n\n";
+            return kFATAL;
+        }
+        fArraySignals = (TClonesArray*)ioman->GetObject("Signals");
+    }
     
     // Obtain the R3BSignalClusters:
-    if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3BScoreApplier::Init No Clusters!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("NEBULAClusters") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BScoreApplier::Init No NEBULA Clusters!\n\n";
+            return kFATAL;
+        }
+        fArrayClusters = (TClonesArray*)ioman->GetObject("NEBULAClusters");
     }
-    fArrayClusters = (TClonesArray*)ioman->GetObject("Clusters");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BScoreApplier::Init No Clusters!\n\n";
+            return kFATAL;
+        }
+        fArrayClusters = (TClonesArray*)ioman->GetObject("Clusters");
+    }
     
     // Obtain the DNN multiplicity:
-    if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3BScoreApplier::Init No DNN Multiplicity!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BScoreApplier::Init No DNN NEBULA Multiplicity!\n\n";
+            return kFATAL;
+        }
+        fArrayMult = (TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity");
     }
-    fArrayMult = (TClonesArray*)ioman->GetObject("DNN_Multiplicity");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BScoreApplier::Init No DNN Multiplicity!\n\n";
+            return kFATAL;
+        }
+        fArrayMult = (TClonesArray*)ioman->GetObject("DNN_Multiplicity");
+    }
     
     // Register the reconstruction outcomes:
-    ioman->Register("PrimaryHits_ScoringPlus_Signals_CutsMult","R3BSignal",fArrayPrims_Signals_CutsMult,kTRUE);
-    ioman->Register("PrimaryHits_ScoringPlus_Signals_DNNMult","R3BSignal",fArrayPrims_Signals_DNNMult,kTRUE);
-    ioman->Register("PrimaryHits_ScoringPlus_Signals_PerfectMult","R3BSignal",fArrayPrims_Signals_PerfectMult,kTRUE);
-    ioman->Register("PrimaryHits_ScoringPlus_Clusters_CutsMult","R3BSignal",fArrayPrims_Clusters_CutsMult,kTRUE);
-    ioman->Register("PrimaryHits_ScoringPlus_Clusters_DNNMult","R3BSignal",fArrayPrims_Clusters_DNNMult,kTRUE);
-    ioman->Register("PrimaryHits_ScoringPlus_Clusters_PerfectMult","R3BSignal",fArrayPrims_Clusters_PerfectMult,kTRUE);
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    ioman->Register(Detector_Prefix+"PrimaryHits_ScoringPlus_Signals_CutsMult","R3BSignal",fArrayPrims_Signals_CutsMult,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_ScoringPlus_Signals_DNNMult","R3BSignal",fArrayPrims_Signals_DNNMult,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_ScoringPlus_Signals_PerfectMult","R3BSignal",fArrayPrims_Signals_PerfectMult,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_ScoringPlus_Clusters_CutsMult","R3BSignal",fArrayPrims_Clusters_CutsMult,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_ScoringPlus_Clusters_DNNMult","R3BSignal",fArrayPrims_Clusters_DNNMult,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_ScoringPlus_Clusters_PerfectMult","R3BSignal",fArrayPrims_Clusters_PerfectMult,kTRUE);
     
     // Create control histograms:
     SignalTotalScoringResults = new TH1D*[MaxMultiplicity+1];
@@ -182,21 +227,23 @@ InitStatus R3BScoreApplier::Init()
     for (Int_t k = 0; k<(MaxMultiplicity+1); ++k)
     {
         kstr = st.Itoa(k,10);
-        HistName = "Signal_TotalScoringResult_n"+kstr;
+        HistName = Detector_Prefix+"Signal_TotalScoringResult_n"+kstr;
         SignalTotalScoringResults[k] = new TH1D(HistName,HistName,200,0.0,Length);
-        HistName = "Cluster_TotalScoringResult_n"+kstr;
+        HistName = Detector_Prefix+"Cluster_TotalScoringResult_n"+kstr;
         ClusterTotalScoringResults[k] = new TH1D(HistName,HistName,200,0.0,Length);
-        HistName = "Signal_AvgScoringResult_n"+kstr;
+        HistName = Detector_Prefix+"Signal_AvgScoringResult_n"+kstr;
         SignalAvgScoringResults[k] = new TH1D(HistName,HistName,200,0.0,1.0);
-        HistName = "Cluster_AvgScoringResult_n"+kstr;
+        HistName = Detector_Prefix+"Cluster_AvgScoringResult_n"+kstr;
         ClusterAvgScoringResults[k] = new TH1D(HistName,HistName,200,0.0,1.0);
     }
     
-    PerfectMultHist = new TH1I("PerfectMultHist","PerfectMultHist",MaxMultiplicity+1,0,MaxMultiplicity+1);
-    CutsMultHist = new TH1I("CutsMultHist","CutsMultHist",MaxMultiplicity+1,0,MaxMultiplicity+1);
-    DNNMultHist = new TH1I("DNNMultHist","DNNMultHist",MaxMultiplicity+1,0,MaxMultiplicity+1);
+    PerfectMultHist = new TH1I(Detector_Prefix+"PerfectMultHist",Detector_Prefix+"PerfectMultHist",MaxMultiplicity+1,0,MaxMultiplicity+1);
+    CutsMultHist = new TH1I(Detector_Prefix+"CutsMultHist",Detector_Prefix+"CutsMultHist",MaxMultiplicity+1,0,MaxMultiplicity+1);
+    DNNMultHist = new TH1I(Detector_Prefix+"DNNMultHist",Detector_Prefix+"DNNMultHist",MaxMultiplicity+1,0,MaxMultiplicity+1);
     
     // Next, initialize the scoring class:
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {TheScorers->SetDetector("NEBULA");}
+    else                                              {TheScorers->SetDetector("NeuLAND");}
     TheScorers->LinkInputsClass(Inputs);
     Bool_t ScoreTest = TheScorers->Initialize();
     
@@ -209,7 +256,8 @@ InitStatus R3BScoreApplier::Init()
     TheScorers->ReadScorers();
     
     // And obtain the TDR Cuts for multiplicity determination:
-    ReadCalibrationFile();
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {ReadNEBULACalibrationFile();}
+    else                                              {ReadCalibrationFile();}
     
     // Return the succes statement:
     EventCounter = 0;
@@ -272,7 +320,11 @@ void R3BScoreApplier::Exec(Option_t *option)
     // -------------------------------------------------------------------
     
     // Next, we must fill our output arrays. Begin by obtaining our multiplicities:
-    Int_t Cuts_Mult = ApplyCalibrationCuts(); CutsMultHist->Fill(Cuts_Mult);
+    Int_t Cuts_Mult = 0;
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Cuts_Mult = ApplyNEBULACalibrationCuts();}
+    else                                              {Cuts_Mult = ApplyCalibrationCuts();}
+    CutsMultHist->Fill(Cuts_Mult);
+    
     Int_t DNN_Mult = GetDNNMultiplicity(); DNNMultHist->Fill(DNN_Mult);
     Int_t Perfect_Mult = GetPerfectMultiplicity(); PerfectMultHist->Fill(Perfect_Mult);
     Int_t nPrimHits = 0;
@@ -421,17 +473,20 @@ void R3BScoreApplier::Finish()
     TheOutputFile->cd();
     
     // Write our control histograms:
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    
     for (Int_t k = 0; k<(MaxMultiplicity+1); ++k)
     {
-        SignalTotalScoringResults[k]->Write(SignalTotalScoringResults[k]->GetName(),2);
-        ClusterTotalScoringResults[k]->Write(ClusterTotalScoringResults[k]->GetName(),2);
-        SignalAvgScoringResults[k]->Write(SignalAvgScoringResults[k]->GetName(),2);
-        ClusterAvgScoringResults[k]->Write(ClusterAvgScoringResults[k]->GetName(),2);
+        SignalTotalScoringResults[k]->Write(Detector_Prefix+SignalTotalScoringResults[k]->GetName(),2);
+        ClusterTotalScoringResults[k]->Write(Detector_Prefix+ClusterTotalScoringResults[k]->GetName(),2);
+        SignalAvgScoringResults[k]->Write(Detector_Prefix+SignalAvgScoringResults[k]->GetName(),2);
+        ClusterAvgScoringResults[k]->Write(Detector_Prefix+ClusterAvgScoringResults[k]->GetName(),2);
     }
     
-    PerfectMultHist->Write("PerfectMultHist",2);
-    DNNMultHist->Write("DNNMultHist",2);
-    CutsMultHist->Write("CutsMultHist",2);
+    PerfectMultHist->Write(Detector_Prefix+"PerfectMultHist",2);
+    DNNMultHist->Write(Detector_Prefix+"DNNMultHist",2);
+    CutsMultHist->Write(Detector_Prefix+"CutsMultHist",2);
 
     // Done.
 }

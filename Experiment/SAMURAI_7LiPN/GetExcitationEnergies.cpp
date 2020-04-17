@@ -71,12 +71,12 @@ void GetExcitationEnergies()
         Excitation_Energy_7LiPN* GetExBeta = new Excitation_Energy_7LiPN();
         GetExBeta->LinkInputClass(Inputs);
         GetExBeta->SetNevents(nEvents);
-        GetExBeta->SetBranchTitle("NeutronTracks_BetaReconstruction_NeuLAND");
+        GetExBeta->SetBranchTitle("NeutronTracks_BetaReconstruction");
         
         Excitation_Energy_7LiPN* GetExSingle = new Excitation_Energy_7LiPN();
         GetExSingle->LinkInputClass(Inputs);
         GetExSingle->SetNevents(nEvents);
-        GetExSingle->SetBranchTitle("NeutronTracks_SingleReconstruction_NeuLAND");
+        GetExSingle->SetBranchTitle("NeutronTracks_SingleReconstruction");
         
         Excitation_Energy_7LiPN* GetExPerfect = new Excitation_Energy_7LiPN();
         GetExPerfect->LinkInputClass(Inputs);

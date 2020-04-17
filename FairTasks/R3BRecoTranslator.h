@@ -48,6 +48,7 @@ class R3BRecoTranslator : public FairTask
         // Define whether to use simulated data too:
         void LinkInputClass(R3BInputClass* inp) {Inputs = inp;}
         void SetNevents(Int_t const nn) {nEvents = nn;}
+        void SetDetector(TString const det) {ThisDetector = det;}
         void IncludeSingleClusterEvents() {Include_SingleClusterEvents = kTRUE;}
         void ExcludeSingleClusterEvents() {Include_SingleClusterEvents = kFALSE;}
         
@@ -60,7 +61,7 @@ class R3BRecoTranslator : public FairTask
         void InitializeEffMatrix(Double_t** &EffMatrix);
         
         void ConvertSignalToTrack(TClonesArray* &Input, TClonesArray* &Output, Bool_t const TestForSimMark);
-        void UpdateEfficiencyMatrixClusters(TClonesArray* &PrimSignals, Double_t** &EffMatrix, TString const Detector);
+        void UpdateEfficiencyMatrixClusters(TClonesArray* &PrimSignals, Double_t** &EffMatrix);
         void UpdateEfficiencyMatrixSignals(TClonesArray* &PrimSignals, Double_t** &EffMatrix);
         void SetExpMarksOnSignals(TClonesArray* &PrimSignals);
         void DuplicatePrimaryHits(TClonesArray* &PrimSignals);
@@ -71,9 +72,7 @@ class R3BRecoTranslator : public FairTask
     private:
         // Class content:
         TClonesArray* fArraySignals;       
-        TClonesArray* fArrayClusters;      
-        TClonesArray* fArrayNEBULASignals;       
-        TClonesArray* fArrayNEBULAClusters;      
+        TClonesArray* fArrayClusters;           
         
         // Primary hit classes:
         TClonesArray* fArrayPrimSignals_TradMed_Clusters_CutsMult;
@@ -88,12 +87,8 @@ class R3BRecoTranslator : public FairTask
         TClonesArray* fArrayPrimSignals_DNNScoringPlus;
         TClonesArray* fArrayPrimSignals_DNNScoringPlus_SingleTOF;
         TClonesArray* fArrayPrimSignals_DNNScoringPlus_Max;
-        TClonesArray* fArrayPrimSignals_BetaReconstruction_NeuLAND;
-        TClonesArray* fArrayPrimSignals_BetaReconstruction_NEBULA;
-        TClonesArray* fArrayPrimSignals_BetaReconstruction_Combined;
-        TClonesArray* fArrayPrimSignals_SingleReconstruction_NeuLAND;
-        TClonesArray* fArrayPrimSignals_SingleReconstruction_NEBULA;
-        TClonesArray* fArrayPrimSignals_SingleReconstruction_Combined;
+        TClonesArray* fArrayPrimSignals_BetaReconstruction;
+        TClonesArray* fArrayPrimSignals_SingleReconstruction;
         
         // Neutron track classes:
         TClonesArray* fRecoNeutronTracks_TradMed_Clusters_CutsMult;
@@ -108,12 +103,8 @@ class R3BRecoTranslator : public FairTask
         TClonesArray* fRecoNeutronTracks_DNNScoringPlus;
         TClonesArray* fRecoNeutronTracks_DNNScoringPlus_SingleTOF;
         TClonesArray* fRecoNeutronTracks_DNNScoringPlus_Max;
-        TClonesArray* fRecoNeutronTracks_BetaReconstruction_NeuLAND;
-        TClonesArray* fRecoNeutronTracks_BetaReconstruction_NEBULA;
-        TClonesArray* fRecoNeutronTracks_BetaReconstruction_Combined;
-        TClonesArray* fRecoNeutronTracks_SingleReconstruction_NeuLAND;
-        TClonesArray* fRecoNeutronTracks_SingleReconstruction_NEBULA;
-        TClonesArray* fRecoNeutronTracks_SingleReconstruction_Combined;
+        TClonesArray* fRecoNeutronTracks_BetaReconstruction;
+        TClonesArray* fRecoNeutronTracks_SingleReconstruction;
         
         // Other outputs:
         TClonesArray* fPerfectNeutronTracks_Signals;
@@ -129,6 +120,7 @@ class R3BRecoTranslator : public FairTask
         std::ofstream WriteTextFile;
         
         // Input parameters:
+        TString ThisDetector;
         Bool_t UseNEBULA;
         Bool_t SimulationData_IsAvailable;
         Double_t ceff;                     
@@ -158,12 +150,8 @@ class R3BRecoTranslator : public FairTask
         Double_t** EffMatrix_DNNScoringPlus;
         Double_t** EffMatrix_DNNScoringPlus_SingleTOF;
         Double_t** EffMatrix_DNNScoringPlus_Max;
-        Double_t** EffMatrix_BetaReconstruction_NeuLAND;
-        Double_t** EffMatrix_BetaReconstruction_NEBULA;
-        Double_t** EffMatrix_BetaReconstruction_Combined;
-        Double_t** EffMatrix_SingleReconstruction_NeuLAND;
-        Double_t** EffMatrix_SingleReconstruction_NEBULA;
-        Double_t** EffMatrix_SingleReconstruction_Combined;
+        Double_t** EffMatrix_BetaReconstruction;
+        Double_t** EffMatrix_SingleReconstruction;
              
         // Auxillary classes:
         R3BInputClass* Inputs;

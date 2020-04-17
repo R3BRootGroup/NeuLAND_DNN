@@ -63,6 +63,7 @@ public:
     
     // Control functions:
     void LinkInputClass(R3BInputClass* inp);    // Links this class to the inputs class.                                                  // Call only once in beginning.
+    void SetDetector(TString const TheDetector);// Specifies whether this is NEBULA of NeuLAND.                                           // Call only once in beginning.
     void CreateFile();                          // Creates and opens the textfile. Format defines the type (FANN, TensorFlow, etc.)       // Call only once in beginning.
     void GenerateOneFile(TString const EventTag); // Called inside CreateFile(). actually generates the file, but without the tests of CreateFile().
     void LinkIOManager(FairRootManager* io);    // Provides the initialization function a FairRootManager to obtain links.                // Call only once in beginning.
@@ -221,6 +222,7 @@ private:
     TString ParentOutputPath;
     Bool_t ComputeSingleClusterRatio;
     Bool_t DataTimeNormaliation_UsePrimTimes;
+    TString ThisDetector;
     
     // Scoring+ method:
     AllScorers* TheScorers;

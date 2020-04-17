@@ -28,6 +28,7 @@ R3BTradMethClass::R3BTradMethClass()
     Cuts_Initialized = kFALSE;
     Include_Zero = kFALSE;
     MinimizerStatus = -10;
+    ThisDetector = "NeuLAND";
 }
     
 // Destructor:
@@ -42,6 +43,7 @@ R3BTradMethClass::~R3BTradMethClass()
 }
 
 // Member function definitions:
+#include "SetDetector.h"
 #include "RoundOff.h"
 #include "DrawHistDouma_2D_flatArray.h"
 #include "LoadHistograms.h"

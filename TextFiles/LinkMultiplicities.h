@@ -42,24 +42,50 @@ Bool_t R3BTextFileGenerator::LinkMultiplicities()
         }
         else
         {
-            if ((TClonesArray*)ioman->GetObject("NeuLAND_Multiplicity"+OutputNameTag) == nullptr)
+            if (ThisDetector=="NEBULA")
             {
-                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NeuLAND_Multiplicity" + OutputNameTag + "!");
-                RetrieveTest = kFALSE;
-            }
-            else
-            {
-                if ((TClonesArray*)ioman->GetObject("Detected_Multiplicity"+OutputNameTag) == nullptr)
+                if ((TClonesArray*)ioman->GetObject("NEBULA_Multiplicity"+OutputNameTag) == nullptr)
                 {
-                    ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No Detected_Multiplicity" + OutputNameTag + "!");
+                    ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NEBULA_Multiplicity" + OutputNameTag + "!");
                     RetrieveTest = kFALSE;
                 }
                 else
                 {
-                    fArrayGunMult[k] = (TClonesArray*) ioman->GetObject("Gun_Multiplicity"+OutputNameTag);
-                    fArrayNeuMult[k] = (TClonesArray*) ioman->GetObject("NeuLAND_Multiplicity"+OutputNameTag);
-                    fArrayDetMult[k] = (TClonesArray*) ioman->GetObject("Detected_Multiplicity"+OutputNameTag);
-                    Mults_AreLinked[k] = kTRUE;
+                    if ((TClonesArray*)ioman->GetObject("NEBULA_Detected_Multiplicity"+OutputNameTag) == nullptr)
+                    {
+                        ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NEBULA_Detected_Multiplicity" + OutputNameTag + "!");
+                        RetrieveTest = kFALSE;
+                    }
+                    else
+                    {
+                        fArrayGunMult[k] = (TClonesArray*) ioman->GetObject("Gun_Multiplicity"+OutputNameTag);
+                        fArrayNeuMult[k] = (TClonesArray*) ioman->GetObject("NEBULA_Multiplicity"+OutputNameTag);
+                        fArrayDetMult[k] = (TClonesArray*) ioman->GetObject("NEBULA_Detected_Multiplicity"+OutputNameTag);
+                        Mults_AreLinked[k] = kTRUE;
+                    }
+                }
+            }
+            else
+            {
+                if ((TClonesArray*)ioman->GetObject("NeuLAND_Multiplicity"+OutputNameTag) == nullptr)
+                {
+                    ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NeuLAND_Multiplicity" + OutputNameTag + "!");
+                    RetrieveTest = kFALSE;
+                }
+                else
+                {
+                    if ((TClonesArray*)ioman->GetObject("Detected_Multiplicity"+OutputNameTag) == nullptr)
+                    {
+                        ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No Detected_Multiplicity" + OutputNameTag + "!");
+                        RetrieveTest = kFALSE;
+                    }
+                    else
+                    {
+                        fArrayGunMult[k] = (TClonesArray*) ioman->GetObject("Gun_Multiplicity"+OutputNameTag);
+                        fArrayNeuMult[k] = (TClonesArray*) ioman->GetObject("NeuLAND_Multiplicity"+OutputNameTag);
+                        fArrayDetMult[k] = (TClonesArray*) ioman->GetObject("Detected_Multiplicity"+OutputNameTag);
+                        Mults_AreLinked[k] = kTRUE;
+                    }
                 }
             }
         }

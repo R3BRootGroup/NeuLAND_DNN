@@ -47,7 +47,7 @@ class R3BMultReader : public FairTask
         // Define whether to use simulated data too:
         void LinkInputClass(R3BInputClass* inp) {Inputs = inp;}
         void SetNevents(Int_t const nn) {nEvents = nn;}
-        
+        void SetDetector(TString const det) {ThisDetector = det;}
 
     private:
         // Class content:
@@ -62,6 +62,7 @@ class R3BMultReader : public FairTask
         Int_t EventCounter;                 
         Int_t nEvents;
         Bool_t TextFile_IsThere;
+        TString ThisDetector;
         
         // Auxillary classes:
         R3BInputClass* Inputs;

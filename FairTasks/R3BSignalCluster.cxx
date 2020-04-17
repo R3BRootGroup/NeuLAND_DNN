@@ -15,6 +15,18 @@ R3BSignalCluster::R3BSignalCluster(Int_t const MaxSize)
     TradMed_Mark = kFALSE;
 }
 
+// Copy Constructor:
+R3BSignalCluster::R3BSignalCluster(R3BSignalCluster* Other)
+{
+    Int_t Size = Other->GetSize();
+    TheCluster.resize(Size);
+    
+    for (Int_t k = 0; k<Size; ++k)
+    {
+        TheCluster.at(k).Duplicate(Other->Atp(k));
+    }
+}
+
 // Destructor definition:
 R3BSignalCluster::~R3BSignalCluster()
 {

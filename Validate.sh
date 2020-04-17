@@ -14,11 +14,13 @@ cd ../
 cd ./Macros/
 root -l -q GenerateOutputPath.cpp
 root -l -q GenerateMaxMultiplicity.cpp
+root -l -q GenerateUseNEBULA.cpp
 cd ../
 
 # And read it into bash:
 read TheOutputPath < ./InputFiles/OutputPath.txt
 read MaxMultiplicity < ./InputFiles/MaxMultiplicity.txt
+read NEBULAFLAG < ./InputFiles/NEBULA_Presence.txt
 
 # Add the training and validation parts:
 TrainingOutputPath="${TheOutputPath}/DNN_Training/"
@@ -64,6 +66,17 @@ echo 'ERROR: You cannot do validation without CutsFile.txt!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/NEBULA_CutsFile.txt" ]
+then
+cp "${TrainingOutputPath}/NEBULA_CutsFile.txt" "${ValidationOutputPath}/NEBULA_CutsFile.txt"
+else
+echo 'ERROR: You cannot do validation without NEBULA_CutsFile.txt!'
+return
+fi
+fi
+
 # Then, check if the required files exist:
 if [ -f "${TrainingOutputPath}/TimeFile.txt" ]
 then
@@ -73,13 +86,34 @@ echo 'ERROR: You cannot do validation without TimeFile.txt!'
 return
 fi
 
-# Then, check if the required files exist:
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/TimeFile_NEBULA.txt" ]
+then
+cp "${TrainingOutputPath}/TimeFile_NEBULA.txt" "${ValidationOutputPath}/TimeFile_NEBULA.txt"
+else
+echo 'ERROR: You cannot do validation without TimeFile_NEBULA.txt!'
+return
+fi
+fi
+
+# Then, check if the required Network files exist:
 if [ ! -f "${TrainingOutputPath}/TheMultNetwork_Final.h5" ]
 then
 echo 'ERROR: You cannot do validation without the final network file!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ ! -f "${TrainingOutputPath}/TheNEBULAMultNetwork_Final.h5" ]
+then
+echo 'ERROR: You cannot do validation without the final NEBULA network file!'
+return
+fi
+fi
+
+# The required scores-files:
 if [ -f "${TrainingOutputPath}/NeuLAND_TheScorersFile.root" ]
 then
 cp "${TrainingOutputPath}/NeuLAND_TheScorersFile.root" "${ValidationOutputPath}/NeuLAND_TheScorersFile.root"
@@ -88,12 +122,34 @@ echo 'ERROR: You cannot do validation without NeuLAND_TheScorersFile.root!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/NEBULA_TheScorersFile.root" ]
+then
+cp "${TrainingOutputPath}/NEBULA_TheScorersFile.root" "${ValidationOutputPath}/NEBULA_TheScorersFile.root"
+else
+echo 'ERROR: You cannot do validation without NEBULA_TheScorersFile.root!'
+return
+fi
+fi
+
 if [ -f "${TrainingOutputPath}/NormParams.txt" ]
 then
 cp "${TrainingOutputPath}/NormParams.txt" "${ValidationOutputPath}/NormParams.txt"
 else
 echo 'NOTE: NormParams.txt is missing. But technically we could do without.'
 # NOTE: No return command.
+fi
+
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/NEBULA_NormParams.txt" ]
+then
+cp "${TrainingOutputPath}/NEBULA_NormParams.txt" "${ValidationOutputPath}/NEBULA_NormParams.txt"
+else
+echo 'NOTE: NEBULA_NormParams.txt is missing. But technically we could do without.'
+# NOTE: No return command.
+fi
 fi
 
 ####################################################################################
@@ -131,6 +187,12 @@ then
     fi
 
     python ./GenerateMultOutput.py
+    
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    python ./GenerateNEBULAMultOutput.py
+    fi
+    
     cd ../../Macros
     
     # Next, convert info to ROOT-file:
@@ -162,6 +224,13 @@ else
     ./MergeTheFiles.sh $1
     wait
     
+    # Merge detection efficiency files:
+    root -l -q "MergeDetectionEffFile.cpp($1,kFALSE)"
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    root -l -q "MergeDetectionEffFile.cpp($1,kTRUE)"
+    fi
+    
     # Then, run the translation of clusters. 
     # ATTENTION should NOT be done in MT mode for validation!
     cd ../Macros
@@ -178,6 +247,12 @@ else
     fi
 
     python ./GenerateMultOutput.py
+    
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    python ./GenerateNEBULAMultOutput.py
+    fi
+    
     cd ../../Macros
     
     # Next, convert info to ROOT-file:
@@ -209,6 +284,11 @@ for ((nMult=0; nMult<${MaxMultiplicity}; ++nMult))
 do
     ThisMult=`expr ${nMult} + 1`
     python ./GenerateStep2OneCluster.py ${ThisMult}
+    
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    python ./GenerateNEBULAStep2OneCluster.py ${ThisMult}
+    fi
 done
 
 # Then, continue to do the analysis:

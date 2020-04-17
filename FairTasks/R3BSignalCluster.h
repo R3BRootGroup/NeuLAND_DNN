@@ -31,6 +31,9 @@ class R3BSignalCluster : public TObject
         // Constructor to reserve memory from the beginning:
         R3BSignalCluster(Int_t const MaxSize);
         
+        // Copy constructor:
+        R3BSignalCluster(R3BSignalCluster* Other);
+        
         // Destructor:
         virtual ~R3BSignalCluster();
         

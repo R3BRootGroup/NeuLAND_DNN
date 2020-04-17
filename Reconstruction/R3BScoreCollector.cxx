@@ -42,6 +42,8 @@ R3BScoreCollector::~R3BScoreCollector()
     // Delete other classes:
     delete TheNuclei;
     delete TheScorers;
+    delete Calibration;
+    delete Calibration_Total;
 }
 
 // FairTask initialization function:

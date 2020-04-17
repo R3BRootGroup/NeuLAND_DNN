@@ -15,8 +15,8 @@ void R3BTextFileGenerator::Fill_Network_IO()
                                                       Step2_UseDetectedMultiplicity = kFALSE;
                                                       IO_FillFunction_ScoringPlus();}
     else if (InfoUse=="IO_Signals_ElenaHoemann")     {Include_HorPaddleCoordinate = kFALSE;
-                                                      Include_ZeroMult_Output = kFALSE; 
-                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;}
+                                                      Include_ZeroMult_Output = kFALSE; if (ThisDetector=="NEBULA") {Include_ZeroMult_Output = kTRUE;}
+                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;} if (ThisDetector=="NEBULA") {Include_ZeroMultEvents = kTRUE;}
                                                       Include_Multiplicity_MisAligned_Events = kFALSE; if (ValidationMode==kTRUE) {Include_Multiplicity_MisAligned_Events = kTRUE;}
                                                       Include_SigneHitClusters = kFALSE;
                                                       Include_TotalScores = kFALSE;
@@ -25,8 +25,8 @@ void R3BTextFileGenerator::Fill_Network_IO()
                                                       Eliminate_Tails_InNormalization = kFALSE;
                                                       IO_FillFunction_ElenaHoemann();}
     else if (InfoUse=="IO_Signals_Elena_6004_5")      {Include_HorPaddleCoordinate = kFALSE;
-                                                      Include_ZeroMult_Output = kFALSE;
-                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;}
+                                                      Include_ZeroMult_Output = kFALSE; if (ThisDetector=="NEBULA") {Include_ZeroMult_Output = kTRUE;}
+                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;} if (ThisDetector=="NEBULA") {Include_ZeroMultEvents = kTRUE;}
                                                       Include_Multiplicity_MisAligned_Events = kFALSE; if (ValidationMode==kTRUE) {Include_Multiplicity_MisAligned_Events = kTRUE;}
                                                       Include_SigneHitClusters = kTRUE;
                                                       Include_TotalScores = kTRUE;
@@ -35,8 +35,8 @@ void R3BTextFileGenerator::Fill_Network_IO()
                                                       Eliminate_Tails_InNormalization = kFALSE;
                                                       IO_FillFunction_ElenaHoemann();}
     else if (InfoUse=="IO_Signals_Elena_9002_5")     {Include_HorPaddleCoordinate = kTRUE;
-                                                      Include_ZeroMult_Output = kFALSE;
-                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;}
+                                                      Include_ZeroMult_Output = kFALSE; if (ThisDetector=="NEBULA") {Include_ZeroMult_Output = kTRUE;}
+                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;} if (ThisDetector=="NEBULA") {Include_ZeroMultEvents = kTRUE;}
                                                       Include_Multiplicity_MisAligned_Events = kFALSE; if (ValidationMode==kTRUE) {Include_Multiplicity_MisAligned_Events = kTRUE;}
                                                       Include_SigneHitClusters = kTRUE;
                                                       Include_TotalScores = kFALSE;
@@ -45,8 +45,8 @@ void R3BTextFileGenerator::Fill_Network_IO()
                                                       Eliminate_Tails_InNormalization = kFALSE;
                                                       IO_FillFunction_ElenaHoemann();}
     else if (InfoUse=="IO_Signals_Elena_9004_5")      {Include_HorPaddleCoordinate = kTRUE;
-                                                      Include_ZeroMult_Output = kFALSE;
-                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;}
+                                                      Include_ZeroMult_Output = kFALSE; if (ThisDetector=="NEBULA") {Include_ZeroMult_Output = kTRUE;}
+                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;} if (ThisDetector=="NEBULA") {Include_ZeroMultEvents = kTRUE;}
                                                       Include_Multiplicity_MisAligned_Events = kFALSE; if (ValidationMode==kTRUE) {Include_Multiplicity_MisAligned_Events = kTRUE;}
                                                       Include_SigneHitClusters = kTRUE;
                                                       Include_TotalScores = kTRUE;
@@ -55,8 +55,8 @@ void R3BTextFileGenerator::Fill_Network_IO()
                                                       Eliminate_Tails_InNormalization = kFALSE;
                                                       IO_FillFunction_ElenaHoemann();}
     else if (InfoUse=="IO_Signals_Elena_12004_5")     {Include_HorPaddleCoordinate = kTRUE;
-                                                      Include_ZeroMult_Output = kFALSE;
-                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;}
+                                                      Include_ZeroMult_Output = kFALSE; if (ThisDetector=="NEBULA") {Include_ZeroMult_Output = kTRUE;}
+                                                      Include_ZeroMultEvents = kFALSE; if (ValidationMode==kTRUE) {Include_ZeroMultEvents = kTRUE;} if (ThisDetector=="NEBULA") {Include_ZeroMultEvents = kTRUE;}
                                                       Include_Multiplicity_MisAligned_Events = kFALSE; if (ValidationMode==kTRUE) {Include_Multiplicity_MisAligned_Events = kTRUE;}
                                                       Include_SigneHitClusters = kTRUE;
                                                       Include_TotalScores = kTRUE;

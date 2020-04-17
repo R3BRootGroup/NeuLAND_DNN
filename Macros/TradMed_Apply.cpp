@@ -35,7 +35,9 @@ void TradMed_Apply(Int_t const TotalNumberOfThreads = 1)
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
+    Bool_t UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     
     // Corrent the number of events for MT effects:
     if (TotalNumberOfThreads>1)
@@ -60,18 +62,21 @@ void TradMed_Apply(Int_t const TotalNumberOfThreads = 1)
   
         // Create the R3B_TradMed_NeutronTracker that is to use cuts for the multiplicity:
         R3B_TradMed_NeutronTracker* MultCuts = new R3B_TradMed_NeutronTracker();
+        MultCuts->SetDetector("NeuLAND");
         MultCuts->LinkInputClass(Inputs);
         MultCuts->SetNevents(nEvents);
         MultCuts->SetMultiplicityDetermination("Cuts");
         
         // Create the R3B_TradMed_NeutronTracker that is to use a perfect multiplicity:
         R3B_TradMed_NeutronTracker* MultPerfect = new R3B_TradMed_NeutronTracker();
+        MultPerfect->SetDetector("NeuLAND");
         MultPerfect->LinkInputClass(Inputs);
         MultPerfect->SetNevents(nEvents);
         MultPerfect->SetMultiplicityDetermination("Perfect");
         
         // Create the R3B_TradMed_NeutronTracker that is to use a DNN multiplicity:
         R3B_TradMed_NeutronTracker* MultDNN = new R3B_TradMed_NeutronTracker();
+        MultDNN->SetDetector("NeuLAND");
         MultDNN->LinkInputClass(Inputs);
         MultDNN->SetNevents(nEvents);
         MultDNN->SetMultiplicityDetermination("DNN");
@@ -80,6 +85,33 @@ void TradMed_Apply(Int_t const TotalNumberOfThreads = 1)
         run->AddTask(MultCuts);
         run->AddTask(MultPerfect);
         run->AddTask(MultDNN);
+        
+        // Same for NEBULA:
+        if (UseNEBULA==kTRUE)
+        {
+            R3B_TradMed_NeutronTracker* NEBMultCuts = new R3B_TradMed_NeutronTracker();
+            NEBMultCuts->SetDetector("NEBULA");
+            NEBMultCuts->LinkInputClass(Inputs);
+            NEBMultCuts->SetNevents(nEvents);
+            NEBMultCuts->SetMultiplicityDetermination("Cuts");
+        
+            R3B_TradMed_NeutronTracker* NEBMultPerfect = new R3B_TradMed_NeutronTracker();
+            NEBMultPerfect->SetDetector("NEBULA");
+            NEBMultPerfect->LinkInputClass(Inputs);
+            NEBMultPerfect->SetNevents(nEvents);
+            NEBMultPerfect->SetMultiplicityDetermination("Perfect");
+        
+            R3B_TradMed_NeutronTracker* NEBMultDNN = new R3B_TradMed_NeutronTracker();
+            NEBMultDNN->SetDetector("NEBULA");
+            NEBMultDNN->LinkInputClass(Inputs);
+            NEBMultDNN->SetNevents(nEvents);
+            NEBMultDNN->SetMultiplicityDetermination("DNN");
+        
+            run->AddTask(NEBMultCuts);
+            run->AddTask(NEBMultPerfect);
+            run->AddTask(NEBMultDNN);
+        }
+            
 
         // Run the FairTasks:
         run->Init();

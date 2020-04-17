@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TSystem.h"
 #include "TROOT.h"
+#include "TH2D.h"
 
 // Inclusion of R3BRoot headers:
 #include "FairRootManager.h"
@@ -63,6 +64,8 @@ class R3BNEBULAScoreCollector : public FairTask
         Int_t MaxMultiplicity;
         Bool_t UseNEBULA;
         Bool_t SimulationData_IsAvailable;
+        TH2D** Calibration;
+        TH2D* Calibration_Total;
         
         R3BInputClass* Inputs;
         Nuclei* TheNuclei;

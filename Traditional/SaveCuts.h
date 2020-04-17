@@ -14,7 +14,15 @@ void R3BTradMethClass::SaveCuts()
         TString PATH = Inputs->GetInputString("TheOutputPath");
         
         // Define filename:
-        TString FileName = PATH + "/CutsFile.txt";
+        TString FileName = "";
+        if (ThisDetector=="NEBULA")
+        {
+            FileName = PATH + "/NEBULA_CutsFile.txt";
+        }
+        else
+        {
+            FileName = PATH + "/CutsFile.txt";
+        }
         
         // Create the file:
         std::ofstream TheFile (FileName.Data(), std::ofstream::out);
@@ -49,7 +57,15 @@ void R3BTradMethClass::LoadCuts()
         TString PATH = Inputs->GetInputString("TheOutputPath");
         
         // Define filename:
-        TString FileName = PATH + "/CutsFile.txt";
+        TString FileName = "";
+        if (ThisDetector=="NEBULA")
+        {
+            FileName = PATH + "/NEBULA_CutsFile.txt";
+        }
+        else
+        {
+            FileName = PATH + "/CutsFile.txt";
+        }
         
         // Load the file:
         ifstream TheFile;

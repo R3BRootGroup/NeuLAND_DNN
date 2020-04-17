@@ -10,8 +10,6 @@ R3BSingleReconstructor::R3BSingleReconstructor() : FairTask("R3BSingleReconstruc
     // Create arrays:
     fArrayNeuLANDSignals = new TClonesArray("R3BSignal");
     fArrayNEBULASignals = new TClonesArray("R3BSignal");
-    fArrayNeuLANDVETOSignals = new TClonesArray("R3BSignal");
-    fArrayNEBULAVETOSignals = new TClonesArray("R3BSignal"); 
     
     fArrayPrimHits_NeuLAND = new TClonesArray("R3BSignal");
     fArrayPrimHits_NEBULA = new TClonesArray("R3BSignal");
@@ -20,10 +18,6 @@ R3BSingleReconstructor::R3BSingleReconstructor() : FairTask("R3BSingleReconstruc
     // Input parameters:
     MaxMultiplicity = 1;
     UseNEBULA = kFALSE;
-    UseVETO = kFALSE;
-    UseNEBULAVETO = kFALSE;
-    NeuLAND_VETOCondition = "None";
-    NEBULA_VETOCondition = "None";
     
     // Other parameters:
     EventCounter = 0;
@@ -42,8 +36,6 @@ R3BSingleReconstructor::~R3BSingleReconstructor()
     if (fArrayPrimHits_NeuLAND) {fArrayPrimHits_NeuLAND->Clear(); delete fArrayPrimHits_NeuLAND;}
     if (fArrayPrimHits_NEBULA) {fArrayPrimHits_NEBULA->Clear(); delete fArrayPrimHits_NEBULA;}
     if (fArrayPrimHits_Combined) {fArrayPrimHits_Combined->Clear(); delete fArrayPrimHits_Combined;}
-    if (fArrayNeuLANDVETOSignals) {fArrayNeuLANDVETOSignals->Clear(); delete fArrayNeuLANDVETOSignals;}
-    if (fArrayNEBULAVETOSignals) {fArrayNEBULAVETOSignals->Clear(); delete fArrayNEBULAVETOSignals;}
     
     // Delete other objects:
     delete TheNuclei;
@@ -70,11 +62,7 @@ InitStatus R3BSingleReconstructor::Init()
     
     // Obtain all required inputs:
     MaxMultiplicity = Inputs->GetInputInteger("ParticleGun_Multiplicity");
-    UseVETO = Inputs->GetInputBoolian("VETO_Include_in_SETUP");
     UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
-    UseNEBULAVETO = Inputs->GetInputBoolian("NEBULA_VET_Include_in_SETUP");
-    NeuLAND_VETOCondition = Inputs->GetInputString("BetaReconstruction_NeuLAND_Select_VETOCondition");
-    NEBULA_VETOCondition = Inputs->GetInputString("BetaReconstruction_NEBULA_Select_VETOCondition");
 
     // Retrieve the clusters:
     if ((TClonesArray*)ioman->GetObject("Signals") == nullptr)
@@ -94,34 +82,13 @@ InitStatus R3BSingleReconstructor::Init()
         fArrayNEBULASignals = (TClonesArray*)ioman->GetObject("NEBULASignals");
     }
     
-    // Obtain VETO signals:
-    if (UseVETO==kTRUE)
-    {
-        if ((TClonesArray*)ioman->GetObject("VETOSignals") == nullptr)
-        {
-            cout << "I/O-manager FATAL: R3BSingleReconstructor::Init No VETOSignals!\n\n";
-            return kFATAL;
-        }
-        fArrayNeuLANDVETOSignals = (TClonesArray*)ioman->GetObject("VETOSignals");
-    }
-    
-    if (UseNEBULAVETO==kTRUE)
-    {
-        if ((TClonesArray*)ioman->GetObject("NEBULAVETOSignals") == nullptr)
-        {
-            cout << "I/O-manager FATAL: R3BSingleReconstructor::Init No NEBULAVETOSignals!\n\n";
-            return kFATAL;
-        }
-        fArrayNeuLANDVETOSignals = (TClonesArray*)ioman->GetObject("NEBULAVETOSignals");
-    }
-    
     // Register Output arrays:
-    ioman->Register("SingleReconstructed_PrimHits_NeuLAND","R3BSignal",fArrayPrimHits_NeuLAND,kTRUE);
+    ioman->Register("SingleReconstructed_PrimHits","R3BSignal",fArrayPrimHits_NeuLAND,kTRUE);
     
     if (UseNEBULA==kTRUE)
     {
-        ioman->Register("SingleReconstructed_PrimHits_NEBULA","R3BSignal",fArrayPrimHits_NEBULA,kTRUE);
-        ioman->Register("SingleReconstructed_PrimHits_Combined","R3BSignal",fArrayPrimHits_Combined,kTRUE);
+        ioman->Register("NEBULA_SingleReconstructed_PrimHits","R3BSignal",fArrayPrimHits_NEBULA,kTRUE);
+        ioman->Register("Combined_SingleReconstructed_PrimHits","R3BSignal",fArrayPrimHits_Combined,kTRUE);
     }
     
     // Then, we can return the succes statement:
@@ -140,11 +107,10 @@ void R3BSingleReconstructor::Exec(Option_t *option)
     
     // Next, find the minimum signal for each of the detectors:
     R3BSignal* NeuLANDMinSignal = new R3BSignal(); NeuLANDMinSignal->SetTime(1e99);
-    R3BSignal* VETOMinSignal = new R3BSignal(); VETOMinSignal->SetTime(1e99);
     R3BSignal* NEBULAMinSignal = new R3BSignal(); NEBULAMinSignal->SetTime(1e99);
-    R3BSignal* NEBVETOMinSignal = new R3BSignal(); NEBVETOMinSignal->SetTime(1e99);
     R3BSignal* ThisSignal;
 
+    // NeuLAND:
     for (Int_t k = 0; k<fArrayNeuLANDSignals->GetEntries(); ++k)
     {
         ThisSignal = (R3BSignal*) fArrayNeuLANDSignals->At(k);
@@ -155,19 +121,7 @@ void R3BSingleReconstructor::Exec(Option_t *option)
         }
     }
     
-    if (UseVETO==kTRUE)
-    {
-        for (Int_t k = 0; k<fArrayNeuLANDVETOSignals->GetEntries(); ++k)
-        {
-            ThisSignal = (R3BSignal*) fArrayNeuLANDVETOSignals->At(k);
-        
-            if (ThisSignal->GetTime()<VETOMinSignal->GetTime())
-            {
-                VETOMinSignal->Duplicate(ThisSignal);
-            }
-        }
-    }
-    
+    // NEBULA:
     if (UseNEBULA==kTRUE)
     {
         for (Int_t k = 0; k<fArrayNEBULASignals->GetEntries(); ++k)
@@ -181,67 +135,16 @@ void R3BSingleReconstructor::Exec(Option_t *option)
         }
     }
     
-    if (UseNEBULAVETO==kTRUE)
-    {
-        for (Int_t k = 0; k<fArrayNEBULAVETOSignals->GetEntries(); ++k)
-        {
-            ThisSignal = (R3BSignal*) fArrayNEBULAVETOSignals->At(k);
-        
-            if (ThisSignal->GetTime()<NEBVETOMinSignal->GetTime())
-            {
-                NEBVETOMinSignal->Duplicate(ThisSignal);
-            }
-        }
-    }
+    // Then, do the reconstruction for NeuLAND:
+    if (fArrayNeuLANDSignals->GetEntries()>0) {new ((*fArrayPrimHits_NeuLAND)[0]) R3BSignal(NeuLANDMinSignal);}
     
-    // Then, do the reconstruction. NeuLAND first:
-    if ((UseVETO==kFALSE)||((UseVETO==kTRUE)&&(NeuLAND_VETOCondition=="None")))
-    {
-        if (fArrayNeuLANDSignals->GetEntries()>0) {new ((*fArrayPrimHits_NeuLAND)[0]) R3BSignal(NeuLANDMinSignal);}
-    }
-    
-    if ((UseVETO==kTRUE)&&((NeuLAND_VETOCondition=="TOF")||(NeuLAND_VETOCondition=="Advanced")))
-    {
-        if ((fArrayNeuLANDVETOSignals->GetEntries()==0)||(NeuLANDMinSignal->GetTime()<VETOMinSignal->GetTime()))
-        {
-            if (fArrayNeuLANDSignals->GetEntries()>0) {new ((*fArrayPrimHits_NeuLAND)[0]) R3BSignal(NeuLANDMinSignal);}
-        }
-    }
-    
-    if ((UseVETO==kTRUE)&&(NeuLAND_VETOCondition=="Naive"))
-    {
-        if (fArrayNeuLANDVETOSignals->GetEntries()==0)
-        {
-            if (fArrayNeuLANDSignals->GetEntries()>0) {new ((*fArrayPrimHits_NeuLAND)[0]) R3BSignal(NeuLANDMinSignal);}
-        }
-    }
-    
-    // Then, NEBULA:
+    // Then, do NEBULA:
     if (UseNEBULA==kTRUE)
     {
-        if ((UseNEBULAVETO==kFALSE)||((UseNEBULAVETO==kTRUE)&&(NEBULA_VETOCondition=="None")))
-        {
-            if (fArrayNEBULASignals->GetEntries()>0) {new ((*fArrayPrimHits_NEBULA)[0]) R3BSignal(NEBULAMinSignal);}
-        }
-        
-        if ((UseNEBULAVETO==kTRUE)&&((NEBULA_VETOCondition=="TOF")||(NEBULA_VETOCondition=="Advanced")))
-        {
-            if ((fArrayNEBULAVETOSignals->GetEntries()==0)||(NEBULAMinSignal->GetTime()<NEBVETOMinSignal->GetTime()))
-            {
-                if (fArrayNEBULASignals->GetEntries()>0) {new ((*fArrayPrimHits_NEBULA)[0]) R3BSignal(NEBULAMinSignal);}
-            }
-        }
-    
-        if ((UseNEBULAVETO==kTRUE)&&(NEBULA_VETOCondition=="Naive"))
-        {
-            if (fArrayNEBULAVETOSignals->GetEntries()==0)
-            {
-                if (fArrayNEBULASignals->GetEntries()>0) {new ((*fArrayPrimHits_NEBULA)[0]) R3BSignal(NEBULAMinSignal);}
-            }
-        }
+        if (fArrayNEBULASignals->GetEntries()>0) {new ((*fArrayPrimHits_NEBULA)[0]) R3BSignal(NEBULAMinSignal);}
     }
     
-    // And finally, the combination:
+    // And combine the two:
     if (UseNEBULA==kTRUE)
     {
         if ((fArrayPrimHits_NeuLAND->GetEntries()==1)&&(fArrayPrimHits_NEBULA->GetEntries()==0))
@@ -277,9 +180,7 @@ void R3BSingleReconstructor::Exec(Option_t *option)
     
     // delete all objects:
     delete NeuLANDMinSignal;
-    delete VETOMinSignal;
     delete NEBULAMinSignal;
-    delete NEBVETOMinSignal;
 }
         
 // FairTask Finish function:

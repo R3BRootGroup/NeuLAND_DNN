@@ -77,6 +77,7 @@ R3BTextFileGenerator::R3BTextFileGenerator()
     CompressBatches = kFALSE;
     ParentOutputPath = "./";
     ComputeSingleClusterRatio = kFALSE;
+    ThisDetector = "NeuLAND";
     
     PrintErrors = kTRUE;
     Errors.clear();
@@ -181,6 +182,7 @@ R3BTextFileGenerator::~R3BTextFileGenerator()
 }
 
 // Member function definitions:
+#include "SetDetector.h"
 #include "SetCurrentDigiRun.h"
 #include "SetTheThreads.h"
 #include "DoesFileExist.h"

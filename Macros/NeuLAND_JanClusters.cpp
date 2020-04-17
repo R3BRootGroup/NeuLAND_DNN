@@ -33,6 +33,7 @@ void NeuLAND_JanClusters(Int_t const TotalNumberOfThreads = 1, Int_t const Curre
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
     
     // Retrieve other inputs:

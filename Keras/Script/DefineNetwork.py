@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # But if we have a number, it means that we do a step2-network of given multiplicity.
     
     # Set the parameters:
-    SetParameters.Initialize()
+    SetParameters.Initialize(False)
     
     # Modify based on label:
     if (TheLabel>0):

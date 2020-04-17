@@ -61,7 +61,9 @@ class R3BMultMatrix : public FairTask
         
         // Other functions:
         void ReadCalibrationFile();
+        void ReadNEBULACalibrationFile();
         Int_t ApplyCalibrationCuts();
+        Int_t ApplyNEBULACalibrationCuts();
         TString RoundOff(Double_t const our_input, Int_t const significance);
         void WriteMultMatrix(Double_t** ThisMatrix, TString const ThisTitle, TString const IntMult);
         void PlotMultMatrix(Double_t** ThisMatrix, TString const ThisTitle, TString const IntMult);
@@ -71,12 +73,15 @@ class R3BMultMatrix : public FairTask
         // TClonesArrays to obtain multiplicities:
         TClonesArray* fArrayMCNeutronTracks;
         TClonesArray* fArraySignals;
+        TClonesArray* fArrayNEBULASignals;
         TClonesArray* fArrayMult;
+        TClonesArray* fArrayNEBDNNMult;
         TClonesArray* fArrayCluster;
         TClonesArray* fArrayNEBULACluster;
         TClonesArray* fArrayNeuMult;
         TClonesArray* fArrayNEBMult;
         TClonesArray* fArrayNEBDetMult;
+        TClonesArray* fArrayNeuDetMult;
         TClonesArray* fArrayBetaPrimHits_NeuLAND;
         TClonesArray* fArrayBetaPrimHits_NEBULA;
         TClonesArray* fArrayBetaPrimHits_Combined;
@@ -88,15 +93,36 @@ class R3BMultMatrix : public FairTask
         Double_t** MultMatrix_Max;
         Double_t** MultMatrix_Max_NEBULA;
         Double_t** MultMatrix_Max_Combined;
+        
         Double_t** MultMatrix_TDR_AlignedEvents;
         Double_t** MultMatrix_TDR_UnFolded;
         Double_t** MultMatrix_TDR_Folded;
         Double_t** MultMatrix_TDR_Folded_Restricted;
+        Double_t** MultMatrix_TDR_NEBULA_AlignedEvents;
+        Double_t** MultMatrix_TDR_NEBULA_UnFolded;
+        Double_t** MultMatrix_TDR_NEBULA_Folded;
+        Double_t** MultMatrix_TDR_NEBULA_Folded_Restricted;
+        Double_t** MultMatrix_TDR_Combined_AlignedEvents;
+        Double_t** MultMatrix_TDR_Combined_UnFolded;
+        Double_t** MultMatrix_TDR_Combined_Folded;
+        Double_t** MultMatrix_TDR_Combined_Folded_Restricted;
+        
         Double_t** MultMatrix_DNN_AlignedEvents;
         Double_t** MultMatrix_DNN_ElenaEvents;
         Double_t** MultMatrix_DNN_UnFolded;
         Double_t** MultMatrix_DNN_Folded;
         Double_t** MultMatrix_DNN_Folded_Restricted;
+        Double_t** MultMatrix_DNN_NEBULA_AlignedEvents;
+        Double_t** MultMatrix_DNN_NEBULA_ElenaEvents;
+        Double_t** MultMatrix_DNN_NEBULA_UnFolded;
+        Double_t** MultMatrix_DNN_NEBULA_Folded;
+        Double_t** MultMatrix_DNN_NEBULA_Folded_Restricted;
+        Double_t** MultMatrix_DNN_Combined_AlignedEvents;
+        Double_t** MultMatrix_DNN_Combined_ElenaEvents;
+        Double_t** MultMatrix_DNN_Combined_UnFolded;
+        Double_t** MultMatrix_DNN_Combined_Folded;
+        Double_t** MultMatrix_DNN_Combined_Folded_Restricted;
+        
         Double_t** MultMatrix_Beta_Aligned;
         Double_t** MultMatrix_Beta_UnFolded;
         Double_t** MultMatrix_Beta_Folded;
@@ -109,6 +135,7 @@ class R3BMultMatrix : public FairTask
         Double_t** MultMatrix_Beta_UnFolded_Combined;
         Double_t** MultMatrix_Beta_Folded_Combined;
         Double_t** MultMatrix_Beta_Folded_Restricted_Combined;
+        
         Double_t** MultMatrix_Single_Aligned;
         Double_t** MultMatrix_Single_UnFolded;
         Double_t** MultMatrix_Single_Folded;
@@ -124,26 +151,41 @@ class R3BMultMatrix : public FairTask
         
         // calibration cuts:
         Double_t fKappa;
+        Double_t fNEBKappa;
         Double_t* fCuts;
+        Double_t* fNEBCuts;
         Bool_t UseCalibrationCuts;
+        Bool_t UseNEBULACalibrationCuts;
         Bool_t TradeEff_for_Acc;
         Int_t Acc_Selected_Multiplicity;
         Double_t Acc_EnergyThreshold;
         
         // Different multiplicities:
+        Int_t GunMultiplicity;
+        
         Int_t BetaNeuLANDMultiplicity;
         Int_t BetaNEBULAMultiplicity;
         Int_t BetaCombinedMultiplicity;
+        
         Int_t SingleNeuLANDMultiplicity;
         Int_t SingleNEBULAMultiplicity;
         Int_t SingleCombinedMultiplicity;
-        Int_t GunMultiplicity;
+        
         Int_t TDRMultiplicity;
+        Int_t NEBTDRMultiplicity;
+        Int_t CombinedTDRMultiplicity;
+        
         Int_t DNNMultiplicity;
-        Int_t DetectedMultiplicity;
+        Int_t NEBDNNMultiplicity;
+        Int_t CombinedDNNMultiplicity;
+        
         Int_t NeuLANDMultiplicity;
         Int_t NEBULAMultiplicity;
+        Int_t CombinedInteractionMultiplicity;
+        
+        Int_t DetectedMultiplicity;
         Int_t NEBDetectedMultiplicity;
+        Int_t CombinedDetectedMultiplicity;
         
         // Other variables:
         TString TheOutputPath;

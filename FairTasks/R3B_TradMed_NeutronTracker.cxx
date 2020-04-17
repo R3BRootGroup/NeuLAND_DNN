@@ -19,6 +19,7 @@ bool AuxSortClustersBeta(R3BSignalCluster*, R3BSignalCluster*);
 // inclusion of other stuff used in the reconstruction:
 #include "TradMedReconstruction.h"
 #include "TradMedMultiplicity.h"
+#include "NEBULA_TradMedMultiplicity.h"
 #include "PerfectMultiplicity.h"
 #include "GetDNNMultiplicity.h"
 
@@ -32,6 +33,8 @@ R3B_TradMed_NeutronTracker::R3B_TradMed_NeutronTracker() : FairTask("R3B NeuLAND
     TheOutputFile = 0;
     
     // Parameters:
+    ThisDetector = "NeuLAND";
+    UseNEBULA = kFALSE;
     MultiplicityDetermination = "Cuts";
     fTarget_Xpos = 0.0;
     fTarget_Ypos = 0.0;
@@ -44,6 +47,7 @@ R3B_TradMed_NeutronTracker::R3B_TradMed_NeutronTracker() : FairTask("R3B NeuLAND
     IntendedMultiplicity = 0;
     FoundMultiplicity = 0;
     UseCalibrationCuts = kFALSE;
+    UseNEBULACalibrationCuts = kFALSE;
     ParticleType = "neutron";
     ParticleMass = 932.0; // MeV.
     mNeutron = 1.0; // amu.
@@ -97,6 +101,7 @@ InitStatus R3B_TradMed_NeutronTracker::Init()
     }
     
     // Retrieve the required inputs:   
+    UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     TString CalFileName = Inputs->GetInputString("TheOutputPath");
     CalFileName = CalFileName + "/CutsFile.txt";
     fTarget_Xpos = Inputs->GetInputDouble("TARGET_center_x_position","cm");
@@ -120,23 +125,48 @@ InitStatus R3B_TradMed_NeutronTracker::Init()
     nBarsTotal = 2*Inputs->GetInputInteger("NeuLAND_Number_of_Bars_per_plane")*Inputs->GetInputInteger("NeuLAND_Number_of_DoublePlanes");
     
     // Initialize in case we wanted to use a calibration file.
-    ReadCalibrationFile();
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {ReadNEBULACalibrationFile();}
+    else                                              {ReadCalibrationFile();}
     
     // Obtain the clusters:
-    if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3B_TradMed_NeutronTracker::Init No R3BSignalClusters!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("NEBULAClusters") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3B_TradMed_NeutronTracker::Init No NEBULA R3BSignalClusters!\n\n";
+            return kFATAL;
+        }
+        fArrayCluster = (TClonesArray*)ioman->GetObject("NEBULAClusters");
     }
-    fArrayCluster = (TClonesArray*)ioman->GetObject("Clusters");  
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3B_TradMed_NeutronTracker::Init No R3BSignalClusters!\n\n";
+            return kFATAL;
+        }
+        fArrayCluster = (TClonesArray*)ioman->GetObject("Clusters");  
+    }
     
     // Obtain the DNN multiplicity:
-    if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3B_TradMed_NeutronTracker::Init No DNN Multiplicity!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3B_TradMed_NeutronTracker::Init No NEBULA DNN Multiplicity!\n\n";
+            return kFATAL;
+        }
+        fArrayMult = (TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity");
     }
-    fArrayMult = (TClonesArray*)ioman->GetObject("DNN_Multiplicity");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3B_TradMed_NeutronTracker::Init No DNN Multiplicity!\n\n";
+            return kFATAL;
+        }
+        fArrayMult = (TClonesArray*)ioman->GetObject("DNN_Multiplicity");
+    }
 
     // Write the primary neutrons as outputs:
     TString RegistrationName = "PrimaryHits_TradMed_Clusters_";
@@ -144,6 +174,7 @@ InitStatus R3B_TradMed_NeutronTracker::Init()
     else if (MultiplicityDetermination=="Perfect") {RegistrationName = RegistrationName + "PerfectMult";}
     else if (MultiplicityDetermination=="DNN")     {RegistrationName = RegistrationName + "DNNMult";}
     else                                           {RegistrationName = RegistrationName + "CutsMult";}
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {RegistrationName = "NEBULA_"+RegistrationName;}
     ioman->Register(RegistrationName,"R3BSignal",fNeutHits,kTRUE);
   
     // Create control histograms:   
@@ -174,7 +205,8 @@ void R3B_TradMed_NeutronTracker::Exec(Option_t* opt)
     // NOTE: Obtain the multiplicity:
     if (MultiplicityDetermination=="Cuts")
     {
-        nNeut = ApplyCalibrationCuts();
+        if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {nNeut = ApplyNEBULACalibrationCuts();}
+        else                                              {nNeut = ApplyCalibrationCuts();}
     }
     else if (MultiplicityDetermination=="Perfect")
     {
@@ -186,7 +218,8 @@ void R3B_TradMed_NeutronTracker::Exec(Option_t* opt)
     }
     else
     {
-        nNeut = ApplyCalibrationCuts();
+        if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {nNeut = ApplyNEBULACalibrationCuts();}
+        else                                              {nNeut = ApplyCalibrationCuts();}
     }
   
     // Fill histograms:
@@ -201,7 +234,7 @@ void R3B_TradMed_NeutronTracker::Exec(Option_t* opt)
     // Give output:
     EventCounter = EventCounter + 1;
     
-    if ((EventCounter%1000)==0) 
+    if (((EventCounter%1000)==0)&&(MultiplicityDetermination=="Cuts")&&(ThisDetector=="NeuLAND"))
     {
         cout << "-I- R3B_TradMed_NeutronTracker: We processed " << EventCounter << "/" << nEvents << " events.\n";
     }

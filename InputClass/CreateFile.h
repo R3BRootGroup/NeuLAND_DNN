@@ -36,7 +36,7 @@ void R3BInputClass::CreateFile(TString const Name)
         
         // General:
         ++NLines; AddInputBoolian("MT_Merge_MCFile",kFALSE);
-        ++NLines;  AddInputString("TheOutputPath",TheVMC + "/NeuLAND_DNN/OutputFiles/");
+        ++NLines;  AddInputString("TheOutputPath",TheVMC + "/DNN/OutputFiles/");
         ++NLines;  AddInputString("TheVMCFolder",TheVMC);
         ++NLines;  AddInputString("R3BRoot_MonteCarlo_OutputFile","MC_File.root");
         ++NLines;  AddInputString("R3BRoot_MonteCarlo_ParFile","Par_File.root");
@@ -54,7 +54,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines; AddInputBoolian("R3BRoot_Cave_IsVacuum",kFALSE);
         
         // Particle Gun:
-        ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","NewlyGenerated");
+        ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","SnData_500keV");
         ++NLines;  AddInputString("ParticleGun_ASCII_FileName","Current_ASCII_File.dat");
         ++NLines;  AddInputString("ParticleGun_ParticleType","neutron");
         ++NLines; AddInputInteger("ParticleGun_Multiplicity",5);
@@ -283,6 +283,7 @@ void R3BInputClass::CreateFile(TString const Name)
         
         // DNN IO-files generation:
         ++NLines;  AddInputString("NeuLAND_DNNTextFile","DNN_InputFile.txt");
+        ++NLines;  AddInputString("NEBULA_DNNTextFile","DNN_NEBULA_InputFile.txt");
         ++NLines;  AddInputString("NeuLAND_DNNTextFile_SoftwareStructure","PythonText");
         ++NLines;  AddInputString("NeuLAND_DNNTextFile_BoolianInputStructure","StandardSigmoid");
         ++NLines;  AddInputString("NeuLAND_DNNTextFile_BoolianOutputStructure","StandardSigmoid");
@@ -310,6 +311,8 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines; AddInputBoolian("NeuLAND_DNNTextFile_DataTimeNormaliation_UsePrimTimes",kFALSE);
         ++NLines;  AddInputDouble("NeuLAND_DNNTextFile_TimeNormaliation_LeftBoundary","ns",59.0);
         ++NLines;  AddInputDouble("NeuLAND_DNNTextFile_TimeNormaliation_RightBoundary","ns",70.0);
+        ++NLines;  AddInputDouble("NEBULA_DNNTextFile_TimeNormaliation_LeftBoundary","ns",80.0);
+        ++NLines;  AddInputDouble("NEBULA_DNNTextFile_TimeNormaliation_RightBoundary","ns",85.0);
         ++NLines;  AddInputString("NeuLAND_DNN_OutputFile","DNN_Multiplicities.root");
         ++NLines; AddInputBoolian("NeuLAND_DNNTextFile_TradeEfficiency_For_Accuracy",kFALSE);
         ++NLines; AddInputInteger("NeuLAND_DNNTextFile_Multiplicity_BoostAccuracy",4);
@@ -353,6 +356,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputString("NeuLAND_Scoring_DNNcalculation_SelectMultiplicity","DNN");
         
         // Final Analysis:
+        ++NLines;  AddInputString("NEBULA_Combination_OutputFile","Combined_Outputs.root");
         ++NLines;  AddInputString("NeuLAND_Distributions","NeuLAND_Histograms.root");
         ++NLines; AddInputInteger("NeuLAND_JanGraphs_PhysList_nPoints",30);
         ++NLines;  AddInputDouble("NeuLAND_JanGraphs_PhysList_Estep","MeV",1.0);

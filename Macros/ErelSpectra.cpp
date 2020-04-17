@@ -7,7 +7,7 @@ inline void ConnectParFileToRuntimeDb(const TString parFile, FairRuntimeDb* rtdb
     rtdb->saveOutput();
 }
 
-void ErelSpectra(Int_t const TotalNumberOfThreads = 1)
+void ErelSpectra(Int_t const TotalNumberOfThreads = 1, Bool_t const Combine = kFALSE)
 {
     // This computes all the Relative Energy Spectra.
     
@@ -35,6 +35,7 @@ void ErelSpectra(Int_t const TotalNumberOfThreads = 1)
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
     
     // Retrieve other inputs:
@@ -48,6 +49,9 @@ void ErelSpectra(Int_t const TotalNumberOfThreads = 1)
         nEvents = nEvents*TotalNumberOfThreads;
     }
     
+    TString ThisDetector = "NeuLAND";
+    if ((UseNEBULA==kTRUE)&&(Combine==kTRUE)) {ThisDetector = "Combined";}
+    
     // Then, execute the macro if there are no errors:
     if (Inputs->ContainsNoErrors()==kTRUE)
     {
@@ -59,6 +63,7 @@ void ErelSpectra(Int_t const TotalNumberOfThreads = 1)
         FairRunAna* run = new FairRunAna();
         run->SetInputFile(SignalFile);
         run->AddFriend(FinalFile);
+        if (UseNEBULA==kTRUE) {run->AddFriend(CombiFile);}
         ConnectParFileToRuntimeDb(ParFile,run->GetRuntimeDb());
         
         // Re-initialize .Txt-file:
@@ -67,25 +72,25 @@ void ErelSpectra(Int_t const TotalNumberOfThreads = 1)
         Creation.close();
   
         // Create different classes for each type of reconstruction method:
-        R3BErelSpectrum* ESpect_01 = new R3BErelSpectrum(); ESpect_01->LinkInputClass(Inputs); ESpect_01->SetNevents(nEvents); ESpect_01->SetBranchName("NeutronTracks_PerfectMethod_Signals");
-        R3BErelSpectrum* ESpect_02 = new R3BErelSpectrum(); ESpect_02->LinkInputClass(Inputs); ESpect_02->SetNevents(nEvents); ESpect_02->SetBranchName("NeutronTracks_PerfectMethod_Clusters");
-        R3BErelSpectrum* ESpect_03 = new R3BErelSpectrum(); ESpect_03->LinkInputClass(Inputs); ESpect_03->SetNevents(nEvents); ESpect_03->SetBranchName("MCNeutronTracks");
+        R3BErelSpectrum* ESpect_01 = new R3BErelSpectrum(); ESpect_01->SetDetector(ThisDetector); ESpect_01->LinkInputClass(Inputs); ESpect_01->SetNevents(nEvents); ESpect_01->SetBranchName("NeutronTracks_PerfectMethod_Signals");
+        R3BErelSpectrum* ESpect_02 = new R3BErelSpectrum(); ESpect_02->SetDetector(ThisDetector); ESpect_02->LinkInputClass(Inputs); ESpect_02->SetNevents(nEvents); ESpect_02->SetBranchName("NeutronTracks_PerfectMethod_Clusters");
+        R3BErelSpectrum* ESpect_03 = new R3BErelSpectrum(); ESpect_03->SetDetector(ThisDetector); ESpect_03->LinkInputClass(Inputs); ESpect_03->SetNevents(nEvents); ESpect_03->SetBranchName("MCNeutronTracks");
         
         // Exp. allowed reconstructions:
-        R3BErelSpectrum* ESpect_04 = new R3BErelSpectrum(); ESpect_04->LinkInputClass(Inputs); ESpect_04->SetNevents(nEvents); ESpect_04->SetBranchName("TheNeutronTracks");
-        R3BErelSpectrum* ESpect_05 = new R3BErelSpectrum(); ESpect_05->LinkInputClass(Inputs); ESpect_05->SetNevents(nEvents); ESpect_05->SetBranchName("NeutronTracks_TradMed_Clusters_CutsMult");
-        R3BErelSpectrum* ESpect_06 = new R3BErelSpectrum(); ESpect_06->LinkInputClass(Inputs); ESpect_06->SetNevents(nEvents); ESpect_06->SetBranchName("NeutronTracks_TradMed_Clusters_DNNMult");
-        R3BErelSpectrum* ESpect_07 = new R3BErelSpectrum(); ESpect_07->LinkInputClass(Inputs); ESpect_07->SetNevents(nEvents); ESpect_07->SetBranchName("NeutronTracks_TradMed_Clusters_PerfectMult");
-        R3BErelSpectrum* ESpect_08 = new R3BErelSpectrum(); ESpect_08->LinkInputClass(Inputs); ESpect_08->SetNevents(nEvents); ESpect_08->SetBranchName("NeutronTracks_ScoringPlus_Signals_CutsMult");
-        R3BErelSpectrum* ESpect_09 = new R3BErelSpectrum(); ESpect_09->LinkInputClass(Inputs); ESpect_09->SetNevents(nEvents); ESpect_09->SetBranchName("NeutronTracks_ScoringPlus_Signals_DNNMult");
-        R3BErelSpectrum* ESpect_10 = new R3BErelSpectrum(); ESpect_10->LinkInputClass(Inputs); ESpect_10->SetNevents(nEvents); ESpect_10->SetBranchName("NeutronTracks_ScoringPlus_Signals_PerfectMult");
-        R3BErelSpectrum* ESpect_11 = new R3BErelSpectrum(); ESpect_11->LinkInputClass(Inputs); ESpect_11->SetNevents(nEvents); ESpect_11->SetBranchName("NeutronTracks_ScoringPlus_Clusters_CutsMult");
-        R3BErelSpectrum* ESpect_12 = new R3BErelSpectrum(); ESpect_12->LinkInputClass(Inputs); ESpect_12->SetNevents(nEvents); ESpect_12->SetBranchName("NeutronTracks_ScoringPlus_Clusters_DNNMult");
-        R3BErelSpectrum* ESpect_13 = new R3BErelSpectrum(); ESpect_13->LinkInputClass(Inputs); ESpect_13->SetNevents(nEvents); ESpect_13->SetBranchName("NeutronTracks_ScoringPlus_Clusters_PerfectMult");
-        R3BErelSpectrum* ESpect_14 = new R3BErelSpectrum(); ESpect_14->LinkInputClass(Inputs); ESpect_14->SetNevents(nEvents); ESpect_14->SetBranchName("NeutronTracks_DNNScoringPlus");
-        R3BErelSpectrum* ESpect_15 = new R3BErelSpectrum(); ESpect_15->LinkInputClass(Inputs); ESpect_15->SetNevents(nEvents); ESpect_15->SetBranchName("NeutronTracks_DNNScoringPlus_SingleTOF");
-        R3BErelSpectrum* ESpect_16 = new R3BErelSpectrum(); ESpect_16->LinkInputClass(Inputs); ESpect_16->SetNevents(nEvents); ESpect_16->SetBranchName("NeutronTracks_DNNScoringPlus_Max");
-        R3BErelSpectrum* ESpect_17 = new R3BErelSpectrum(); ESpect_17->LinkInputClass(Inputs); ESpect_17->SetNevents(nEvents); ESpect_17->SetBranchName("NeutronTracks_BetaReconstruction_NeuLAND");
+        R3BErelSpectrum* ESpect_04 = new R3BErelSpectrum(); ESpect_04->SetDetector(ThisDetector); ESpect_04->LinkInputClass(Inputs); ESpect_04->SetNevents(nEvents); ESpect_04->SetBranchName("TheNeutronTracks");
+        R3BErelSpectrum* ESpect_05 = new R3BErelSpectrum(); ESpect_05->SetDetector(ThisDetector); ESpect_05->LinkInputClass(Inputs); ESpect_05->SetNevents(nEvents); ESpect_05->SetBranchName("NeutronTracks_TradMed_Clusters_CutsMult");
+        R3BErelSpectrum* ESpect_06 = new R3BErelSpectrum(); ESpect_06->SetDetector(ThisDetector); ESpect_06->LinkInputClass(Inputs); ESpect_06->SetNevents(nEvents); ESpect_06->SetBranchName("NeutronTracks_TradMed_Clusters_DNNMult");
+        R3BErelSpectrum* ESpect_07 = new R3BErelSpectrum(); ESpect_07->SetDetector(ThisDetector); ESpect_07->LinkInputClass(Inputs); ESpect_07->SetNevents(nEvents); ESpect_07->SetBranchName("NeutronTracks_TradMed_Clusters_PerfectMult");
+        R3BErelSpectrum* ESpect_08 = new R3BErelSpectrum(); ESpect_08->SetDetector(ThisDetector); ESpect_08->LinkInputClass(Inputs); ESpect_08->SetNevents(nEvents); ESpect_08->SetBranchName("NeutronTracks_ScoringPlus_Signals_CutsMult");
+        R3BErelSpectrum* ESpect_09 = new R3BErelSpectrum(); ESpect_09->SetDetector(ThisDetector); ESpect_09->LinkInputClass(Inputs); ESpect_09->SetNevents(nEvents); ESpect_09->SetBranchName("NeutronTracks_ScoringPlus_Signals_DNNMult");
+        R3BErelSpectrum* ESpect_10 = new R3BErelSpectrum(); ESpect_10->SetDetector(ThisDetector); ESpect_10->LinkInputClass(Inputs); ESpect_10->SetNevents(nEvents); ESpect_10->SetBranchName("NeutronTracks_ScoringPlus_Signals_PerfectMult");
+        R3BErelSpectrum* ESpect_11 = new R3BErelSpectrum(); ESpect_11->SetDetector(ThisDetector); ESpect_11->LinkInputClass(Inputs); ESpect_11->SetNevents(nEvents); ESpect_11->SetBranchName("NeutronTracks_ScoringPlus_Clusters_CutsMult");
+        R3BErelSpectrum* ESpect_12 = new R3BErelSpectrum(); ESpect_12->SetDetector(ThisDetector); ESpect_12->LinkInputClass(Inputs); ESpect_12->SetNevents(nEvents); ESpect_12->SetBranchName("NeutronTracks_ScoringPlus_Clusters_DNNMult");
+        R3BErelSpectrum* ESpect_13 = new R3BErelSpectrum(); ESpect_13->SetDetector(ThisDetector); ESpect_13->LinkInputClass(Inputs); ESpect_13->SetNevents(nEvents); ESpect_13->SetBranchName("NeutronTracks_ScoringPlus_Clusters_PerfectMult");
+        R3BErelSpectrum* ESpect_14 = new R3BErelSpectrum(); ESpect_14->SetDetector(ThisDetector); ESpect_14->LinkInputClass(Inputs); ESpect_14->SetNevents(nEvents); ESpect_14->SetBranchName("NeutronTracks_DNNScoringPlus");
+        R3BErelSpectrum* ESpect_15 = new R3BErelSpectrum(); ESpect_15->SetDetector(ThisDetector); ESpect_15->LinkInputClass(Inputs); ESpect_15->SetNevents(nEvents); ESpect_15->SetBranchName("NeutronTracks_DNNScoringPlus_SingleTOF");
+        R3BErelSpectrum* ESpect_16 = new R3BErelSpectrum(); ESpect_16->SetDetector(ThisDetector); ESpect_16->LinkInputClass(Inputs); ESpect_16->SetNevents(nEvents); ESpect_16->SetBranchName("NeutronTracks_DNNScoringPlus_Max");
+        R3BErelSpectrum* ESpect_17 = new R3BErelSpectrum(); ESpect_17->SetDetector(ThisDetector); ESpect_17->LinkInputClass(Inputs); ESpect_17->SetNevents(nEvents); ESpect_17->SetBranchName("NeutronTracks_BetaReconstruction");
         
         // Add task to the mother FairTask:
         if (SimulationData_IsAvailable==kTRUE)
@@ -109,15 +114,6 @@ void ErelSpectra(Int_t const TotalNumberOfThreads = 1)
         run->AddTask(ESpect_15);
         run->AddTask(ESpect_16);
         run->AddTask(ESpect_17);
-        
-        if (UseNEBULA==kTRUE)
-        {
-            R3BErelSpectrum* ESpect_N1 = new R3BErelSpectrum(); ESpect_N1->LinkInputClass(Inputs); ESpect_N1->SetNevents(nEvents); ESpect_N1->SetBranchName("NeutronTracks_BetaReconstruction_NEBULA");
-            R3BErelSpectrum* ESpect_N2 = new R3BErelSpectrum(); ESpect_N2->LinkInputClass(Inputs); ESpect_N2->SetNevents(nEvents); ESpect_N2->SetBranchName("NeutronTracks_BetaReconstruction_Combined");
-            run->AddTask(ESpect_N1);
-            run->AddTask(ESpect_N2);
-        }
-       
 
         // Run the FairTasks:
         run->Init();

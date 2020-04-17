@@ -1,5 +1,8 @@
 void TradMed_ComputeCuts()
 {
+    // Boolian to actually compute cuts or just guess:
+    Bool_t PerformComputation = kTRUE;
+    
     // Connect to InputsFile:
     R3BInputClass* Inputs = new R3BInputClass();
     Inputs->DisableErrorPrinting();
@@ -8,22 +11,36 @@ void TradMed_ComputeCuts()
     
     // Next, execute the traditional method:
     R3BTradMethClass* TradMed = new R3BTradMethClass();
+    TradMed->SetDetector("NeuLAND");
     TradMed->DisableErrorPrinting();
     TradMed->LinkInputClass(Inputs);
     TradMed->LoadHistograms();
-    //TradMed->InitializeCuts();
-    //TradMed->Optimization_IncludeZero();
-    //TradMed->OptimizeCuts();
-    TradMed->DoMultipleOptimizations(3);
+    if (PerformComputation==kFALSE) {TradMed->InitializeCuts();}
+    TradMed->Optimization_IncludeZero();
+    if (PerformComputation==kTRUE) {TradMed->DoMultipleOptimizations(3);}
     TradMed->SaveCuts();
     TradMed->PlotHistograms();
     TradMed->PrintMatrix();
-    // TradMed->Illustrate_EqualDist(10);
     
-    if (TradMed->ContainsNoErrors()==kFALSE)
+    // Same for NEBULA:
+    if (Inputs->GetInputBoolian("NEBULA_Include_in_SETUP")==kTRUE)
     {
-        TradMed->PrintAllErrors();
+        R3BTradMethClass* NEBTradMed = new R3BTradMethClass();
+        NEBTradMed->SetDetector("NEBULA");
+        NEBTradMed->DisableErrorPrinting();
+        NEBTradMed->LinkInputClass(Inputs);
+        NEBTradMed->Optimization_IncludeZero();
+        NEBTradMed->LoadHistograms();
+        if (PerformComputation==kFALSE) {NEBTradMed->InitializeCuts();}
+        if (PerformComputation==kTRUE) {NEBTradMed->DoMultipleOptimizations(3);}
+        NEBTradMed->SaveCuts();
+        NEBTradMed->PlotHistograms();
+        NEBTradMed->PrintMatrix();
+        if (NEBTradMed->ContainsNoErrors()==kFALSE) {NEBTradMed->PrintAllErrors();}
     }
+    
+    // Print Errors:
+    if (TradMed->ContainsNoErrors()==kFALSE)    {TradMed->PrintAllErrors();}
 
     // Done.
 }

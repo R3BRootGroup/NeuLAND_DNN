@@ -51,12 +51,15 @@ class R3BScoreApplier : public FairTask
         // Other member-functions:
         void LinkInputClass(R3BInputClass* inp) {Inputs = inp;}
         void SetNevents(Int_t const nn) {nEvents = nn;}
+        void SetDetector(TString const det) {ThisDetector = det;}
         
         // Assisiant functions:
         void ReadCalibrationFile();
+        void ReadNEBULACalibrationFile();
         Int_t GetPerfectMultiplicity();
         Int_t GetDNNMultiplicity();
         Int_t ApplyCalibrationCuts();        
+        Int_t ApplyNEBULACalibrationCuts();        
 
     private:
         // Class content:
@@ -73,6 +76,8 @@ class R3BScoreApplier : public FairTask
         TClonesArray* fArrayPrims_Clusters_PerfectMult;
         
         // Input parameters:
+        Bool_t UseNEBULA;
+        TString ThisDetector;
         Int_t MaxMultiplicity;
         Bool_t TradeEff_for_Acc;
         Int_t Acc_Selected_Multiplicity;
@@ -94,6 +99,9 @@ class R3BScoreApplier : public FairTask
         Bool_t UseCalibrationCuts;
         Double_t* fCuts;
         Double_t fKappa;
+        Bool_t UseNEBULACalibrationCuts;
+        Double_t* fNEBCuts;
+        Double_t fNEBKappa;
         
         R3BInputClass* Inputs;
         Nuclei* TheNuclei;

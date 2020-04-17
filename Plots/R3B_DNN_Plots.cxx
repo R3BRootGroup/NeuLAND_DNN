@@ -7,6 +7,7 @@ R3B_DNN_Plots::R3B_DNN_Plots()
     OutPutPath = "./";
     ScaleFactor = 4.0;
     LogScaleMinimum = 0.3;
+    ThisDetector = "NeuLAND";
     
     MCFile = 0;          MCFile_Exists = kFALSE;
     ParFile = 0;         ParFile_Exists = kFALSE;

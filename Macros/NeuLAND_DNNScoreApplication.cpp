@@ -33,7 +33,9 @@ void NeuLAND_DNNScoreApplication(Int_t const TotalNumberOfThreads = 1)
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
+    Bool_t UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     
     // Corrent the number of events for MT effects:
     if (TotalNumberOfThreads>1)
@@ -60,11 +62,22 @@ void NeuLAND_DNNScoreApplication(Int_t const TotalNumberOfThreads = 1)
         R3BDNNScoreApplier* ScoreApp = new R3BDNNScoreApplier();
         
         // Pass parameters:
+        ScoreApp->SetDetector("NeuLAND");
         ScoreApp->LinkInputClass(Inputs);
         ScoreApp->SetNevents(nEvents);
         
         // Add it to the Mother of FairTasks:
         run->AddTask(ScoreApp);
+        
+        // Same for NEBULA:
+        if (UseNEBULA==kTRUE)
+        {
+            R3BDNNScoreApplier* NEBScoreApp = new R3BDNNScoreApplier();
+            NEBScoreApp->SetDetector("NEBULA");
+            NEBScoreApp->LinkInputClass(Inputs);
+            NEBScoreApp->SetNevents(nEvents);
+            run->AddTask(NEBScoreApp);
+        }
 
         // Run the FairTasks:
         run->Init();

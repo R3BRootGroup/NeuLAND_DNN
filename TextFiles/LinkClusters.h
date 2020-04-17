@@ -31,15 +31,31 @@ Bool_t R3BTextFileGenerator::LinkClusters()
         if (k==0) {OutputNameTag = "";} // So there is always one without tags that can be found by other tasks.
         
         // Retrieve the Clusters:
-        if ((TClonesArray*)ioman->GetObject("Clusters"+OutputNameTag) == nullptr)
+        if (ThisDetector=="NEBULA")
         {
-            ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No R3BSignalClusters" + OutputNameTag + "!");
-            RetrieveTest = kFALSE;
+            if ((TClonesArray*)ioman->GetObject("NEBULAClusters"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NEBULA R3BSignalClusters" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }
+            else
+            {
+                fArrayClusters[k] = (TClonesArray*) ioman->GetObject("NEBULAClusters"+OutputNameTag);
+                Clusters_IsLinked[k] = kTRUE;
+            }
         }
         else
         {
-            fArrayClusters[k] = (TClonesArray*) ioman->GetObject("Clusters"+OutputNameTag);
-            Clusters_IsLinked[k] = kTRUE;
+            if ((TClonesArray*)ioman->GetObject("Clusters"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No R3BSignalClusters" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }
+            else
+            {
+                fArrayClusters[k] = (TClonesArray*) ioman->GetObject("Clusters"+OutputNameTag);
+                Clusters_IsLinked[k] = kTRUE;
+            }
         }
     }
     

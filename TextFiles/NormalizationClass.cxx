@@ -24,6 +24,7 @@ NormalizationClass::~NormalizationClass()
 #include "WriteNormFile.h"
 #include "ReadNormFile.h"
 #include "DefaultNorms.h"
+#include "DefaultNEBULANorms.h"
 #include "ElenaNorms.h"
 
 void NormalizationClass::AddParameter(TString const Name, TString const Opt, Double_t const OldMean, Double_t const OldScale, Double_t const NewMean, Double_t const NewScale)

@@ -16,18 +16,28 @@ def Compute_IO_Structure():
     if (NetworkType=='IO_Signals_ElenaHoemann'):
         nInputNeurons = 2+4*nBarsPerPlane*nDoublePlanes
         nOutputNeurons = MaxMultiplicity
+        if (TheNEBULAFlag==True):
+            nOutputNeurons = MaxMultiplicity+1
     elif (NetworkType=='IO_Signals_Elena_9002_5'):
         nInputNeurons = 2+6*nBarsPerPlane*nDoublePlanes
         nOutputNeurons = MaxMultiplicity
+        if (TheNEBULAFlag==True):
+            nOutputNeurons = MaxMultiplicity+1
     elif (NetworkType=='IO_Signals_Elena_9004_5'):
         nInputNeurons = 4+6*nBarsPerPlane*nDoublePlanes
         nOutputNeurons = MaxMultiplicity
+        if (TheNEBULAFlag==True):
+            nOutputNeurons = MaxMultiplicity+1
     elif (NetworkType=='IO_Signals_Elena_6004_5'):
         nInputNeurons = 4+4*nBarsPerPlane*nDoublePlanes
         nOutputNeurons = MaxMultiplicity
+        if (TheNEBULAFlag==True):
+            nOutputNeurons = MaxMultiplicity+1
     elif (NetworkType=='IO_Signals_Elena_12004_5'):
         nInputNeurons = 4+8*nBarsPerPlane*nDoublePlanes
         nOutputNeurons = MaxMultiplicity
+        if (TheNEBULAFlag==True):
+            nOutputNeurons = MaxMultiplicity+1
     elif (NetworkType=='IO_Signals_MarkusPolleryd'):
         nInputNeurons = -1
         nOutputNeurons = -1
@@ -58,7 +68,7 @@ def Compute_IO_Structure():
         nMaxNeurons = nOutputNeurons
 
 # function that initializes all parameters:
-def Initialize():
+def Initialize( NEBULA_FLAG ):
     global nEventsTotal
     nEventsTotal = GetInputInteger('R3BRoot_nEvents')
     
@@ -82,10 +92,19 @@ def Initialize():
     OutputPath = GetInputString('TheOutputPath')
     
     global nDoublePlanes
-    nDoublePlanes = GetInputInteger('NeuLAND_Number_of_DoublePlanes')
+    if (NEBULA_FLAG==False):
+        nDoublePlanes = GetInputInteger('NeuLAND_Number_of_DoublePlanes')
+    else:
+        nDoublePlanes = GetInputInteger('NEBULA_Number_of_DoublePlaneModules')
     
     global nBarsPerPlane
-    nBarsPerPlane = GetInputInteger('NeuLAND_Number_of_Bars_per_plane')
+    if (NEBULA_FLAG==False):
+        nBarsPerPlane = GetInputInteger('NeuLAND_Number_of_Bars_per_plane')
+    else:
+        nBarsPerPlane = GetInputInteger('NEBULA_Number_of_Bars_in_OnePlane')
+        
+    global TheNEBULAFlag
+    TheNEBULAFlag = NEBULA_FLAG
     
     global MaxMultiplicity
     MaxMultiplicity = GetInputInteger('ParticleGun_Multiplicity')

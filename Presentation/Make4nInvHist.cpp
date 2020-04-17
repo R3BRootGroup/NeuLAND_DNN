@@ -3,7 +3,7 @@
 void Make4nInvHist()
 {
     // NOTE: Makes a 4n Invariant Mass spectrum plot.
-    TString Case = "23dp_200MeV";
+    TString Case = "8dp_600MeV";
     TString ThePath = "/media/christiaan/DATA/Christiaan/ENSAR/Scenario_Summary/";
     Bool_t PlotScoring = kFALSE;
     Bool_t PlotDDNMult = kFALSE;

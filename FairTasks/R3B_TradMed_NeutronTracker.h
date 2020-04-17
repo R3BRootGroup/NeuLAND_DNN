@@ -65,10 +65,13 @@ class R3B_TradMed_NeutronTracker : public FairTask
     // Parameter inputs before running this code:
     void LinkInputClass(R3BInputClass* inp) {Inputs = inp;}
     void SetNevents(Int_t const nn) {nEvents = nn;}
+    void SetDetector(TString const det) {ThisDetector = det;}
     
     // Functions for the multiplicity determination based on the traditional cuts:
     void ReadCalibrationFile();
+    void ReadNEBULACalibrationFile();
     Int_t ApplyCalibrationCuts();
+    Int_t ApplyNEBULACalibrationCuts();
     Int_t PerfectMultiplicity();
     Int_t GetDNNMultiplicity();
     
@@ -95,6 +98,8 @@ private:
     TClonesArray* fArrayMult;
 
     // Parameters:
+    TString ThisDetector;
+    Bool_t UseNEBULA;
     Double_t fTarget_Xpos;
     Double_t fTarget_Ypos;
     Double_t fTarget_Zpos;
@@ -103,6 +108,7 @@ private:
     Double_t fBeam_Zpos;
     Int_t EventCounter;
     Bool_t UseCalibrationCuts;
+    Bool_t UseNEBULACalibrationCuts;
     Int_t MaxMultiplicity;
     Double_t beamEnergy;
     Double_t beamBeta;
@@ -126,7 +132,9 @@ private:
     
     // Calibration cuts:
     Double_t fKappa;  // Slope of the cuts.
+    Double_t fNEBKappa;  // Slope of the NEBULA cuts.
     Double_t* fCuts;  // 1D-array. Index is the position of the cuts.
+    Double_t* fNEBCuts;  // 1D-array. Index is the position of the NEBULA cuts.
 
     // Intermediate values;
     std::vector<R3BSignalCluster*> fVectorCluster;

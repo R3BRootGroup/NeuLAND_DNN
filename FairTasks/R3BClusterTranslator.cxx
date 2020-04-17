@@ -53,6 +53,7 @@ R3BClusterTranslator::R3BClusterTranslator() : FairTask("R3BClusterTranslator")
     Step2_Structure = "ScoringPlus";
     ComputeSingleClusterRatio = kFALSE;
     SingleFraction = 0.5;
+    ThisDetector = "NeuLAND";
 }
 
 // Destructor definition:
@@ -89,6 +90,28 @@ void R3BClusterTranslator::SetTheThreads(Int_t const nT, Int_t const cT)
     {
         CurrentThread = cT;
         NumberOfThreads = nT;
+    }
+}
+
+void R3BClusterTranslator::SetDetector(TString const TheDetector)
+{
+    // Specifies which detector we are dealing with.
+    ThisDetector = "NeuLAND";
+    
+    if ((Inputs!=0)&&(Inputs!=nullptr))
+    {
+        if (Inputs->IsLinked()==kTRUE)
+        {
+            Bool_t UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
+            
+            if (UseNEBULA==kTRUE)
+            {
+                if (TheDetector=="NEBULA")
+                {
+                    ThisDetector = "NEBULA";
+                }
+            }
+        }
     }
 }
 
@@ -159,15 +182,30 @@ InitStatus R3BClusterTranslator::Init()
         if (k==0) {OutputNameTag = "";} // So there is always one without tags that can be found by other tasks.
         
         // Retrieve the clusters:
-        if ((TClonesArray*)ioman->GetObject("Clusters"+OutputNameTag) == nullptr)
+        if (ThisDetector=="NEBULA")
         {
-            cout << "I/O-manager FATAL: R3BClusterTranslator::Init No R3BSignalCluster" + OutputNameTag + "!\n\n";
-            return kFATAL;
-        }
-        fArraySignalClusters[k] = (TClonesArray*)ioman->GetObject("Clusters"+OutputNameTag);
+            if ((TClonesArray*)ioman->GetObject("NEBULAClusters"+OutputNameTag) == nullptr)
+            {
+                cout << "I/O-manager FATAL: R3BClusterTranslator::Init No NEBULA R3BSignalCluster" + OutputNameTag + "!\n\n";
+                return kFATAL;
+            }
+            fArraySignalClusters[k] = (TClonesArray*)ioman->GetObject("NEBULAClusters"+OutputNameTag);
     
-        // Register R3BSimpleClusters:
-        ioman->Register("TranslatedClusters"+OutputNameTag,"R3BSimpleCluster",fArraySimpleClusters[k],kTRUE);
+            // Register R3BSimpleClusters:
+            ioman->Register("NEBULATranslatedClusters"+OutputNameTag,"R3BSimpleCluster",fArraySimpleClusters[k],kTRUE);
+        }
+        else
+        {
+            if ((TClonesArray*)ioman->GetObject("Clusters"+OutputNameTag) == nullptr)
+            {
+                cout << "I/O-manager FATAL: R3BClusterTranslator::Init No R3BSignalCluster" + OutputNameTag + "!\n\n";
+                return kFATAL;
+            }
+            fArraySignalClusters[k] = (TClonesArray*)ioman->GetObject("Clusters"+OutputNameTag);
+    
+            // Register R3BSimpleClusters:
+            ioman->Register("TranslatedClusters"+OutputNameTag,"R3BSimpleCluster",fArraySimpleClusters[k],kTRUE);
+        }
     }
     
     // Then, set up control histograms:
@@ -176,6 +214,8 @@ InitStatus R3BClusterTranslator::Init()
     Int_t Ebins = (Int_t) (Eboundary/10.0);
     Int_t ClusBins = MaxMultiplicity*12;
     TString nstr = "";
+    TString DetectorTag = "";
+    if (ThisDetector=="NEBULA") {DetectorTag = "NEBULA_";}
     
     Multiplicity = new TH1I*[nDigiRuns];
     EnergyDeposition = new TH1D*[nDigiRuns];
@@ -190,16 +230,16 @@ InitStatus R3BClusterTranslator::Init()
         OutputNameTag = "_DigiRun_" + kstr;
         if (k==0) {OutputNameTag = "";} // So there is always one without tags that can be found by other tasks.
     
-        Multiplicity[k] = new TH1I("Multiplicity"+OutputNameTag,"Incoming particle Multiplicity",MaxMultiplicity+1,0,MaxMultiplicity+1);
-        EnergyDeposition[k] = new TH1D("Total_Energy_Deposition"+OutputNameTag,"Total_Energy_Deposition",Ebins,0.0,Eboundary);
-        AverageSize[k] = new TH1D("Average_ClusterSize"+OutputNameTag,"Average_ClusterSize",20,0.0,20.0);
-        NumberOfClustersHist[k] = new TH1I("NumberOfClusters"+OutputNameTag,"Number of Clusters",ClusBins+1,0,ClusBins+1);
+        Multiplicity[k] = new TH1I(DetectorTag+"Multiplicity"+OutputNameTag,DetectorTag+"Incoming particle Multiplicity",MaxMultiplicity+1,0,MaxMultiplicity+1);
+        EnergyDeposition[k] = new TH1D(DetectorTag+"Total_Energy_Deposition"+OutputNameTag,DetectorTag+"Total_Energy_Deposition",Ebins,0.0,Eboundary);
+        AverageSize[k] = new TH1D(DetectorTag+"Average_ClusterSize"+OutputNameTag,DetectorTag+"Average_ClusterSize",20,0.0,20.0);
+        NumberOfClustersHist[k] = new TH1I(DetectorTag+"NumberOfClusters"+OutputNameTag,DetectorTag+"Number of Clusters",ClusBins+1,0,ClusBins+1);
         Calibration[k] = new TH2D*[MaxMultiplicity+1];
     
         for (Int_t n = 0; n<(MaxMultiplicity+1); ++n)
         {
             nstr = st.Itoa(n,10);
-            Calibration[k][n] = new TH2D("TDR_Multiplicity_Calibration_"+nstr+OutputNameTag,"TDR_Multiplicity_Calibration_"+nstr,Ebins*10,0.0,Eboundary,ClusBins+1,0.0,((Int_t) (ClusBins+1)));
+            Calibration[k][n] = new TH2D(DetectorTag+"TDR_Multiplicity_Calibration_"+nstr+OutputNameTag,DetectorTag+"TDR_Multiplicity_Calibration_"+nstr,Ebins*10,0.0,Eboundary,ClusBins+1,0.0,((Int_t) (ClusBins+1)));
         }
     }
     
@@ -210,7 +250,15 @@ InitStatus R3BClusterTranslator::Init()
         Detection_Efficiencies = new Double_t[MaxMultiplicity+1];
     
         // Define Filename:
-        TString EffFileName = TheOutputPath + "/Detection_Efficiency";
+        TString EffFileName = "";
+        if (ThisDetector=="NEBULA")
+        {
+            EffFileName = TheOutputPath + "/NEBULA_Detection_Efficiency";
+        }
+        else
+        {
+            EffFileName = TheOutputPath + "/Detection_Efficiency";
+        }
         TString tst = "";
         TString nTstr = tst.Itoa(NumberOfThreads,10);
         TString cTstr = tst.Itoa(CurrentThread,10);
@@ -253,23 +301,41 @@ InitStatus R3BClusterTranslator::Init()
         }
         
         // Next, renormalize to the 1n efficiency & progress further:
-        if (MaxMultiplicity>1)
+        if (ThisDetector=="NEBULA")
         {
-            if (Detection_Efficiencies[1]>0.0)
+            for (Int_t k = 1; k<(MaxMultiplicity+1); ++k)
             {
-                for (Int_t k = 2; k<(MaxMultiplicity+1); ++k)
+                if (Detection_Efficiencies[k]>0.0)
                 {
-                    Detection_Efficiencies[k] = Detection_Efficiencies[k]/Detection_Efficiencies[1];
-                    Detection_Efficiencies[k] = 1.0/Detection_Efficiencies[k];
+                        Detection_Efficiencies[k] = 1.0/Detection_Efficiencies[k];
                 }
-                Detection_Efficiencies[1] = 1.0;
+                else
+                {
+                    Detection_Efficiencies[k] = 1.0;
+                }
             }
+            Detection_Efficiencies[0] = 1.0;
         }
-        
-        // Also the single fraction:
-        if (ComputeSingleClusterRatio==kTRUE)
+        else
         {
-            Detection_Efficiencies[1] = 1.0/(1.0 - SingleFraction);
+            if (MaxMultiplicity>1)
+            {
+                if (Detection_Efficiencies[1]>0.0)
+                {
+                    for (Int_t k = 2; k<(MaxMultiplicity+1); ++k)
+                    {
+                        Detection_Efficiencies[k] = Detection_Efficiencies[k]/Detection_Efficiencies[1];
+                        Detection_Efficiencies[k] = 1.0/Detection_Efficiencies[k];
+                    }
+                    Detection_Efficiencies[1] = 1.0;
+                }
+            }
+        
+            // Also the single fraction:
+            if (ComputeSingleClusterRatio==kTRUE)
+            {
+                Detection_Efficiencies[1] = 1.0/(1.0 - SingleFraction);
+            }
         }
         
         // Then, declare the bias Frequency array:
@@ -296,6 +362,7 @@ InitStatus R3BClusterTranslator::Init()
         if ((ValidationMode==kFALSE)||((ValidationMode==kTRUE)&&(ThisIsStep2==kFALSE)))
         {
             FileGen->LinkInputClass(Inputs);
+            FileGen->SetDetector(ThisDetector);
             FileGen->LinkIOManager(ioman);
             FileGen->SetSubFolder("DNN_DataBase");
             FileGen->SelectStep1();
@@ -314,6 +381,7 @@ InitStatus R3BClusterTranslator::Init()
                 kstr = st.Itoa(k+1,10);
                 FileGen_Step2[k] = new R3BTextFileGenerator();
                 FileGen_Step2[k]->LinkInputClass(Inputs);
+                FileGen_Step2[k]->SetDetector(ThisDetector);
                 FileGen_Step2[k]->LinkIOManager(ioman);
                 FileGen_Step2[k]->SetSubFolder("DNN_Step2_Mult"+kstr);
                 FileGen_Step2[k]->SelectStep2(k+1);
@@ -342,16 +410,34 @@ void R3BClusterTranslator::Exec(Option_t *option)
         Double_t IntFreq_d;
         Double_t RandomNumber;
         
-        if (MaxMultiplicity>=2)
+        if (ThisDetector=="NEBULA")
         {
-            for (Int_t k = 2; k<(MaxMultiplicity+1); ++k)
+            if (MaxMultiplicity>=1)
             {
-                IntFreq = (Int_t) Detection_Efficiencies[k];
-                DoubleFreq = Detection_Efficiencies[k];
-                IntFreq_d = (Int_t) IntFreq;
-                RandomNumber = Generator->Uniform(1.0);
-                BiasFrequencies[k] = IntFreq;
-                if (RandomNumber<TMath::Abs(DoubleFreq - IntFreq_d)) {BiasFrequencies[k] = BiasFrequencies[k] + 1;}
+                for (Int_t k = 1; k<(MaxMultiplicity+1); ++k)
+                {
+                    IntFreq = (Int_t) Detection_Efficiencies[k];
+                    DoubleFreq = Detection_Efficiencies[k];
+                    IntFreq_d = (Int_t) IntFreq;
+                    RandomNumber = Generator->Uniform(1.0);
+                    BiasFrequencies[k] = IntFreq;
+                    if (RandomNumber<TMath::Abs(DoubleFreq - IntFreq_d)) {BiasFrequencies[k] = BiasFrequencies[k] + 1;}
+                }
+            }
+        }
+        else
+        {
+            if (MaxMultiplicity>=2)
+            {
+                for (Int_t k = 2; k<(MaxMultiplicity+1); ++k)
+                {
+                    IntFreq = (Int_t) Detection_Efficiencies[k];
+                    DoubleFreq = Detection_Efficiencies[k];
+                    IntFreq_d = (Int_t) IntFreq;
+                    RandomNumber = Generator->Uniform(1.0);
+                    BiasFrequencies[k] = IntFreq;
+                    if (RandomNumber<TMath::Abs(DoubleFreq - IntFreq_d)) {BiasFrequencies[k] = BiasFrequencies[k] + 1;}
+                }
             }
         }
     }
@@ -468,7 +554,6 @@ void R3BClusterTranslator::Exec(Option_t *option)
                 }
             }
         }
-        
     }
     
     // That is it. Delete-stuff:

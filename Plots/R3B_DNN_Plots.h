@@ -37,6 +37,7 @@ public:
     virtual ~R3B_DNN_Plots();
     
     // Control functions:
+    void SetDetector(TString const det) {ThisDetector = det;}
     void LinkInputClass(R3BInputClass* inp);    // Links this class to the inputs class.
     void CheckFiles();                          // Checks for all files whether they exist and if so, links to them.
     
@@ -121,6 +122,7 @@ private:
     Double_t ScaleFactor;
     Double_t LogScaleMinimum;
     Bool_t UseNEBULA;
+    TString ThisDetector;
     
     // Links to the relevant output files:
     TFile* MCFile;          Bool_t MCFile_Exists;

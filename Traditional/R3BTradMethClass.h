@@ -64,6 +64,7 @@ public:
     Bool_t ContainsNoErrors();    
     
     // Other member functions:
+    void SetDetector(TString const str);
     Double_t HistIntegral(Int_t const Index, Int_t const Range); // Computes the histogram fraction between certain lines.
     TString RoundOff(Double_t const our_input, Int_t const significance); // conversion from Double_t to TString.
     TCanvas* DrawHistDouma_2D_flatArray(Int_t const Nhist, Int_t const Nhor, Int_t const Nvert, TH2D* const Raw[], TString const Title[], TString const xlabel, TString const ylabel, TString const zlabel, Double_t const PlotMin, Double_t const PlotMax); // Plotting function for a full array.
@@ -80,6 +81,7 @@ private:
     Double_t Avg_Kappa;                     // coefficient of the cuts when multiple attempts of optimization are made.
     Double_t* Avg_Ethresholds;              // Horizontal values where the cuts intersects the x-axis (E-axis) when multiple attempts of optimization are made.
     Int_t MinimizerStatus;                  // Status of the minimizer after the minimization is performed.
+    TString ThisDetector;                   // States whether we do it for NeuLAND (standard) or for NEBULA.
     
     // Error handling:
     Bool_t PrintErrors;                     // Decides whether errors are printed on-the-fly yes/no.

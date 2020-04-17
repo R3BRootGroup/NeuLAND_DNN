@@ -53,6 +53,7 @@ class R3BDNNScoreApplier : public FairTask
         // Other member-functions:
         void LinkInputClass(R3BInputClass* inp) {Inputs = inp;}
         void SetNevents(Int_t const nn) {nEvents = nn;}
+        void SetDetector(TString const det) {ThisDetector = det;}
         
         // Assisiant functions:
         void ReadCalibrationFile();      
@@ -68,6 +69,8 @@ class R3BDNNScoreApplier : public FairTask
         TClonesArray* fArrayPrims_Max;
         
         // Input parameters:
+        TString ThisDetector;
+        Bool_t UseNEBULA;
         Int_t MaxMultiplicity;
         TString OutputPath;
         Int_t NmaxClusters;

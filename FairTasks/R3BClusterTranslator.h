@@ -57,6 +57,7 @@ class R3BClusterTranslator : public FairTask
         // Parameter Member functions:
         void LinkInputsClass(R3BInputClass* inp) {Inputs = inp;}
         void SetnEvents(Int_t const nn) {nEvents = nn;}
+        void SetDetector(TString const TheDetector);
         
         // Multithreading:
         void SetTheThreads(Int_t const nT, Int_t const cT);
@@ -100,6 +101,7 @@ class R3BClusterTranslator : public FairTask
         Bool_t SimulationData_IsAvailable;
         Bool_t ComputeSingleClusterRatio;
         Double_t SingleFraction;
+        TString ThisDetector;
         
         // Multithreading:
         Int_t NumberOfThreads;

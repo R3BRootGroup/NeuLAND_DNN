@@ -31,15 +31,31 @@ Bool_t R3BTextFileGenerator::LinkSignals()
         if (k==0) {OutputNameTag = "";} // So there is always one without tags that can be found by other tasks.
         
         // Retrieve the Signals:
-        if ((TClonesArray*)ioman->GetObject("Signals"+OutputNameTag) == nullptr)
+        if (ThisDetector=="NEBULA")
         {
-            ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No R3BSignals" + OutputNameTag + "!");
-            RetrieveTest = kFALSE;
+            if ((TClonesArray*)ioman->GetObject("NEBULASignals"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NEBULA R3BSignals" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }
+            else
+            {
+                fArraySignals[k] = (TClonesArray*) ioman->GetObject("NEBULASignals"+OutputNameTag);
+                Signals_IsLinked[k] = kTRUE;
+            }
         }
         else
         {
-            fArraySignals[k] = (TClonesArray*) ioman->GetObject("Signals"+OutputNameTag);
-            Signals_IsLinked[k] = kTRUE;
+            if ((TClonesArray*)ioman->GetObject("Signals"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No R3BSignals" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }
+            else
+            {
+                fArraySignals[k] = (TClonesArray*) ioman->GetObject("Signals"+OutputNameTag);
+                Signals_IsLinked[k] = kTRUE;
+            }
         }
     }
     

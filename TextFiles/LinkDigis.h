@@ -31,15 +31,31 @@ Bool_t R3BTextFileGenerator::LinkDigis()
         if (k==0) {OutputNameTag = "";} // So there is always one without tags that can be found by other tasks.
         
         // Retrieve the Digis:
-        if ((TClonesArray*)ioman->GetObject("NeulandDigis"+OutputNameTag) == nullptr)
+        if (ThisDetector=="NEBULA")
         {
-            ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NeulandDigis" + OutputNameTag + "!");
-            RetrieveTest = kFALSE;
+            if ((TClonesArray*)ioman->GetObject("NEBULADigis"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NEBULADigis" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }   
+            else
+            {
+                fArrayDigis[k] = (TClonesArray*) ioman->GetObject("NEBULADigis"+OutputNameTag);
+                Digis_IsLinked[k] = kTRUE;
+            }
         }
         else
         {
-            fArrayDigis[k] = (TClonesArray*) ioman->GetObject("NeulandDigis"+OutputNameTag);
-            Digis_IsLinked[k] = kTRUE;
+            if ((TClonesArray*)ioman->GetObject("NeulandDigis"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No NeulandDigis" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }   
+            else
+            {
+                fArrayDigis[k] = (TClonesArray*) ioman->GetObject("NeulandDigis"+OutputNameTag);
+                Digis_IsLinked[k] = kTRUE;
+            }
         }
     }
     

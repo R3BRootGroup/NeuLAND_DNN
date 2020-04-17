@@ -92,24 +92,22 @@ void R3B_DNN_Plots::ErelSpect(Int_t const Multiplicity, TString const CompMethod
     
     // -----------------
     
-    ThisPlot.IncludePlot = IncludeExpPlots&&Include_ErelSpectrum_BetaReconstruction_NeuLAND; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_NeuLAND_Erel_Spectrum_ExpMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+0; ThePlots.push_back(ThisPlot);
-    ThisPlot.IncludePlot = IncludeDetPlots&&Include_ErelSpectrum_BetaReconstruction_NeuLAND; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_NeuLAND_Erel_Spectrum_DetMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+1; ThePlots.push_back(ThisPlot);
-    ThisPlot.IncludePlot = IncludeGunPlots&&Include_ErelSpectrum_BetaReconstruction_NeuLAND; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_NeuLAND_Erel_Spectrum_GunMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+2; ThePlots.push_back(ThisPlot);
-    
-    if (UseNEBULA==kTRUE)
-    {
-        ThisPlot.IncludePlot = IncludeExpPlots&&Include_ErelSpectrum_BetaReconstruction_NEBULA; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_NEBULA_Erel_Spectrum_ExpMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+0; ThePlots.push_back(ThisPlot);
-        ThisPlot.IncludePlot = IncludeDetPlots&&Include_ErelSpectrum_BetaReconstruction_NEBULA; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_NEBULA_Erel_Spectrum_DetMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+1; ThePlots.push_back(ThisPlot);
-        ThisPlot.IncludePlot = IncludeGunPlots&&Include_ErelSpectrum_BetaReconstruction_NEBULA; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_NEBULA_Erel_Spectrum_GunMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+2; ThePlots.push_back(ThisPlot);
-   
-        ThisPlot.IncludePlot = IncludeExpPlots&&Include_ErelSpectrum_BetaReconstruction_Combined; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_Combined_Erel_Spectrum_ExpMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+0; ThePlots.push_back(ThisPlot);
-        ThisPlot.IncludePlot = IncludeDetPlots&&Include_ErelSpectrum_BetaReconstruction_Combined; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_Combined_Erel_Spectrum_DetMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+1; ThePlots.push_back(ThisPlot);
-        ThisPlot.IncludePlot = IncludeGunPlots&&Include_ErelSpectrum_BetaReconstruction_Combined; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_Combined_Erel_Spectrum_GunMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+2; ThePlots.push_back(ThisPlot);
-    }
+    ThisPlot.IncludePlot = IncludeExpPlots&&Include_ErelSpectrum_BetaReconstruction_NeuLAND; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_Erel_Spectrum_ExpMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+0; ThePlots.push_back(ThisPlot);
+    ThisPlot.IncludePlot = IncludeDetPlots&&Include_ErelSpectrum_BetaReconstruction_NeuLAND; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_Erel_Spectrum_DetMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+1; ThePlots.push_back(ThisPlot);
+    ThisPlot.IncludePlot = IncludeGunPlots&&Include_ErelSpectrum_BetaReconstruction_NeuLAND; ThisPlot.HistName = "NeutronTracks_BetaReconstruction_Erel_Spectrum_GunMult_n="+MultStr; ThisPlot.LegendaText = "Mult.=<Beta> & Rec.=<NeuLAND>"; ThisPlot.TheColor = kGray+2; ThePlots.push_back(ThisPlot);
    
     // ============================================================================
     
+    // Add Detector Prefixes:
+    TString Detector_Prefix = "";
+    if ((UseNEBULA==kTRUE)&&(ThisDetector=="NEBULA")) {Detector_Prefix = "NEBULA_";}
+    if ((UseNEBULA==kTRUE)&&(ThisDetector=="Combined")) {Detector_Prefix = "Combined_";}
+    Int_t PlotSize = ThePlots.size();
     
+    for (Int_t k = 0; k<PlotSize; ++k)
+    {
+        ThePlots.at(k).HistName = Detector_Prefix + ThePlots.at(k).HistName;
+    }
     
     // Search for the first plot:
     Bool_t Succes = kFALSE;
@@ -158,7 +156,7 @@ void R3B_DNN_Plots::ErelSpect(Int_t const Multiplicity, TString const CompMethod
         }
     
         // And then, save the plot:
-        TheCanvas->SaveAs(OutPutPath + "/ErelSpectra_n"+MultStr+"_"+CompMethod+".png");
+        TheCanvas->SaveAs(OutPutPath + "/" + ThisDetector + "_ErelSpectra_n"+MultStr+"_"+CompMethod+".png");
         TheCanvas->Close();
     }
 

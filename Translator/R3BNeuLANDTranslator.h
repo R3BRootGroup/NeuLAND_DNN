@@ -140,6 +140,8 @@ class R3BNeuLANDTranslator : public FairTask
         TH1D* PrimToSignal_Distance_Conditional; // same, but now with a cut.
         TH1D* AllTimes;                     // Signal times of all signals.
         TH1D* PrimTimes;                    // Signal times of the primary-marked signals by the simulation.
+        TH1D* AllTimes_NEBULA;              // Signal times of all signals.
+        TH1D* PrimTimes_NEBULA;             // Signal times of the primary-marked signals by the simulation.
         TH3D* MCPrint;                      // Single event prints for MC points.
         TH3D** MCPrint_Indu;                // Single event prints for MC points (per track).
         TH3D** SignalPrint_Indu;            // Single event prints for signals (per track).

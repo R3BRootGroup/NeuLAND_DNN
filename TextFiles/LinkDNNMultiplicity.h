@@ -33,15 +33,31 @@ Bool_t R3BTextFileGenerator::LinkDNNMultiplicity()
         if (k==0) {OutputNameTag = "";} // So there is always one without tags that can be found by other tasks.
         
         // Retrieve the multiplicities:
-        if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity"+OutputNameTag) == nullptr)
+        if (ThisDetector=="NEBULA")
         {
-            ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No DNN_Multiplicity" + OutputNameTag + "!");
-            RetrieveTest = kFALSE;
+            if ((TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No DNN_NEBULA_Multiplicity" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }
+            else
+            {
+                fArrayDNNMult[k] = (TClonesArray*) ioman->GetObject("DNN_NEBULA_Multiplicity"+OutputNameTag);
+                DNNMults_AreLinked[k] = kTRUE;
+            }
         }
         else
         {
-            fArrayDNNMult[k] = (TClonesArray*) ioman->GetObject("DNN_Multiplicity"+OutputNameTag);
-            DNNMults_AreLinked[k] = kTRUE;
+            if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity"+OutputNameTag) == nullptr)
+            {
+                ErrorMessage("I/O-manager FATAL: R3BTextFileGenerator: No DNN_Multiplicity" + OutputNameTag + "!");
+                RetrieveTest = kFALSE;
+            }
+            else
+            {
+                fArrayDNNMult[k] = (TClonesArray*) ioman->GetObject("DNN_Multiplicity"+OutputNameTag);
+                DNNMults_AreLinked[k] = kTRUE;
+            }
         }
     }
     

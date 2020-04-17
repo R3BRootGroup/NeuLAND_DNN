@@ -21,11 +21,11 @@ using namespace std;
 void ProcessHists()
 {   
     // Define Boolians:
-    Bool_t IsSimulation = kFALSE;
-    Bool_t Is110MeV = kTRUE;
+    Bool_t IsSimulation = kTRUE;
+    Bool_t Is110MeV = kFALSE;
     
     // Define OutputPath:
-    TString OutputPath = "/media/christiaan/DATA/DNN_Data/SAMURAI_110MeV/SAMURAI_110MeV_INCLXX/";
+    TString OutputPath = "/media/christiaan/DATA/DNN_Data/SAMURAI/";
     if (Is110MeV==kTRUE) {OutputPath.ReplaceAll("250MeV","110MeV");}
     if (OutputPath.Contains("/DNN_Training/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Training/","");}
     if (OutputPath.Contains("/DNN_Validation/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Validation/","");}
@@ -54,8 +54,8 @@ void ProcessHists()
     std::vector<TH1D*> BackHists;
     std::vector<TH1D*> NewHists;
     
-    OldHistNames.push_back("NeutronTracks_SingleReconstruction_NeuLAND_Excitation_Energy_Total");          NewHistNames.push_back("SingleTOF_Total");               // 0
-    OldHistNames.push_back("NeutronTracks_SingleReconstruction_NeuLAND_Excitation_Energy_MultClus_Total"); NewHistNames.push_back("SingleTOF_MultClus");            // 1
+    OldHistNames.push_back("NeutronTracks_SingleReconstruction_Excitation_Energy_Total");          NewHistNames.push_back("SingleTOF_Total");               // 0
+    OldHistNames.push_back("NeutronTracks_SingleReconstruction_Excitation_Energy_MultClus_Total"); NewHistNames.push_back("SingleTOF_MultClus");            // 1
     OldHistNames.push_back("NeutronTracks_DNNScoringPlus_Excitation_Energy_MultClus_Total");               NewHistNames.push_back("2xDNN_MultClus");                // 2
     OldHistNames.push_back("NeutronTracks_DNNScoringPlus_SingleTOF_Excitation_Energy_MultClus_Total");     NewHistNames.push_back("MultDNN_SingleTOF_MultClus");    // 3
     OldHistNames.push_back("NeutronTracks_ScoringPlus_Clusters_DNNMult_Excitation_Energy_MultClus_Total"); NewHistNames.push_back("MultDNN_ScoringPlus_MultClus");  // 4

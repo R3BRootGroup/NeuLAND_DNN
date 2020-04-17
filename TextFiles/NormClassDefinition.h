@@ -11,11 +11,28 @@ void R3BTextFileGenerator::NormClassDefinition()
     {
         TFile* InputFile = (TFile*) ioman->GetInFile();
         TH1D* AllTimes;
-        AllTimes = (TH1D*) InputFile->Get("AllTimes");  
-        if ((AllTimes==0)||(AllTimes==nullptr)) {AllTimes = (TH1D*) InputFile->Get("AllTimes_Merged");}
+        if (ThisDetector=="NEBULA")
+        {
+            AllTimes = (TH1D*) InputFile->Get("AllTimes_NEBULA");  
+            if ((AllTimes==0)||(AllTimes==nullptr)) {AllTimes = (TH1D*) InputFile->Get("AllTimes_NEBULA_Merged");}
+        }
+        else
+        {
+            AllTimes = (TH1D*) InputFile->Get("AllTimes");  
+            if ((AllTimes==0)||(AllTimes==nullptr)) {AllTimes = (TH1D*) InputFile->Get("AllTimes_Merged");}
+        }
+        
         TH1D* PrimTimes;
-        PrimTimes = (TH1D*) InputFile->Get("PrimTimes"); 
-        if ((PrimTimes==0)||(PrimTimes==nullptr)) {PrimTimes = (TH1D*) InputFile->Get("PrimTimes_Merged");}
+        if (ThisDetector=="NEBULA")
+        {
+            PrimTimes = (TH1D*) InputFile->Get("PrimTimes_NEBULA"); 
+            if ((PrimTimes==0)||(PrimTimes==nullptr)) {PrimTimes = (TH1D*) InputFile->Get("PrimTimes_NEBULA_Merged");}
+        }
+        else
+        {
+            PrimTimes = (TH1D*) InputFile->Get("PrimTimes"); 
+            if ((PrimTimes==0)||(PrimTimes==nullptr)) {PrimTimes = (TH1D*) InputFile->Get("PrimTimes_Merged");}
+        }
         
         if (DataTimeNormaliation_UsePrimTimes==kFALSE)
         {
@@ -29,13 +46,27 @@ void R3BTextFileGenerator::NormClassDefinition()
         }
     
         // Check for the travel time:
-        Double_t Distance = TMath::Sqrt(TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_x_position","cm") - Inputs->GetInputDouble("TARGET_center_x_position","cm")),2.0) + 
-                                    TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_y_position","cm") - Inputs->GetInputDouble("TARGET_center_y_position","cm")),2.0) + 
-                                    TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_z_position","cm") - Inputs->GetInputDouble("TARGET_center_z_position","cm")),2.0));
+        Double_t Distance = 0.0;
+        if (ThisDetector=="NEBULA")
+        {
+            Distance = TMath::Sqrt(TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_x_position","cm") - Inputs->GetInputDouble("TARGET_center_x_position","cm")),2.0) + 
+                                   TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_y_position","cm") - Inputs->GetInputDouble("TARGET_center_y_position","cm")),2.0) + 
+                                   TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_z_position","cm") - Inputs->GetInputDouble("TARGET_center_z_position","cm")),2.0));
     
-        Distance = Distance + TMath::Sqrt(TMath::Power(TMath::Abs(Inputs->GetInputDouble("NeuLAND_center_x_position","cm") - Inputs->GetInputDouble("TARGET_center_x_position","cm")),2.0) + 
-                                      TMath::Power(TMath::Abs(Inputs->GetInputDouble("NeuLAND_center_y_position","cm") - Inputs->GetInputDouble("TARGET_center_y_position","cm")),2.0) + 
-                                      TMath::Power(TMath::Abs(Inputs->GetInputDouble("NeuLAND_front_z_position","cm")  - Inputs->GetInputDouble("TARGET_center_z_position","cm")),2.0));
+            Distance = Distance + TMath::Sqrt(TMath::Power(TMath::Abs(Inputs->GetInputDouble("NEBULA_center_x_position","cm") - Inputs->GetInputDouble("TARGET_center_x_position","cm")),2.0) + 
+                                  TMath::Power(TMath::Abs(Inputs->GetInputDouble("NEBULA_center_y_position","cm") - Inputs->GetInputDouble("TARGET_center_y_position","cm")),2.0) + 
+                                  TMath::Power(TMath::Abs(Inputs->GetInputDouble("NEBULA_front_z_position","cm")  - Inputs->GetInputDouble("TARGET_center_z_position","cm")),2.0));
+        }
+        else
+        {
+            Distance = TMath::Sqrt(TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_x_position","cm") - Inputs->GetInputDouble("TARGET_center_x_position","cm")),2.0) + 
+                                   TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_y_position","cm") - Inputs->GetInputDouble("TARGET_center_y_position","cm")),2.0) + 
+                                   TMath::Power(TMath::Abs(Inputs->GetInputDouble("ParticleGun_z_position","cm") - Inputs->GetInputDouble("TARGET_center_z_position","cm")),2.0));
+    
+            Distance = Distance + TMath::Sqrt(TMath::Power(TMath::Abs(Inputs->GetInputDouble("NeuLAND_center_x_position","cm") - Inputs->GetInputDouble("TARGET_center_x_position","cm")),2.0) + 
+                                  TMath::Power(TMath::Abs(Inputs->GetInputDouble("NeuLAND_center_y_position","cm") - Inputs->GetInputDouble("TARGET_center_y_position","cm")),2.0) + 
+                                  TMath::Power(TMath::Abs(Inputs->GetInputDouble("NeuLAND_front_z_position","cm")  - Inputs->GetInputDouble("TARGET_center_z_position","cm")),2.0));
+        }
     
         Double_t BeamBeta = Inputs->GetAvgBeamBeta();
         Double_t cLight = 29.9792458;
@@ -50,7 +81,15 @@ void R3BTextFileGenerator::NormClassDefinition()
         }
     
         // Write them to a file:
-        std::ofstream TimeFile = std::ofstream(ParentOutputPath + "/TimeFile.txt", std::ofstream::out);
+        std::ofstream TimeFile;
+        if (ThisDetector=="NEBULA")
+        {
+            TimeFile = std::ofstream(ParentOutputPath + "/TimeFile_NEBULA.txt", std::ofstream::out);
+        }
+        else
+        {
+            TimeFile = std::ofstream(ParentOutputPath + "/TimeFile.txt", std::ofstream::out);
+        }
         TimeFile << DataDriven_MeanTime << "\n";
         TimeFile << DataDriven_ScaleTime << "\n";
         TimeFile.close();
@@ -113,7 +152,8 @@ void R3BTextFileGenerator::NormClassDefinition()
         DefaultNorms->LinkInputClass(Inputs);
         DefaultNorms->SetDataDrivenTimes(DataDriven_MeanTime,DataDriven_ScaleTime);
         DefaultNorms->LinkScorers(TheScorers);
-        DefaultNorms->DefaultNorms(Input_ISNO,Input_ISYES);
+        if (ThisDetector=="NEBULA") {DefaultNorms->DefaultNEBULANorms(Input_ISNO,Input_ISYES);}
+        else                        {DefaultNorms->DefaultNorms(Input_ISNO,Input_ISYES);}
         if (ExecuteNormalization==kTRUE) {DefaultNorms->PerformNormalization();}
         else                             {DefaultNorms->SkipNormalization();}
         

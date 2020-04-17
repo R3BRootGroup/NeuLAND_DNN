@@ -216,7 +216,7 @@ Int_t R3BExpTranslator_7LiPN_250MeV::GetNumberOfEvents()
         }
     }
     
-    if (TestMode==kTRUE) {nEvents = 1000000;}
+    if (TestMode==kTRUE) {nEvents = 100000;}
     
     return nEvents;
 }
@@ -682,6 +682,7 @@ void R3BExpTranslator_7LiPN_250MeV::Exec(Option_t *option)
         Int_t OurLocalBarIndex = 0;
         Int_t LayerIndex = 0;
         Bool_t HitIsVETO = kFALSE;
+        Bool_t BarIndex_OutOfRange = kFALSE;
         
         for (Int_t ksig = 0; ksig<nSignals; ++ksig)
         {
@@ -691,6 +692,9 @@ void R3BExpTranslator_7LiPN_250MeV::Exec(Option_t *option)
             
             // Decide between NEBULA and VETO:
             BarIndex = NEBULAPla_id[LeafIndex]->GetValue(ksig);
+            
+            // Reset this test:
+            BarIndex_OutOfRange = kFALSE;
             
             if ((BarIndex>=121)&&(BarIndex<=144))
             {
@@ -804,6 +808,11 @@ void R3BExpTranslator_7LiPN_250MeV::Exec(Option_t *option)
                 ThisSignal->SetPositionY(ypos);
                 ThisSignal->SetPositionZ(zpos);
             }
+            else
+            {
+                // Then, we have the wrong BarIndex:
+                BarIndex_OutOfRange = kTRUE;
+            }
             
             // Do a comparison:
             TranslationTest = kTRUE;
@@ -821,6 +830,7 @@ void R3BExpTranslator_7LiPN_250MeV::Exec(Option_t *option)
                 NANTest = kTRUE;
             }
             if (NANTest==kFALSE) {TranslationTest = kFALSE;}
+            if (BarIndex_OutOfRange==kTRUE) {TranslationTest = kFALSE;}
             
             if ((ThisSignal->GetEnergy()<0.0)&&(TranslationTest==kTRUE))
             {

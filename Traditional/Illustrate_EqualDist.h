@@ -34,6 +34,7 @@ void R3BTradMethClass::Illustrate_EqualDist(Int_t const Resol)
     Ymax = Illustration->GetYaxis()->GetXmax();
     
     // Then, loop over the full histogram & fill it up:
+    // NOTE: This is a sweep; no special NEBULA case is needed here.
     for (Int_t kx = 1; kx<(NbinsX+1); ++kx)
     {
         for (Int_t ky = 1; ky<(NbinsY+1); ++ky)

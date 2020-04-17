@@ -5,7 +5,7 @@ void R3BMultMatrix::UpdatePerfectMatrices()
     Int_t nClusters_NEBULA = 0;
     if (UseNEBULA==kTRUE) {nClusters_NEBULA = fArrayNEBULACluster->GetEntries();}
     
-    // Deal with perfect matrices:
+    // NeuLAND Perfect Matrix:
     if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
     {
         if ((DetectedMultiplicity>=0)&&(DetectedMultiplicity<=MaxMultiplicity)&&(GunMultiplicity>=0)&&(GunMultiplicity<=MaxMultiplicity))
@@ -17,6 +17,7 @@ void R3BMultMatrix::UpdatePerfectMatrices()
     
     if (UseNEBULA==kTRUE)
     {
+        // NEBULA Perfect Matrix:
         if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NEBULA>1)))
         {
             if ((NEBDetectedMultiplicity>=0)&&(NEBDetectedMultiplicity<=MaxMultiplicity)&&(GunMultiplicity>=0)&&(GunMultiplicity<=MaxMultiplicity))
@@ -26,11 +27,12 @@ void R3BMultMatrix::UpdatePerfectMatrices()
             }
         }
         
+        // Combined Perfect Matrix:
         if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&((nClusters_NeuLAND+nClusters_NEBULA)>1)))
         {
-            if (((DetectedMultiplicity+NEBDetectedMultiplicity)>=0)&&((DetectedMultiplicity+NEBDetectedMultiplicity)<=MaxMultiplicity)&&(GunMultiplicity>=0)&&(GunMultiplicity<=MaxMultiplicity))
+            if ((CombinedDetectedMultiplicity>=0)&&(CombinedDetectedMultiplicity<=MaxMultiplicity)&&(GunMultiplicity>=0)&&(GunMultiplicity<=MaxMultiplicity))
             {
-                MultMatrix_Max_Combined[(DetectedMultiplicity+NEBDetectedMultiplicity)][GunMultiplicity] = MultMatrix_Max_Combined[(DetectedMultiplicity+NEBDetectedMultiplicity)][GunMultiplicity] + 1.0;
+                MultMatrix_Max_Combined[CombinedDetectedMultiplicity][GunMultiplicity] = MultMatrix_Max_Combined[CombinedDetectedMultiplicity][GunMultiplicity] + 1.0;
                 MultMatrix_Max_Combined[MaxMultiplicity+1][GunMultiplicity] = MultMatrix_Max_Combined[MaxMultiplicity+1][GunMultiplicity] + 1.0;
             }
         }

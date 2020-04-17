@@ -18,7 +18,7 @@ if __name__ == "__main__":
     TheEpochStr = str(TheEpoch)
 
     # Set parameters:
-    SetParameters.Initialize()
+    SetParameters.Initialize(False)
     
     # Edit the output path:
     ThisOutputPath = SetParameters.OutputPath

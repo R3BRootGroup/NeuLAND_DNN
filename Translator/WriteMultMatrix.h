@@ -286,4 +286,26 @@ void R3BNeuLANDTranslator::WriteMultMatrix()
     }
     
     EffWriteTextFile.close();
+    
+    // For NEBULA too:
+    if (UseNEBULA==kTRUE)
+    {
+        TString EffNEBFileName = TheOutputPath + "/NEBULA_Detection_Efficiency";
+        if (TotalNumberOfThreads>1)
+        {
+            EffNEBFileName = EffNEBFileName + "_nT" + nTstr + "_cT" + cTstr + ".txt";
+        }
+        else
+        {
+            EffNEBFileName = EffNEBFileName + ".txt";
+        }
+        std::ofstream EffNEBWriteTextFile (EffNEBFileName.Data(), std::ofstream::out);
+    
+        for (Int_t k = 0; k<(MaxMultiplicity+1); ++k)
+        {
+            EffNEBWriteTextFile << MultNEBULAMatrix[k][k] << "\n";
+        }
+    
+        EffNEBWriteTextFile.close();
+    }
 }

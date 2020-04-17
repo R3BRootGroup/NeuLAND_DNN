@@ -57,8 +57,10 @@ public:
     void SetOldScale(TString const Name, Double_t const Left, Double_t const Right);
     void SetNewScale(TString const Name, Double_t const Left, Double_t const Right);
     void DefaultNorms(Double_t const NewLeft, Double_t const NewRight);
+    void DefaultNEBULANorms(Double_t const NewLeft, Double_t const NewRight);
     void ElenaNorms(Double_t const NewLeft, Double_t const NewRight);
     void BlankDefaultNorms(Double_t const NewLeft, Double_t const NewRight);
+    void BlankDefaultNEBULANorms(Double_t const NewLeft, Double_t const NewRight);
     void BlankElenaNorms(Double_t const NewLeft, Double_t const NewRight);
     void WriteNormFile(TString const TheFileName);
     void PerformNormalization() {ExecuteNormalization = kTRUE;}

@@ -33,10 +33,12 @@ void TranslateClusters(Int_t const TotalNumberOfThreads = 1, Int_t const Current
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
     
     // Retrieve other required inputs:
     TString InfoUse = Inputs->GetInputString("NeuLAND_DNNTextFile_InfoStructure");
+    Bool_t UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     
     // Take care of multithreading:
     if (TotalNumberOfThreads>1)
@@ -80,6 +82,7 @@ void TranslateClusters(Int_t const TotalNumberOfThreads = 1, Int_t const Current
         
         // Pass parameters:
         Translator->LinkInputsClass(Inputs);
+        Translator->SetDetector("NeuLAND");
         Translator->SetnEvents(nEvents);
         Translator->SelectStep1(); // Applies only for validation mode.
         if (ThisIsStep2==kTRUE) {Translator->SelectStep2();}
@@ -87,6 +90,24 @@ void TranslateClusters(Int_t const TotalNumberOfThreads = 1, Int_t const Current
         
         // Add Translator to the Mother of FairTasks:
         run->AddTask(Translator);
+        
+        // Same for NEBULA:
+        if (UseNEBULA==kTRUE)
+        {
+             // Create the R3BClusterTranslator
+            R3BClusterTranslator* NEBTranslator = new R3BClusterTranslator();
+        
+            // Pass parameters:
+            NEBTranslator->LinkInputsClass(Inputs);
+            NEBTranslator->SetDetector("NEBULA");
+            NEBTranslator->SetnEvents(nEvents);
+            NEBTranslator->SelectStep1(); // Applies only for validation mode.
+            if (ThisIsStep2==kTRUE) {NEBTranslator->SelectStep2();}
+            NEBTranslator->SetTheThreads(TotalNumberOfThreads,CurrentThread);
+        
+            // Add NEBTranslator to the Mother of FairTasks:
+            run->AddTask(NEBTranslator);
+        }
         
         // NOTE: No loop over DigiRuns necessary, as this only takes care of that by itself!
 

@@ -51,8 +51,6 @@ class R3BSingleReconstructor : public FairTask
         // Class content:
         TClonesArray* fArrayNeuLANDSignals;
         TClonesArray* fArrayNEBULASignals;
-        TClonesArray* fArrayNeuLANDVETOSignals;
-        TClonesArray* fArrayNEBULAVETOSignals;
         
         TClonesArray* fArrayPrimHits_NeuLAND;
         TClonesArray* fArrayPrimHits_NEBULA;
@@ -61,10 +59,6 @@ class R3BSingleReconstructor : public FairTask
         // Input parameters:
         Int_t MaxMultiplicity;
         Bool_t UseNEBULA;
-        Bool_t UseVETO;
-        Bool_t UseNEBULAVETO;
-        TString NeuLAND_VETOCondition;
-        TString NEBULA_VETOCondition;
         
         // Other parameters:
         Int_t EventCounter;

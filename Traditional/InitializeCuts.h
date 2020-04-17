@@ -23,12 +23,29 @@ void R3BTradMethClass::InitializeCuts()
         delete Generator;
         
         // Guess Kappa:
-        Kappa = -1.0*(Ymax-Ymin)/(Xmax-Xmin)*(1.0 + 2.0*DoublePlaneScale)/3.0;
+        if (ThisDetector=="NEBULA")
+        {
+            Kappa = -1.0*(Ymax-Ymin)/(Xmax-Xmin)*(1.0 + 2.0*DoublePlaneScale)/3.0;
+            Kappa = Kappa*0.9;
+        }
+        else
+        {
+            Kappa = -1.0*(Ymax-Ymin)/(Xmax-Xmin)*(1.0 + 2.0*DoublePlaneScale)/3.0;
+        }
         Kappa = Kappa*RandomNumber;
         
         // Guess stepsize:
-        Double_t StepSize = 1.0*(Xmax-Xmin)/((Int_t) Max_Multiplicity);
-        StepSize = StepSize*(4.0 + 1.0*DoublePlaneScale)/5.0;
+        Double_t StepSize = 0.0;
+        if (ThisDetector=="NEBULA")
+        {
+            StepSize = 1.0*(Xmax-Xmin)/((Int_t) Max_Multiplicity);
+            StepSize = StepSize*(4.0 + 1.0*DoublePlaneScale)/5.0; 
+        }
+        else
+        {
+            StepSize = 1.0*(Xmax-Xmin)/((Int_t) Max_Multiplicity);
+            StepSize = StepSize*(4.0 + 1.0*DoublePlaneScale)/5.0;   
+        }
         StepSize = StepSize*RandomNumber;
         
         // Guess values:

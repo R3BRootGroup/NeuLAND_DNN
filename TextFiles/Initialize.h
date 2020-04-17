@@ -72,6 +72,25 @@ Bool_t R3BTextFileGenerator::Initialize(Int_t const Local_nEvents)
             TString st = "";
             TString kstr = "";
             
+            // Adjust input parameters for NEBULA:
+            if (ThisDetector=="NEBULA")
+            {
+                ParticleType = Inputs->GetInputString("NEBULA_ParticleType_ToBeDetected");
+                NeutronMass = TheNuclei->GetMass(ParticleType,"MeV"); 
+                NbarsPerPlane = Inputs->GetInputInteger("NEBULA_Number_of_Bars_in_OnePlane");
+                NDoublePlanes = Inputs->GetInputInteger("NEBULA_Number_of_DoublePlaneModules");
+                NeuLAND_Center_X = Inputs->GetInputDouble("NEBULA_center_x_position","cm");
+                NeuLAND_Center_Y = Inputs->GetInputDouble("NEBULA_center_y_position","cm");
+                NeuLAND_Front_Z = Inputs->GetInputDouble("NEBULA_front_z_position","cm");
+                NeuLAND_Rot_X = Inputs->GetInputDouble("NEBULA_x_rotation_angle","degree");
+                NeuLAND_Rot_Y = Inputs->GetInputDouble("NEBULA_y_rotation_angle","degree");
+                NeuLAND_Rot_Z = Inputs->GetInputDouble("NEBULA_z_rotation_angle","degree");
+                NeuLAND_Active_Bar_Thickness = Inputs->GetInputDouble("NEBULA_BC408_BarThickness","cm");
+                NeuLAND_Total_Bar_Length = Inputs->GetInputDouble("NEBULA_Total_BarLength","cm");
+                NeuLAND_TotalBarThicknessXY = Inputs->GetNEBULATotalPaddleThickness();
+                NeuLAND_TotalBarThicknessZ = Inputs->GetNEBULATotalPaddleThickness();
+            }
+            
             // Obtain local inputs needed only inside this function:
             Int_t Local_MaxNrSignals = Inputs->GetInputInteger("NeuLAND_DNNTextFile_MaxNumberOfSignals");
             TString Local_NormalizationMethod = Inputs->GetInputString("NeuLAND_DNNTextFile_NormalizationMethod");
@@ -209,9 +228,25 @@ Bool_t R3BTextFileGenerator::Initialize(Int_t const Local_nEvents)
                         }
             
                         // Then, we can now define the full TextFile Name:
-                        FileName = OutputPath + Inputs->GetInputString("NeuLAND_DNNTextFile");
+                        if (ThisDetector=="NEBULA")
+                        {
+                            FileName = OutputPath + Inputs->GetInputString("NEBULA_DNNTextFile");
+                        }
+                        else
+                        {
+                            FileName = OutputPath + Inputs->GetInputString("NeuLAND_DNNTextFile");
+                        }
                         
                         // Next, Obtain the scorers:
+                        if (ThisDetector=="NEBULA")
+                        {
+                            TheScorers->SetDetector("NEBULA");
+                        }
+                        else
+                        {
+                            TheScorers->SetDetector("NeuLAND");
+                        }
+                        
                         TheScorers->LinkInputsClass(Inputs);
                         Bool_t ScoreTest = TheScorers->Initialize();
                             
@@ -293,30 +328,35 @@ Bool_t R3BTextFileGenerator::Initialize(Int_t const Local_nEvents)
                                     // Set Correct number of inputs and outputs:
                                     Local_N_inputs = 2 + 4*NbarsPerPlane*NDoublePlanes;
                                     Local_N_outputs = MaxMultiplicity;
+                                    if (ThisDetector=="NEBULA") {Local_N_outputs = MaxMultiplicity+1;}
                                 }
                                 else if (InfoUse=="IO_Signals_Elena_9002_5")
                                 {
                                     // Set Correct number of inputs and outputs:
                                     Local_N_inputs = 2 + 6*NbarsPerPlane*NDoublePlanes;
                                     Local_N_outputs = MaxMultiplicity;
+                                    if (ThisDetector=="NEBULA") {Local_N_outputs = MaxMultiplicity+1;}
                                 }
                                 else if (InfoUse=="IO_Signals_Elena_9004_5")
                                 {
                                     // Set Correct number of inputs and outputs:
                                     Local_N_inputs = 4 + 6*NbarsPerPlane*NDoublePlanes;
                                     Local_N_outputs = MaxMultiplicity;
+                                    if (ThisDetector=="NEBULA") {Local_N_outputs = MaxMultiplicity+1;}
                                 }
                                 else if (InfoUse=="IO_Signals_Elena_6004_5")
                                 {
                                     // Set Correct number of inputs and outputs:
                                     Local_N_inputs = 4 + 4*NbarsPerPlane*NDoublePlanes;
                                     Local_N_outputs = MaxMultiplicity;
+                                    if (ThisDetector=="NEBULA") {Local_N_outputs = MaxMultiplicity+1;}
                                 }
                                 else if (InfoUse=="IO_Signals_Elena_12004_5")
                                 {
                                     // Set Correct number of inputs and outputs:
                                     Local_N_inputs = 4 + 8*NbarsPerPlane*NDoublePlanes;
                                     Local_N_outputs = MaxMultiplicity;
+                                    if (ThisDetector=="NEBULA") {Local_N_outputs = MaxMultiplicity+1;}
                                 }
                                 else if (InfoUse=="ScoringPlus")
                                 {

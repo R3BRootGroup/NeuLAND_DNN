@@ -133,6 +133,14 @@ void MergeHists(Int_t const TotalNumberOfThreads = 1, Int_t const Situation = -1
                         // Add Histograms:            
                         TheHistogramMerger[k]->AddHistogram("AllTimes"+OutputNameTag);
                         TheHistogramMerger[k]->AddHistogram("PrimTimes"+OutputNameTag);
+                        
+                        if (UseNEBULA==kTRUE)
+                        {
+                            TheHistogramMerger[k]->AddHistogram("AllTimes_NEBULA"+OutputNameTag);
+                            TheHistogramMerger[k]->AddHistogram("PrimTimes_NEBULA"+OutputNameTag);
+                        }
+                        
+                            
                     }
                     else
                     {

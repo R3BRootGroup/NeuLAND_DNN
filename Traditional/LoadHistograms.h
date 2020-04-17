@@ -43,12 +43,19 @@ void R3BTradMethClass::LoadHistograms()
                 kstr = st.Itoa(k,10);
                 
                 // Obtain the histogram:
-                MultHistograms[k] = (TH2D*) f->Get("TDR_Calibration_"+kstr);
+                if (ThisDetector=="NEBULA")
+                {
+                    MultHistograms[k] = (TH2D*) f->Get("TDR_NEBULA_Calibration_"+kstr);
+                }
+                else
+                {
+                    MultHistograms[k] = (TH2D*) f->Get("TDR_Calibration_"+kstr);
+                }
                 
                 // Check that it worked:
                 if ((MultHistograms[k]==0)||(MultHistograms[k]==nullptr))
                 {
-                    ErrorMessage("The histogram TDR_Calibration_"+kstr+" could not be located!");
+                    ErrorMessage("The histogram TDR_(NEBULA)_Calibration_"+kstr+" could not be located!");
                     ErrorTag = kTRUE;
                 }
                 
@@ -63,7 +70,15 @@ void R3BTradMethClass::LoadHistograms()
             // Check that no more histograms exist:
             TH1D* Test = 0;
             kstr = st.Itoa(Max_Multiplicity+1,10);
-            Test = (TH1D*) f->Get("TDR_Calibration_"+kstr);
+            
+            if (ThisDetector=="NEBULA")
+            {
+                Test = (TH1D*) f->Get("TDR_NEBULA_Calibration_"+kstr);
+            }
+            else
+            {
+                Test = (TH1D*) f->Get("TDR_Calibration_"+kstr);
+            }
             
             if (!((Test==0)||(Test==nullptr)))
             {

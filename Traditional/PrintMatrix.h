@@ -14,7 +14,15 @@ void R3BTradMethClass::PrintMatrix()
         TString PATH = Inputs->GetInputString("TheOutputPath");
         
         // Define filename:
-        TString FileName = PATH + "/SeparationMatrix.txt";
+        TString FileName = "";
+        if (ThisDetector=="NEBULA")
+        {
+            FileName = PATH + "/NEBULA_SeparationMatrix.txt";
+        }
+        else
+        {
+            FileName = PATH + "/SeparationMatrix.txt";
+        }
         
         // Create the file:
         std::ofstream TheFile (FileName.Data(), std::ofstream::out);

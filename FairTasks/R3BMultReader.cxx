@@ -19,6 +19,7 @@ R3BMultReader::R3BMultReader() : FairTask("R3BMultReader")
     nEvents = 1;
     Inputs = 0;
     TextFile_IsThere = kFALSE;
+    ThisDetector = "NeuLAND";
     
     // Initialize Nuclear dataBase:
     TheNuclei = new Nuclei();
@@ -61,23 +62,49 @@ InitStatus R3BMultReader::Init()
     OutputPath = Inputs->GetInputString("TheOutputPath");
     
     // Retrieve the NeuLAND signals:
-    if ((TClonesArray*)ioman->GetObject("Signals") == nullptr)
+    if (ThisDetector=="NEBULA")
     {
-        cout << "I/O-manager FATAL: R3BMultReader::Init No Signals!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("NEBULASignals") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BMultReader::Init No NEBULASignals!\n\n";
+            return kFATAL;
+        }
+        fArraySignals = (TClonesArray*)ioman->GetObject("NEBULASignals");
     }
-    fArraySignals = (TClonesArray*)ioman->GetObject("Signals");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("Signals") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BMultReader::Init No Signals!\n\n";
+            return kFATAL;
+        }
+        fArraySignals = (TClonesArray*)ioman->GetObject("Signals");
+    }
     
     // Also retrieve the clusters:
-    if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+    if (ThisDetector=="NEBULA")
     {
-        cout << "I/O-manager FATAL: R3BMultReader::Init No R3BSignalClusters!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("NEBULAClusters") == nullptr)
+        { 
+            cout << "I/O-manager FATAL: R3BMultReader::Init No NEBULA R3BSignalClusters!\n\n";
+            return kFATAL;
+        }
+        fArrayClusters = (TClonesArray*)ioman->GetObject("NEBULAClusters");
     }
-    fArrayClusters = (TClonesArray*)ioman->GetObject("Clusters");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+        { 
+            cout << "I/O-manager FATAL: R3BMultReader::Init No R3BSignalClusters!\n\n";
+            return kFATAL;
+        }
+        fArrayClusters = (TClonesArray*)ioman->GetObject("Clusters");
+    }
     
     // However, we do need to read from the DNN output TextFile.
-    TString Name = OutputPath + "/PredictedMultiplicities.txt";
+    TString Name;
+    if (ThisDetector=="NEBULA") {Name = OutputPath + "/Predicted_NEBULA_Multiplicities.txt";}
+    else                        {Name = OutputPath + "/PredictedMultiplicities.txt";}
     DNN_Output_TextFile.open(Name.Data());
     
     if (!DNN_Output_TextFile.is_open())
@@ -91,7 +118,8 @@ InitStatus R3BMultReader::Init()
     }
     
     // Register the multiplicity into a ROOT-file:
-    ioman->Register("DNN_Multiplicity","ObjInteger",fArrayMults,kTRUE);
+    if (ThisDetector=="NEBULA") {ioman->Register("DNN_NEBULA_Multiplicity","ObjInteger",fArrayMults,kTRUE);}
+    else                        {ioman->Register("DNN_Multiplicity","ObjInteger",fArrayMults,kTRUE);}
     
     // Then, return the succes statement:
     if (Inputs->ContainsNoErrors()==kFALSE) {Inputs->PrintAllErrors(); return kFATAL;}
@@ -124,10 +152,11 @@ void R3BMultReader::Exec(Option_t *option)
     if (fArrayClusters->GetEntries()==0) {CurrentMultiplicity = 0;}
     
     // And also in the case of 1 signal:
-    if (fArrayClusters->GetEntries()==1) {CurrentMultiplicity = 1;}
+    if (ThisDetector!="NEBULA") {if (fArrayClusters->GetEntries()==1) {CurrentMultiplicity = 1;}}
     
     // Store the multiplicity:
-    new ((*fArrayMults)[0]) ObjInteger("DNN_Multiplicity",CurrentMultiplicity);
+    if (ThisDetector=="NEBULA") {new ((*fArrayMults)[0]) ObjInteger("DNN_NEBULA_Multiplicity",CurrentMultiplicity);}
+    else                        {new ((*fArrayMults)[0]) ObjInteger("DNN_Multiplicity",CurrentMultiplicity);}
 
     // Log progress:
     EventCounter = EventCounter + 1;

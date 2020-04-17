@@ -1,4 +1,4 @@
-void MakePlots()
+void MakePlots(Bool_t const Combine = kFALSE)
 {
     // Connect to InputsFile:
     R3BInputClass* Inputs = new R3BInputClass();
@@ -6,16 +6,20 @@ void MakePlots()
     Inputs->LinkFile("../InputFiles/InputsFile.txt");
     Inputs->ReadFile();
     
+    // Retrieve required inputs:
+    Bool_t SimulationData_IsAvailable = Inputs->GetInputBoolian("NeuLAND_TranslateToSignals_Mark_TruePrimarySignals");
+    Bool_t UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
+    TString ThisDetector = "NeuLAND";
+    if ((Combine==kTRUE)&&(UseNEBULA==kTRUE)) {ThisDetector = "Combined";}
+    
     // Next, Generate the Plots-Class:
     R3B_DNN_Plots* ThePlots = new R3B_DNN_Plots();
+    ThePlots->SetDetector(ThisDetector);
     ThePlots->DisableErrorPrinting();
     ThePlots->LinkInputClass(Inputs);
     ThePlots->CheckFiles();
     ThePlots->SetScaleFactor(4.0);
     ThePlots->SetOutputPath(Inputs->GetInputString("TheOutputPath"));
-    
-    // Retrieve required inputs:
-    Bool_t SimulationData_IsAvailable = Inputs->GetInputBoolian("NeuLAND_TranslateToSignals_Mark_TruePrimarySignals");
     
     // Then, create the plots that we want:
     ThePlots->Exclude_MC_Spectrum();

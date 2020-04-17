@@ -20,6 +20,8 @@ R3BNEBULAScoreCollector::R3BNEBULAScoreCollector() : FairTask("R3BNEBULAScoreCol
     MaxMultiplicity = 1;
     UseNEBULA = kFALSE;
     SimulationData_IsAvailable = kTRUE;
+    Calibration = 0;
+    Calibration_Total = 0;
     
     // Create the auxillary classes:
     Inputs = 0;
@@ -41,6 +43,8 @@ R3BNEBULAScoreCollector::~R3BNEBULAScoreCollector()
     // Delete other classes:
     delete TheNuclei;
     delete TheScorers;
+    delete Calibration;
+    delete Calibration_Total;
 }
 
 // FairTask initialization function:
@@ -114,6 +118,22 @@ InitStatus R3BNEBULAScoreCollector::Init()
     TheScorers->LinkInputsClass(Inputs);
     Bool_t ScoreTest = TheScorers->Initialize();
     
+    // Also initialize the calibration histograms:
+    Double_t EBeamPerN = Inputs->GetAvgBeamEnergyPerNucleon();
+    Double_t Eboundary = EBeamPerN*((Int_t) MaxMultiplicity);
+    Int_t Ebins = (Int_t) (Eboundary/10.0);
+    Int_t ClusBins = MaxMultiplicity*9;
+    TString st = "";
+    TString kstr = "";
+    Calibration = new TH2D*[MaxMultiplicity+1];
+    Calibration_Total = new TH2D("TDR_NEBULA_Multiplicity_Calibration_Total","TDR_NEBULA_Multiplicity_Calibration_Total",Ebins*10,0.0,Eboundary,ClusBins+1,0.0,((Int_t) (ClusBins+1)));
+    
+    for (Int_t k = 0; k<(MaxMultiplicity+1); ++k)
+    {
+        kstr = st.Itoa(k,10);
+        Calibration[k] = new TH2D("TDR_NEBULA_Multiplicity_Calibration_"+kstr,"TDR_NEBULA_Multiplicity_Calibration_"+kstr,Ebins*10,0.0,Eboundary,ClusBins+1,0.0,((Int_t) (ClusBins+1)));
+    }
+    
     // Check for errors:
     if (Inputs->ContainsNoErrors()==kFALSE) {Inputs->PrintAllErrors(); return kFATAL;}
     if (TheScorers->ContainsNoErrors()==kFALSE) {TheScorers->PrintAllErrors(); return kFATAL;}
@@ -172,6 +192,12 @@ void R3BNEBULAScoreCollector::Exec(Option_t *option)
         TheScorers->UpdateClusterScorers(ThisCluster);
     }
     
+    // Fill calibration histograms:
+    if (DetectedMultiplicity<0) {DetectedMultiplicity = 0;}
+    if (DetectedMultiplicity>MaxMultiplicity) {DetectedMultiplicity = MaxMultiplicity;}
+    Calibration[DetectedMultiplicity]->Fill(Total_Energy,(Int_t) nClusters);
+    Calibration_Total->Fill(Total_Energy,(Int_t) nClusters);
+    
     // Then, log the progress:
     EventCounter = EventCounter + 1;
     if (EventCounter%1000==0) {cout << "R3BNEBULAScoreCollector Log: We processed " << EventCounter << " events.\n";}
@@ -180,8 +206,18 @@ void R3BNEBULAScoreCollector::Exec(Option_t *option)
 // Definition of Finish-function:
 void R3BNEBULAScoreCollector::Finish()
 {   
-    // Select OutputFile:
+    // Write histograms:
     TheOutputFile->cd();
+    TString st = "";
+    TString kstr = "";
+    
+    for (Int_t k = 0; k<(MaxMultiplicity+1); ++k) 
+    {
+        kstr = st.Itoa(k,10); 
+        Calibration[k]->Write("TDR_NEBULA_Calibration_"+kstr,2);
+    }
+    
+    Calibration_Total->Write("TDR_NEBULA_Calibration_Total",2);
     
     // Write the obtained scorers to their respective output file:
     TheScorers->WriteScorers();

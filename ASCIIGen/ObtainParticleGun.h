@@ -97,8 +97,8 @@ void R3BASCIIFileGenerator::ObtainParticleGun()
         // Check that this nucleus indeed exists in the database:
         if (ParticleGun_TotalMass<0.0)
         {
-            ErrorMessage("The particle <"+ParticleGun_ParticleType+"> was not added to the Database in R3BRoot/NeuLAND_DNN/Masses/NuclearData/");
-            ErrorMessage("The particle <"+ParticleGun_ParticleType+"> was not added to the BuildDatabase()-function in R3BRoot/NeuLAND_DNN/Masses/");
+            ErrorMessage("The particle <"+ParticleGun_ParticleType+"> was not added to the Database in R3BRoot/DNN/Masses/NuclearData/");
+            ErrorMessage("The particle <"+ParticleGun_ParticleType+"> was not added to the BuildDatabase()-function in R3BRoot/DNN/Masses/");
             ParticleGun_PDGCode = 22;
             ParticleGun_TotalMass = 0.0;
         }

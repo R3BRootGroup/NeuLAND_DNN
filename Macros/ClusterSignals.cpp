@@ -35,6 +35,7 @@ void ClusterSignals(Int_t const TotalNumberOfThreads = 1, Int_t const CurrentThr
     TString FinalFile = TheOutputPath + Inputs->GetInputString("NeuLAND_Reconstruction_FinalFile");
     TString BetaFile = TheOutputPath + Inputs->GetInputString("BetaReconstruction_OutputFile");
     TString SingleFile = TheOutputPath + Inputs->GetInputString("SingleReconstruction_OutputFile");
+    TString CombiFile = TheOutputPath + Inputs->GetInputString("NEBULA_Combination_OutputFile");
     Int_t nEvents = Inputs->GetInputInteger("R3BRoot_nEvents");
     
     // Retrieve extra inputs:
@@ -118,6 +119,7 @@ void ClusterSignals(Int_t const TotalNumberOfThreads = 1, Int_t const CurrentThr
                 ClusterFinderNEB[k]->SetTag(OutputNameTag);
                 ClusterFinderNEB[k]->LinkInputClass(Inputs);
                 ClusterFinderNEB[k]->SetNevents(nEvents);
+                ClusterFinderNEB[k]->SetMT(TotalNumberOfThreads,CurrentThread);
                 ClusterFinderNEB[k]->SetDetector("NEBULA");
                 run->AddTask(ClusterFinderNEB[k]);
             }

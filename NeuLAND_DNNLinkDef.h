@@ -45,6 +45,7 @@
 #pragma link C++ class R3BRecoTranslator+;
 #pragma link C++ class R3BBetaReconstructor+;
 #pragma link C++ class R3BSingleReconstructor+;
+#pragma link C++ class R3BNEBULACombiner+;
 #pragma link C++ class R3BMultReader+;
 #pragma link C++ class R3BMultMatrix+;
 #pragma link C++ class R3BPhysList+;

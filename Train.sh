@@ -14,11 +14,13 @@ cd ../
 cd ./Macros/
 root -l -q GenerateOutputPath.cpp
 root -l -q GenerateMaxMultiplicity.cpp
+root -l -q GenerateUseNEBULA.cpp
 cd ../
 
 # And read it into bash:
 read TheOutputPath < ./InputFiles/OutputPath.txt
 read MaxMultiplicity < ./InputFiles/MaxMultiplicity.txt
+read NEBULAFLAG < ./InputFiles/NEBULA_Presence.txt
 
 # Add the Training:
 TrainingOutputPath="${TheOutputPath}/DNN_Training/"
@@ -98,12 +100,28 @@ else
     cd ../Macros
     root -l -q "NeuLAND_ScoreCollection.cpp($1,-1)"
     
-    # Then, run the translation of clusters in MT mode:
+    # Then, merge the detection efficiency files:
     cd ../MT
-    ./MTClusterTranslation.sh $1 'Train'
-    wait
+    root -l -q "MergeDetectionEffFile.cpp($1,kFALSE)"
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    root -l -q "MergeDetectionEffFile.cpp($1,kTRUE)"
+    fi
+    cd ../Macros
+    
+    # Then, run the translation of clusters in MT mode if possible:
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+        root -l -q "TranslateClusters.cpp(1,0,kFALSE)"
+    else
+        cd ../MT
+        ./MTClusterTranslation.sh $1 'Train'
+        wait
+        cd ../Macros
+    fi
     
     # Then, merge he outcome as well:
+    cd ../MT
     root -l -q "MergeFiles.cpp($1,4)"
     root -l -q "MergeHists.cpp($1,4)"
     
@@ -130,12 +148,25 @@ fi
 python ./DefineNetwork.py 0
 python ./TrainNetwork.py 0
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+python ./DefineNEBULANetwork.py 0
+python ./TrainNEBULANetwork.py 0
+fi
+
 for ((nMult=0; nMult<${MaxMultiplicity}; ++nMult))
 do
     ThisMult=`expr ${nMult} + 1`
     
     python ./DefineNetwork.py ${ThisMult}
     python ./TrainNetwork.py ${ThisMult}
+        
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    python ./DefineNEBULANetwork.py ${ThisMult}
+    python ./TrainNEBULANetwork.py ${ThisMult}
+    fi
+    
 done
 
 cd ../../

@@ -189,9 +189,19 @@ void R3BTextFileGenerator::IO_FillFunction_ElenaHoemann()
             
                     if (Include_Multiplicity_MisAligned_Events==kFALSE)
                     {
-                        if (DetectedMultiplicity!=GunMultiplicity) 
+                        if (DetectedMultiplicity!=GunMultiplicity)
                         {
-                            FillCheck = kFALSE;
+                            if (ThisDetector=="NEBULA")
+                            {
+                                if (DetectedMultiplicity>0)
+                                {
+                                    FillCheck = kFALSE;
+                                }
+                            }
+                            else
+                            {
+                                FillCheck = kFALSE;
+                            }
                         
                             if (CurrentDigiRun==0)
                             {

@@ -21,6 +21,8 @@ R3BErelSpectrum::R3BErelSpectrum() : FairTask("R3BErelSpectrum")
     BranchName = "TheNeutronTracks";
     
     // Input parameters:
+    ThisDetector = "NeuLAND";
+    UseNEBULA = kFALSE;
     GunType = "NewlyGenerated";
     FileName = "./Output.root";
     BeamType = "neutron";
@@ -85,6 +87,7 @@ InitStatus R3BErelSpectrum::Init()
     }
     
     // Retrieve the required inputs:
+    UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     GunType = Inputs->GetInputString("ParticleGun_ASCII_GunChoice");
     ParticleType_ToBeDetected = Inputs->GetInputString("NeuLAND_ParticleType_ToBeDetected");
     ParticleMass = TheNuclei->GetMass(ParticleType_ToBeDetected,"MeV");
@@ -126,25 +129,37 @@ InitStatus R3BErelSpectrum::Init()
     }
     
     // Obtain R3BSignals:
-    if ((TClonesArray*)ioman->GetObject("Signals") == nullptr)
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA";}
+    if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
+    if ((TClonesArray*)ioman->GetObject(Detector_Prefix+"Signals") == nullptr)
     {
-        cout << "I/O-manager FATAL: R3BErelSpectrum::Init No R3BSignals!\n\n";
+        cout << "I/O-manager FATAL: R3BErelSpectrum::Init No " << Detector_Prefix << " R3BSignals!\n\n";
         return kFATAL;
     }
-    fArraySignals = (TClonesArray*)ioman->GetObject("Signals");
+    fArraySignals = (TClonesArray*)ioman->GetObject(Detector_Prefix+"Signals");
     
     // Obtain the neutron tracks for which a spectrum has to be generated:
-    if ((TClonesArray*)ioman->GetObject(BranchName) == nullptr)
+    Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)&&((BranchName=="Signals")||(BranchName=="Clusters"))) {Detector_Prefix = "NEBULA";}
+    if (BranchName=="MCNeutronTracks") {Detector_Prefix = "";}
+    
+    if ((TClonesArray*)ioman->GetObject((Detector_Prefix+BranchName).Data()) == nullptr)
     {
-        cout << "I/O-manager FATAL: R3BErelSpectrum::Init No <" << BranchName << "!\n\n";
+        cout << "I/O-manager FATAL: R3BErelSpectrum::Init No <" << Detector_Prefix+BranchName << "!\n\n";
         return kFATAL;
     }
-    fArrayLorentzTracks = (TClonesArray*)ioman->GetObject(BranchName);
+    fArrayLorentzTracks = (TClonesArray*)ioman->GetObject((Detector_Prefix+BranchName).Data());
         
     // Create Histograms to store the relative energy spectra in:
     TString st = "";
     TString kstr = "";
     TString HistName = "";
+    Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA";}
+    if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
     
     ErelSpectrum_GunMultiplicity = new TH1D*[MaxMultiplicity+1];
     ErelSpectrum_DetectedMultiplicity = new TH1D*[MaxMultiplicity+1];
@@ -160,17 +175,17 @@ InitStatus R3BErelSpectrum::Init()
     {
         kstr = st.Itoa(k,10);
         
-        HistName = BranchName + "_Erel_Spectrum_GunMult_n=" + kstr;
+        HistName = Detector_Prefix + BranchName + "_Erel_Spectrum_GunMult_n=" + kstr;
         ErelSpectrum_GunMultiplicity[k] = new TH1D(HistName,HistName,NbinsSpectrum,0.0,EmaxSpectrum);
         GunCounters[k] = 0;
         GunCounters_Limited[k] = 0;
         
-        HistName = BranchName + "_Erel_Spectrum_DetMult_n=" + kstr;
+        HistName = Detector_Prefix + BranchName + "_Erel_Spectrum_DetMult_n=" + kstr;
         ErelSpectrum_DetectedMultiplicity[k] = new TH1D(HistName,HistName,NbinsSpectrum,0.0,EmaxSpectrum);
         DetCounters[k] = 0;
         DetCounters_Limited[k] = 0;
         
-        HistName = BranchName + "_Erel_Spectrum_ExpMult_n=" + kstr;
+        HistName = Detector_Prefix + BranchName + "_Erel_Spectrum_ExpMult_n=" + kstr;
         ErelSpectrum_ExpMultiplicity[k] = new TH1D(HistName,HistName,NbinsSpectrum,0.0,EmaxSpectrum);
         ExpCounters[k] = 0;
         ExpCounters_Limited[k] = 0;
@@ -331,7 +346,10 @@ void R3BErelSpectrum::Finish()
     delete f;
     
     // Next, write the Histogram integrals to a .txt-file:
-    TString TextFileName = OutputPath + "/ErelSpectrum_Integrals.txt";
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
+    TString TextFileName = OutputPath + "/" + Detector_Prefix + "ErelSpectrum_Integrals.txt";
     
     ifstream Test;
     Test.open(TextFileName.Data());

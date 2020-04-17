@@ -57,6 +57,12 @@ void R3BNeuLANDTranslator::CreateControlHistograms()
     AllTimes = new TH1D("AllTimes"+OutputNameTag,"AllTimes"+OutputNameTag,1000,0.0,2.0*TravelTime);
     PrimTimes = new TH1D("PrimTimes"+OutputNameTag,"PrimTimes"+OutputNameTag,1000,0.0,2.0*TravelTime);
     
+    if (UseNEBULA==kTRUE)
+    {
+        AllTimes_NEBULA = new TH1D("AllTimes_NEBULA"+OutputNameTag,"AllTimes_NEBULA"+OutputNameTag,1000,0.0,3.0*TravelTime);
+        PrimTimes_NEBULA = new TH1D("PrimTimes_NEBULA"+OutputNameTag,"PrimTimes_NEBULA"+OutputNameTag,1000,0.0,3.0*TravelTime);
+    }
+    
     if (DistanceCheck==kTRUE)
     {
         Double_t MaxLength = NeuLAND_Total_Bar_Length;
@@ -96,6 +102,18 @@ void R3BNeuLANDTranslator::FillControlHistograms()
         ThisSignal = (R3BSignal*) fArraySignals->At(k);
         AllTimes->Fill(ThisSignal->GetTime());
         if (ThisSignal->IsPrimarySim()==kTRUE) {PrimTimes->Fill(ThisSignal->GetTime());}
+    }
+    
+    if (UseNEBULA==kTRUE)
+    {
+        nSignals = fArrayNEBULASignals->GetEntries();
+    
+        for (Int_t k = 0; k<nSignals; ++k)
+        {
+            ThisSignal = (R3BSignal*) fArrayNEBULASignals->At(k);
+            AllTimes_NEBULA->Fill(ThisSignal->GetTime());
+            if (ThisSignal->IsPrimarySim()==kTRUE) {PrimTimes_NEBULA->Fill(ThisSignal->GetTime());}
+        }
     }
 }
 

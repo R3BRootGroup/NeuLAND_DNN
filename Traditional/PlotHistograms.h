@@ -29,7 +29,15 @@ void R3BTradMethClass::PlotHistograms()
         for (Int_t k = 0; k<Nplots; ++k)
         {
             kstr = st.Itoa(k,10);
-            Titles[k] = "Multiplicity Histogram n="+kstr;
+            if (ThisDetector=="NEBULA")
+            {
+                Titles[k] = "NEBULA Multiplicity Histogram n="+kstr;
+            }
+            else
+            {
+                Titles[k] = "Multiplicity Histogram n="+kstr;
+            }
+            
         }
         
         // Then, determine the overall scale of the plots:
@@ -114,7 +122,14 @@ void R3BTradMethClass::PlotHistograms()
         
         // Save & close the picture:
         TString PATH = Inputs->GetInputString("TheOutputPath");
-        PATH = PATH + "TraditionalMethod.png";
+        if (ThisDetector=="NEBULA")
+        {
+            PATH = PATH + "NEBULA_TraditionalMethod.png";
+        }
+        else
+        {
+            PATH = PATH + "TraditionalMethod.png";
+        }
         TheCanvas->SaveAs(PATH);
         TheCanvas->Close();
         

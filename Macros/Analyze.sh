@@ -10,11 +10,12 @@ root -l -q "GetMultMatrices.cpp($1)"
 root -l -q "TradMed_Apply.cpp($1)"
 root -l -q "NeuLAND_ScoreApplication.cpp($1)"
 root -l -q "NeuLAND_DNNScoreApplication.cpp($1)"
+root -l -q "CombineReconstructions.cpp($1)"
 root -l -q "ConvertReconstruction.cpp($1)"
 root -l -q "NeuLAND_DetectionRate.cpp($1)"
-root -l -q "ErelSpectra.cpp($1)"
+root -l -q "ErelSpectra.cpp($1,kTRUE)"
 root -l -q "PhysListPlots.cpp($1)"
-root -l -q MakePlots.cpp
+root -l -q "MakePlots.cpp(kTRUE)"
 else
 echo '### FATAL: You should supply a positive integer as input to this script!'
 fi

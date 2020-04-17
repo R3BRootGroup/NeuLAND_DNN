@@ -9,10 +9,8 @@ R3BRecoTranslator::R3BRecoTranslator() : FairTask("R3BRecoTranslator")
     fVerbose = 1;
 
     // Inputs:
-    fArraySignals = new TClonesArray("R3BSignal");       
-    fArrayNEBULASignals = new TClonesArray("R3BSignal");       
-    fArrayClusters = new TClonesArray("R3BSignalCluster");
-    fArrayNEBULAClusters = new TClonesArray("R3BSignalCluster");      
+    fArraySignals = new TClonesArray("R3BSignal");           
+    fArrayClusters = new TClonesArray("R3BSignalCluster");     
     
     // Primary hit classes:
     fArrayPrimSignals_TradMed_Clusters_CutsMult = new TClonesArray("R3BSignal");
@@ -27,12 +25,8 @@ R3BRecoTranslator::R3BRecoTranslator() : FairTask("R3BRecoTranslator")
     fArrayPrimSignals_DNNScoringPlus = new TClonesArray("R3BSignal");
     fArrayPrimSignals_DNNScoringPlus_SingleTOF = new TClonesArray("R3BSignal");
     fArrayPrimSignals_DNNScoringPlus_Max = new TClonesArray("R3BSignal");
-    fArrayPrimSignals_BetaReconstruction_NeuLAND = new TClonesArray("R3BSignal");
-    fArrayPrimSignals_BetaReconstruction_NEBULA = new TClonesArray("R3BSignal");
-    fArrayPrimSignals_BetaReconstruction_Combined = new TClonesArray("R3BSignal");
-    fArrayPrimSignals_SingleReconstruction_NeuLAND = new TClonesArray("R3BSignal");
-    fArrayPrimSignals_SingleReconstruction_NEBULA = new TClonesArray("R3BSignal");
-    fArrayPrimSignals_SingleReconstruction_Combined = new TClonesArray("R3BSignal");
+    fArrayPrimSignals_BetaReconstruction = new TClonesArray("R3BSignal");
+    fArrayPrimSignals_SingleReconstruction = new TClonesArray("R3BSignal");
     
     // Neutron track classes:
     fRecoNeutronTracks_TradMed_Clusters_CutsMult = new TClonesArray("TLorentzVector");
@@ -47,12 +41,8 @@ R3BRecoTranslator::R3BRecoTranslator() : FairTask("R3BRecoTranslator")
     fRecoNeutronTracks_DNNScoringPlus = new TClonesArray("TLorentzVector");
     fRecoNeutronTracks_DNNScoringPlus_SingleTOF = new TClonesArray("TLorentzVector");
     fRecoNeutronTracks_DNNScoringPlus_Max = new TClonesArray("TLorentzVector");
-    fRecoNeutronTracks_BetaReconstruction_NeuLAND = new TClonesArray("TLorentzVector");
-    fRecoNeutronTracks_BetaReconstruction_NEBULA = new TClonesArray("TLorentzVector");
-    fRecoNeutronTracks_BetaReconstruction_Combined = new TClonesArray("TLorentzVector");
-    fRecoNeutronTracks_SingleReconstruction_NeuLAND = new TClonesArray("TLorentzVector");
-    fRecoNeutronTracks_SingleReconstruction_NEBULA = new TClonesArray("TLorentzVector");
-    fRecoNeutronTracks_SingleReconstruction_Combined = new TClonesArray("TLorentzVector");
+    fRecoNeutronTracks_BetaReconstruction = new TClonesArray("TLorentzVector");
+    fRecoNeutronTracks_SingleReconstruction = new TClonesArray("TLorentzVector");
     
     // Other outputs:
     fPerfectNeutronTracks_Signals = new TClonesArray("TLorentzVector");
@@ -67,6 +57,7 @@ R3BRecoTranslator::R3BRecoTranslator() : FairTask("R3BRecoTranslator")
     nEvents = 0;             
     
     // Input parameters:
+    ThisDetector = "NeuLAND";
     UseNEBULA = kFALSE;
     ceff = 14.0;             
     EffMatrix_nMaxHits = 1;
@@ -96,12 +87,8 @@ R3BRecoTranslator::R3BRecoTranslator() : FairTask("R3BRecoTranslator")
     EffMatrix_DNNScoringPlus = 0;
     EffMatrix_DNNScoringPlus_SingleTOF = 0;
     EffMatrix_DNNScoringPlus_Max = 0;
-    EffMatrix_BetaReconstruction_NeuLAND = 0;
-    EffMatrix_BetaReconstruction_NEBULA = 0;
-    EffMatrix_BetaReconstruction_Combined = 0;
-    EffMatrix_SingleReconstruction_NeuLAND = 0;
-    EffMatrix_SingleReconstruction_NEBULA = 0;
-    EffMatrix_SingleReconstruction_Combined = 0;
+    EffMatrix_BetaReconstruction = 0;
+    EffMatrix_SingleReconstruction = 0;
          
     // Auxillary classes:
     Inputs = 0;
@@ -117,8 +104,6 @@ R3BRecoTranslator::~R3BRecoTranslator()
     // Delete the arrays:
     if(fArraySignals) {fArraySignals->Clear(); delete fArraySignals;}
     if(fArrayClusters) {fArrayClusters->Clear(); delete fArrayClusters;}
-    if(fArrayNEBULAClusters) {fArrayNEBULAClusters->Clear(); delete fArrayNEBULAClusters;}
-    if(fArrayNEBULASignals) {fArrayNEBULASignals->Clear(); delete fArrayNEBULASignals;}
     
     // Primary hit classes:
     if(fArrayPrimSignals_TradMed_Clusters_CutsMult) {fArrayPrimSignals_TradMed_Clusters_CutsMult->Clear(); delete fArrayPrimSignals_TradMed_Clusters_CutsMult;}
@@ -133,12 +118,8 @@ R3BRecoTranslator::~R3BRecoTranslator()
     if(fArrayPrimSignals_DNNScoringPlus) {fArrayPrimSignals_DNNScoringPlus->Clear(); delete fArrayPrimSignals_DNNScoringPlus;}
     if(fArrayPrimSignals_DNNScoringPlus_SingleTOF) {fArrayPrimSignals_DNNScoringPlus_SingleTOF->Clear(); delete fArrayPrimSignals_DNNScoringPlus_SingleTOF;}
     if(fArrayPrimSignals_DNNScoringPlus_Max) {fArrayPrimSignals_DNNScoringPlus_Max->Clear(); delete fArrayPrimSignals_DNNScoringPlus_Max;}
-    if(fArrayPrimSignals_BetaReconstruction_NeuLAND) {fArrayPrimSignals_BetaReconstruction_NeuLAND->Clear(); delete fArrayPrimSignals_BetaReconstruction_NeuLAND;}
-    if(fArrayPrimSignals_BetaReconstruction_NEBULA) {fArrayPrimSignals_BetaReconstruction_NEBULA->Clear(); delete fArrayPrimSignals_BetaReconstruction_NEBULA;}
-    if(fArrayPrimSignals_BetaReconstruction_Combined) {fArrayPrimSignals_BetaReconstruction_Combined->Clear(); delete fArrayPrimSignals_BetaReconstruction_Combined;}
-    if(fArrayPrimSignals_SingleReconstruction_NeuLAND) {fArrayPrimSignals_SingleReconstruction_NeuLAND->Clear(); delete fArrayPrimSignals_SingleReconstruction_NeuLAND;}
-    if(fArrayPrimSignals_SingleReconstruction_NEBULA) {fArrayPrimSignals_SingleReconstruction_NEBULA->Clear(); delete fArrayPrimSignals_SingleReconstruction_NEBULA;}
-    if(fArrayPrimSignals_SingleReconstruction_Combined) {fArrayPrimSignals_SingleReconstruction_Combined->Clear(); delete fArrayPrimSignals_SingleReconstruction_Combined;}
+    if(fArrayPrimSignals_BetaReconstruction) {fArrayPrimSignals_BetaReconstruction->Clear(); delete fArrayPrimSignals_BetaReconstruction;}
+    if(fArrayPrimSignals_SingleReconstruction) {fArrayPrimSignals_SingleReconstruction->Clear(); delete fArrayPrimSignals_SingleReconstruction;}
     
     // Neutron track classes:
     if(fRecoNeutronTracks_TradMed_Clusters_CutsMult) {fRecoNeutronTracks_TradMed_Clusters_CutsMult->Clear(); delete fRecoNeutronTracks_TradMed_Clusters_CutsMult;}
@@ -153,12 +134,8 @@ R3BRecoTranslator::~R3BRecoTranslator()
     if(fRecoNeutronTracks_DNNScoringPlus) {fRecoNeutronTracks_DNNScoringPlus->Clear(); delete fRecoNeutronTracks_DNNScoringPlus;}
     if(fRecoNeutronTracks_DNNScoringPlus_SingleTOF) {fRecoNeutronTracks_DNNScoringPlus_SingleTOF->Clear(); delete fRecoNeutronTracks_DNNScoringPlus_SingleTOF;}
     if(fRecoNeutronTracks_DNNScoringPlus_Max) {fRecoNeutronTracks_DNNScoringPlus_Max->Clear(); delete fRecoNeutronTracks_DNNScoringPlus_Max;}
-    if(fRecoNeutronTracks_BetaReconstruction_NeuLAND) {fRecoNeutronTracks_BetaReconstruction_NeuLAND->Clear(); delete fRecoNeutronTracks_BetaReconstruction_NeuLAND;}
-    if(fRecoNeutronTracks_BetaReconstruction_NEBULA) {fRecoNeutronTracks_BetaReconstruction_NEBULA->Clear(); delete fRecoNeutronTracks_BetaReconstruction_NEBULA;}
-    if(fRecoNeutronTracks_BetaReconstruction_Combined) {fRecoNeutronTracks_BetaReconstruction_Combined->Clear(); delete fRecoNeutronTracks_BetaReconstruction_Combined;}
-    if(fRecoNeutronTracks_SingleReconstruction_NeuLAND) {fRecoNeutronTracks_SingleReconstruction_NeuLAND->Clear(); delete fRecoNeutronTracks_SingleReconstruction_NeuLAND;}
-    if(fRecoNeutronTracks_SingleReconstruction_NEBULA) {fRecoNeutronTracks_SingleReconstruction_NEBULA->Clear(); delete fRecoNeutronTracks_SingleReconstruction_NEBULA;}
-    if(fRecoNeutronTracks_SingleReconstruction_Combined) {fRecoNeutronTracks_SingleReconstruction_Combined->Clear(); delete fRecoNeutronTracks_SingleReconstruction_Combined;}
+    if(fRecoNeutronTracks_BetaReconstruction) {fRecoNeutronTracks_BetaReconstruction->Clear(); delete fRecoNeutronTracks_BetaReconstruction;}
+    if(fRecoNeutronTracks_SingleReconstruction) {fRecoNeutronTracks_SingleReconstruction->Clear(); delete fRecoNeutronTracks_SingleReconstruction;}
     
     // Other outputs:
     if(fPerfectNeutronTracks_Signals) {fPerfectNeutronTracks_Signals->Clear(); delete fPerfectNeutronTracks_Signals;}
@@ -181,12 +158,8 @@ R3BRecoTranslator::~R3BRecoTranslator()
     delete EffMatrix_DNNScoringPlus;
     delete EffMatrix_DNNScoringPlus_SingleTOF;
     delete EffMatrix_DNNScoringPlus_Max;
-    delete EffMatrix_BetaReconstruction_NeuLAND;
-    delete EffMatrix_BetaReconstruction_NEBULA;
-    delete EffMatrix_BetaReconstruction_Combined;
-    delete EffMatrix_SingleReconstruction_NeuLAND;
-    delete EffMatrix_SingleReconstruction_NEBULA;
-    delete EffMatrix_SingleReconstruction_Combined;
+    delete EffMatrix_BetaReconstruction;
+    delete EffMatrix_SingleReconstruction;
     
     // Delete other objects:
     delete TheNuclei;
@@ -250,49 +223,35 @@ InitStatus R3BRecoTranslator::Init()
     IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_DNNScoringPlus,"PrimaryHits_DNNScoringPlus"); if (IniTest==kFALSE) {return kFATAL;}
     IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_DNNScoringPlus_SingleTOF,"PrimaryHits_DNNScoringPlus_SingleTOF"); if (IniTest==kFALSE) {return kFATAL;}
     IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_DNNScoringPlus_Max,"PrimaryHits_DNNScoringPlus_Max"); if (IniTest==kFALSE) {return kFATAL;}
-    IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_BetaReconstruction_NeuLAND,"BetaReconstructed_PrimHits_NeuLAND"); if (IniTest==kFALSE) {return kFATAL;}
-    IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_SingleReconstruction_NeuLAND,"SingleReconstructed_PrimHits_NeuLAND"); if (IniTest==kFALSE) {return kFATAL;}
-    
-    if (UseNEBULA==kTRUE)
-    {
-        IniTest = InitializeInputClonesArray(ioman,fArrayNEBULASignals,"NEBULASignals"); if (IniTest==kFALSE) {return kFATAL;}
-        IniTest = InitializeInputClonesArray(ioman,fArrayNEBULAClusters,"NEBULAClusters"); if (IniTest==kFALSE) {return kFATAL;}
-        IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_BetaReconstruction_NEBULA,"BetaReconstructed_PrimHits_NEBULA"); if (IniTest==kFALSE) {return kFATAL;}
-        IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_BetaReconstruction_Combined,"BetaReconstructed_PrimHits_Combined"); if (IniTest==kFALSE) {return kFATAL;}
-        IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_SingleReconstruction_NEBULA,"SingleReconstructed_PrimHits_NEBULA"); if (IniTest==kFALSE) {return kFATAL;}
-        IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_SingleReconstruction_Combined,"SingleReconstructed_PrimHits_Combined"); if (IniTest==kFALSE) {return kFATAL;}
-    }
+    IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_BetaReconstruction,"BetaReconstructed_PrimHits"); if (IniTest==kFALSE) {return kFATAL;}
+    IniTest = InitializeInputClonesArray(ioman,fArrayPrimSignals_SingleReconstruction,"SingleReconstructed_PrimHits"); if (IniTest==kFALSE) {return kFATAL;}
     
     // Register all output arrays:
-    ioman->Register("NeutronTracks_TradMed_Clusters_CutsMult","TLorenzVector",fRecoNeutronTracks_TradMed_Clusters_CutsMult,kTRUE);
-    ioman->Register("NeutronTracks_TradMed_Clusters_DNNMult","TLorenzVector",fRecoNeutronTracks_TradMed_Clusters_DNNMult,kTRUE);
-    ioman->Register("NeutronTracks_TradMed_Clusters_PerfectMult","TLorenzVector",fRecoNeutronTracks_TradMed_Clusters_PerfectMult,kTRUE);
-    ioman->Register("NeutronTracks_ScoringPlus_Signals_CutsMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Signals_CutsMult,kTRUE);
-    ioman->Register("NeutronTracks_ScoringPlus_Signals_DNNMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Signals_DNNMult,kTRUE);
-    ioman->Register("NeutronTracks_ScoringPlus_Signals_PerfectMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Signals_PerfectMult,kTRUE);
-    ioman->Register("NeutronTracks_ScoringPlus_Clusters_CutsMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Clusters_CutsMult,kTRUE);
-    ioman->Register("NeutronTracks_ScoringPlus_Clusters_DNNMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Clusters_DNNMult,kTRUE);
-    ioman->Register("NeutronTracks_ScoringPlus_Clusters_PerfectMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Clusters_PerfectMult,kTRUE);
-    ioman->Register("NeutronTracks_DNNScoringPlus","TLorenzVector",fRecoNeutronTracks_DNNScoringPlus,kTRUE);
-    ioman->Register("NeutronTracks_DNNScoringPlus_SingleTOF","TLorenzVector",fRecoNeutronTracks_DNNScoringPlus_SingleTOF,kTRUE);
-    ioman->Register("NeutronTracks_DNNScoringPlus_Max","TLorenzVector",fRecoNeutronTracks_DNNScoringPlus_Max,kTRUE);
-    ioman->Register("NeutronTracks_BetaReconstruction_NeuLAND","TLorenzVector",fRecoNeutronTracks_BetaReconstruction_NeuLAND,kTRUE);
-    ioman->Register("NeutronTracks_SingleReconstruction_NeuLAND","TLorenzVector",fRecoNeutronTracks_SingleReconstruction_NeuLAND,kTRUE);
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
+    ioman->Register(Detector_Prefix+"NeutronTracks_TradMed_Clusters_CutsMult","TLorenzVector",fRecoNeutronTracks_TradMed_Clusters_CutsMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_TradMed_Clusters_DNNMult","TLorenzVector",fRecoNeutronTracks_TradMed_Clusters_DNNMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_TradMed_Clusters_PerfectMult","TLorenzVector",fRecoNeutronTracks_TradMed_Clusters_PerfectMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_ScoringPlus_Signals_CutsMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Signals_CutsMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_ScoringPlus_Signals_DNNMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Signals_DNNMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_ScoringPlus_Signals_PerfectMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Signals_PerfectMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_ScoringPlus_Clusters_CutsMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Clusters_CutsMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_ScoringPlus_Clusters_DNNMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Clusters_DNNMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_ScoringPlus_Clusters_PerfectMult","TLorenzVector",fRecoNeutronTracks_ScoringPlus_Clusters_PerfectMult,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_DNNScoringPlus","TLorenzVector",fRecoNeutronTracks_DNNScoringPlus,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_DNNScoringPlus_SingleTOF","TLorenzVector",fRecoNeutronTracks_DNNScoringPlus_SingleTOF,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_DNNScoringPlus_Max","TLorenzVector",fRecoNeutronTracks_DNNScoringPlus_Max,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_BetaReconstruction","TLorenzVector",fRecoNeutronTracks_BetaReconstruction,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_SingleReconstruction","TLorenzVector",fRecoNeutronTracks_SingleReconstruction,kTRUE);
     
-    if (UseNEBULA==kTRUE)
-    {
-        ioman->Register("NeutronTracks_BetaReconstruction_NEBULA","TLorenzVector",fRecoNeutronTracks_BetaReconstruction_NEBULA,kTRUE);
-        ioman->Register("NeutronTracks_BetaReconstruction_Combined","TLorenzVector",fRecoNeutronTracks_BetaReconstruction_Combined,kTRUE);
-        ioman->Register("NeutronTracks_SingleReconstruction_NEBULA","TLorenzVector",fRecoNeutronTracks_SingleReconstruction_NEBULA,kTRUE);
-        ioman->Register("NeutronTracks_SingleReconstruction_Combined","TLorenzVector",fRecoNeutronTracks_SingleReconstruction_Combined,kTRUE);
-    }
-    
-    ioman->Register("NeutronTracks_PerfectMethod_Signals","TLorenzVector",fPerfectNeutronTracks_Signals,kTRUE);
-    ioman->Register("NeutronTracks_PerfectMethod_Clusters","TLorenzVector",fPerfectNeutronTracks_Clusters,kTRUE);
-    ioman->Register("AllSignals","R3BSignal",AllSignals,kTRUE);
-    ioman->Register("ClusterHeads","R3BSignal",ClusterHeads,kTRUE);
-    ioman->Register("TheNeutronHits","R3BSignal",TheNeutronHits,kTRUE);
-    ioman->Register("TheNeutronTracks","TLorenzVector",TheNeutronTracks,kTRUE);
+    // Register reference outputs:
+    ioman->Register(Detector_Prefix+"NeutronTracks_PerfectMethod_Signals","TLorenzVector",fPerfectNeutronTracks_Signals,kTRUE);
+    ioman->Register(Detector_Prefix+"NeutronTracks_PerfectMethod_Clusters","TLorenzVector",fPerfectNeutronTracks_Clusters,kTRUE);
+    ioman->Register(Detector_Prefix+"AllSignals","R3BSignal",AllSignals,kTRUE);
+    ioman->Register(Detector_Prefix+"ClusterHeads","R3BSignal",ClusterHeads,kTRUE);
+    ioman->Register(Detector_Prefix+"TheNeutronHits","R3BSignal",TheNeutronHits,kTRUE);
+    ioman->Register(Detector_Prefix+"TheNeutronTracks","TLorenzVector",TheNeutronTracks,kTRUE);
     
     // Initialize efficiency matrices:
     InitializeEffMatrix(EffMatrix_TradMed_Clusters_CutsMult);
@@ -307,14 +266,12 @@ InitStatus R3BRecoTranslator::Init()
     InitializeEffMatrix(EffMatrix_DNNScoringPlus);
     InitializeEffMatrix(EffMatrix_DNNScoringPlus_SingleTOF);
     InitializeEffMatrix(EffMatrix_DNNScoringPlus_Max);
-    InitializeEffMatrix(EffMatrix_BetaReconstruction_NeuLAND);
-    InitializeEffMatrix(EffMatrix_BetaReconstruction_NEBULA);
-    InitializeEffMatrix(EffMatrix_BetaReconstruction_Combined);
-    InitializeEffMatrix(EffMatrix_SingleReconstruction_NeuLAND);
-    InitializeEffMatrix(EffMatrix_SingleReconstruction_NEBULA);
-    InitializeEffMatrix(EffMatrix_SingleReconstruction_Combined);
+    InitializeEffMatrix(EffMatrix_BetaReconstruction);
+    InitializeEffMatrix(EffMatrix_SingleReconstruction);
     
     // Next, initialize the scoring class:
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {TheScorers->SetDetector("NEBULA");}
+    else                                              {TheScorers->SetDetector("NeuLAND");}
     TheScorers->LinkInputsClass(Inputs);
     Bool_t ScoreTest = TheScorers->Initialize();
 
@@ -331,12 +288,18 @@ InitStatus R3BRecoTranslator::Init()
 
 Bool_t R3BRecoTranslator::InitializeInputClonesArray(FairRootManager* &ioman, TClonesArray* &TheArray, TString const ArrayName)
 {
-    if ((TClonesArray*)ioman->GetObject(ArrayName.Data()) == nullptr)
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)&&(ArrayName=="Signals")) {Detector_Prefix = "NEBULA";}
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)&&(ArrayName=="Clusters")) {Detector_Prefix = "NEBULA";}
+    
+    if ((TClonesArray*)ioman->GetObject((Detector_Prefix+ArrayName).Data()) == nullptr)
     {
-            cout << "I/O-manager FATAL: R3BRecoTranslator::Init() ==> Could not locate <" + ArrayName + ">!\n\n";
+            cout << "I/O-manager FATAL: R3BRecoTranslator::Init() ==> Could not locate <" + Detector_Prefix + ArrayName + ">!\n\n";
             return kFALSE;
     }
-    TheArray = (TClonesArray*) ioman->GetObject(ArrayName.Data());
+    TheArray = (TClonesArray*) ioman->GetObject((Detector_Prefix+ArrayName).Data());
     return kTRUE;
 }
 
@@ -359,8 +322,7 @@ void R3BRecoTranslator::InitializeEffMatrix(Double_t** &EffMatrix)
 void R3BRecoTranslator::Exec(Option_t *option)
 {
     // NOTE: FairTask will automatically load the inputs into the TClonesArrays.
-    Int_t nClusters_NeuLAND = fArrayClusters->GetEntries();
-    Int_t nClusters_NEBULA = fArrayNEBULAClusters->GetEntries();
+    Int_t nClusters = fArrayClusters->GetEntries();
     
     // Reset all output Arrays:
     fRecoNeutronTracks_TradMed_Clusters_CutsMult->Clear();
@@ -375,12 +337,8 @@ void R3BRecoTranslator::Exec(Option_t *option)
     fRecoNeutronTracks_DNNScoringPlus->Clear();
     fRecoNeutronTracks_DNNScoringPlus_SingleTOF->Clear();
     fRecoNeutronTracks_DNNScoringPlus_Max->Clear();
-    fRecoNeutronTracks_BetaReconstruction_NeuLAND->Clear();
-    fRecoNeutronTracks_BetaReconstruction_NEBULA->Clear();
-    fRecoNeutronTracks_BetaReconstruction_Combined->Clear();
-    fRecoNeutronTracks_SingleReconstruction_NeuLAND->Clear();
-    fRecoNeutronTracks_SingleReconstruction_NEBULA->Clear();
-    fRecoNeutronTracks_SingleReconstruction_Combined->Clear();
+    fRecoNeutronTracks_BetaReconstruction->Clear();
+    fRecoNeutronTracks_SingleReconstruction->Clear();
     
     fPerfectNeutronTracks_Signals->Clear();
     fPerfectNeutronTracks_Clusters->Clear();
@@ -390,7 +348,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     TheNeutronTracks->Clear();
     
     // Begin by converting the R3BSignals from the different hits to TLorentVectors:
-    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
     {
         ConvertSignalToTrack(fArrayPrimSignals_TradMed_Clusters_CutsMult,fRecoNeutronTracks_TradMed_Clusters_CutsMult,kFALSE);
         ConvertSignalToTrack(fArrayPrimSignals_TradMed_Clusters_DNNMult,fRecoNeutronTracks_TradMed_Clusters_DNNMult,kFALSE);
@@ -404,67 +362,36 @@ void R3BRecoTranslator::Exec(Option_t *option)
         ConvertSignalToTrack(fArrayPrimSignals_DNNScoringPlus,fRecoNeutronTracks_DNNScoringPlus,kFALSE);
         ConvertSignalToTrack(fArrayPrimSignals_DNNScoringPlus_SingleTOF,fRecoNeutronTracks_DNNScoringPlus_SingleTOF,kFALSE);
         ConvertSignalToTrack(fArrayPrimSignals_DNNScoringPlus_Max,fRecoNeutronTracks_DNNScoringPlus_Max,kFALSE);
-        ConvertSignalToTrack(fArrayPrimSignals_BetaReconstruction_NeuLAND,fRecoNeutronTracks_BetaReconstruction_NeuLAND,kFALSE);
-        ConvertSignalToTrack(fArrayPrimSignals_SingleReconstruction_NeuLAND,fRecoNeutronTracks_SingleReconstruction_NeuLAND,kFALSE);
-    }
-    
-    if (UseNEBULA==kTRUE)
-    {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NEBULA>1)))
-        {
-            ConvertSignalToTrack(fArrayPrimSignals_BetaReconstruction_NEBULA,fRecoNeutronTracks_BetaReconstruction_NEBULA,kFALSE);
-            ConvertSignalToTrack(fArrayPrimSignals_BetaReconstruction_Combined,fRecoNeutronTracks_BetaReconstruction_Combined,kFALSE);
-        }
-        
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&((nClusters_NeuLAND+nClusters_NEBULA)>1)))
-        {
-            ConvertSignalToTrack(fArrayPrimSignals_SingleReconstruction_NEBULA,fRecoNeutronTracks_SingleReconstruction_NEBULA,kFALSE);
-            ConvertSignalToTrack(fArrayPrimSignals_SingleReconstruction_Combined,fRecoNeutronTracks_SingleReconstruction_Combined,kFALSE);
-        }
+        ConvertSignalToTrack(fArrayPrimSignals_BetaReconstruction,fRecoNeutronTracks_BetaReconstruction,kFALSE);
+        ConvertSignalToTrack(fArrayPrimSignals_SingleReconstruction,fRecoNeutronTracks_SingleReconstruction,kFALSE);
     }
     
     // Next, we wish to update the efficiency matrices:
-    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
     {
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_TradMed_Clusters_CutsMult,EffMatrix_TradMed_Clusters_CutsMult,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_TradMed_Clusters_DNNMult,EffMatrix_TradMed_Clusters_DNNMult,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_TradMed_Clusters_PerfectMult,EffMatrix_TradMed_Clusters_PerfectMult,"NeuLAND");
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_TradMed_Clusters_CutsMult,EffMatrix_TradMed_Clusters_CutsMult);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_TradMed_Clusters_DNNMult,EffMatrix_TradMed_Clusters_DNNMult);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_TradMed_Clusters_PerfectMult,EffMatrix_TradMed_Clusters_PerfectMult);
         UpdateEfficiencyMatrixSignals(fArrayPrimSignals_ScoringPlus_Signals_CutsMult,EffMatrix_ScoringPlus_Signals_CutsMult);
         UpdateEfficiencyMatrixSignals(fArrayPrimSignals_ScoringPlus_Signals_DNNMult,EffMatrix_ScoringPlus_Signals_DNNMult);
         UpdateEfficiencyMatrixSignals(fArrayPrimSignals_ScoringPlus_Signals_PerfectMult,EffMatrix_ScoringPlus_Signals_PerfectMult);
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_ScoringPlus_Clusters_CutsMult,EffMatrix_ScoringPlus_Clusters_CutsMult,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_ScoringPlus_Clusters_DNNMult,EffMatrix_ScoringPlus_Clusters_DNNMult,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_ScoringPlus_Clusters_PerfectMult,EffMatrix_ScoringPlus_Clusters_PerfectMult,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_DNNScoringPlus,EffMatrix_DNNScoringPlus,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_DNNScoringPlus_SingleTOF,EffMatrix_DNNScoringPlus_SingleTOF,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_DNNScoringPlus_Max,EffMatrix_DNNScoringPlus_Max,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_BetaReconstruction_NeuLAND,EffMatrix_BetaReconstruction_NeuLAND,"NeuLAND");
-        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_SingleReconstruction_NeuLAND,EffMatrix_SingleReconstruction_NeuLAND,"NeuLAND");
-    }
-    
-    if (UseNEBULA==kTRUE)
-    {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NEBULA>1)))
-        {
-            UpdateEfficiencyMatrixClusters(fArrayPrimSignals_BetaReconstruction_NEBULA,EffMatrix_BetaReconstruction_NEBULA,"NEBULA");
-            UpdateEfficiencyMatrixClusters(fArrayPrimSignals_BetaReconstruction_Combined,EffMatrix_BetaReconstruction_Combined,"Combined");
-        }
-        
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&((nClusters_NeuLAND+nClusters_NEBULA)>1)))
-        {
-            UpdateEfficiencyMatrixClusters(fArrayPrimSignals_SingleReconstruction_NEBULA,EffMatrix_SingleReconstruction_NEBULA,"NEBULA");
-            UpdateEfficiencyMatrixClusters(fArrayPrimSignals_SingleReconstruction_Combined,EffMatrix_SingleReconstruction_Combined,"Combined");
-        }
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_ScoringPlus_Clusters_CutsMult,EffMatrix_ScoringPlus_Clusters_CutsMult);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_ScoringPlus_Clusters_DNNMult,EffMatrix_ScoringPlus_Clusters_DNNMult);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_ScoringPlus_Clusters_PerfectMult,EffMatrix_ScoringPlus_Clusters_PerfectMult);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_DNNScoringPlus,EffMatrix_DNNScoringPlus);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_DNNScoringPlus_SingleTOF,EffMatrix_DNNScoringPlus_SingleTOF);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_DNNScoringPlus_Max,EffMatrix_DNNScoringPlus_Max);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_BetaReconstruction,EffMatrix_BetaReconstruction);
+        UpdateEfficiencyMatrixClusters(fArrayPrimSignals_SingleReconstruction,EffMatrix_SingleReconstruction);
     }
     
     // Then, build the neutron tracks according to a perfect reconstruction:
-    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
     {
         ConvertSignalToTrack(fArraySignals,fPerfectNeutronTracks_Signals,kTRUE);
     }
     
     // Then, find the cluster heads among all clusters in NeuLAND:
-    Int_t nClusters = fArrayClusters->GetEntries();
     Int_t nPrims = 0;
     Int_t ClusterHead_Index = 0;
     R3BSignalCluster* ThisCluster;
@@ -508,7 +435,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     
     // Then, build the neutron tracks from the cluster heads, according to perfect reconstruction:
-    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+    if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
     {
         ConvertSignalToTrack(ClusterHeads,fPerfectNeutronTracks_Clusters,kTRUE);
     }
@@ -516,7 +443,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     // Next, we have to decide which output is the 'official' output.
     if ((Multiplicity_Method=="Cuts")&&(Reconstruction_Method=="Traditional"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_TradMed_Clusters_CutsMult);
             DuplicatePrimaryHits(fArrayPrimSignals_TradMed_Clusters_CutsMult);
@@ -524,7 +451,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="DNN")&&(Reconstruction_Method=="Traditional"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_TradMed_Clusters_DNNMult);
             DuplicatePrimaryHits(fArrayPrimSignals_TradMed_Clusters_DNNMult);
@@ -532,7 +459,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }    
     else if ((Multiplicity_Method=="Perfect")&&(Reconstruction_Method=="Traditional"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_TradMed_Clusters_PerfectMult);
             DuplicatePrimaryHits(fArrayPrimSignals_TradMed_Clusters_PerfectMult);
@@ -540,7 +467,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="Cuts")&&(Reconstruction_Method=="ScoringPlus_Signals"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_ScoringPlus_Signals_CutsMult);
             DuplicatePrimaryHits(fArrayPrimSignals_ScoringPlus_Signals_CutsMult);
@@ -548,7 +475,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="DNN")&&(Reconstruction_Method=="ScoringPlus_Signals"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_ScoringPlus_Signals_DNNMult);
             DuplicatePrimaryHits(fArrayPrimSignals_ScoringPlus_Signals_DNNMult);
@@ -556,7 +483,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="Perfect")&&(Reconstruction_Method=="ScoringPlus_Signals"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_ScoringPlus_Signals_PerfectMult);
             DuplicatePrimaryHits(fArrayPrimSignals_ScoringPlus_Signals_PerfectMult);
@@ -564,7 +491,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="Cuts")&&(Reconstruction_Method=="ScoringPlus_Clusters"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_ScoringPlus_Clusters_CutsMult);
             DuplicatePrimaryHits(fArrayPrimSignals_ScoringPlus_Clusters_CutsMult);
@@ -572,7 +499,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="DNN")&&(Reconstruction_Method=="ScoringPlus_Clusters"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_ScoringPlus_Clusters_DNNMult);
             DuplicatePrimaryHits(fArrayPrimSignals_ScoringPlus_Clusters_DNNMult);
@@ -580,7 +507,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="Perfect")&&(Reconstruction_Method=="ScoringPlus_Clusters"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_ScoringPlus_Clusters_PerfectMult);
             DuplicatePrimaryHits(fArrayPrimSignals_ScoringPlus_Clusters_PerfectMult);
@@ -590,7 +517,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
               ((Multiplicity_Method=="Perfect")&&(Step2_MultiplicityChoice=="Perfect")))&&
               ((Reconstruction_Method=="DNNScoringPlus")||(Reconstruction_Method=="DNNScoringPlus_SingleTOF")))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             if (Reconstruction_Method=="DNNScoringPlus")
             {
@@ -614,7 +541,7 @@ void R3BRecoTranslator::Exec(Option_t *option)
               ((Multiplicity_Method=="Perfect")&&(Step2_MultiplicityChoice=="Perfect")))&&
               (Reconstruction_Method=="DNNScoringPlus_Maximum"))
     {
-        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
             SetExpMarksOnSignals(fArrayPrimSignals_DNNScoringPlus_Max);
             DuplicatePrimaryHits(fArrayPrimSignals_DNNScoringPlus_Max);
@@ -628,40 +555,18 @@ void R3BRecoTranslator::Exec(Option_t *option)
     }
     else if ((Multiplicity_Method=="Beta")&&(Step2_MultiplicityChoice=="Beta"))
     {
-        if (UseNEBULA==kFALSE)
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
-            if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
-            {
-                SetExpMarksOnSignals(fArrayPrimSignals_BetaReconstruction_NeuLAND);
-                DuplicatePrimaryHits(fArrayPrimSignals_BetaReconstruction_NeuLAND);
-            }
-        }
-        else
-        {
-            if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&((nClusters_NeuLAND+nClusters_NEBULA)>1)))
-            {
-                SetExpMarksOnSignals(fArrayPrimSignals_BetaReconstruction_Combined);
-                DuplicatePrimaryHits(fArrayPrimSignals_BetaReconstruction_Combined);
-            }
+            SetExpMarksOnSignals(fArrayPrimSignals_BetaReconstruction);
+            DuplicatePrimaryHits(fArrayPrimSignals_BetaReconstruction);
         }
     }
     else if ((Multiplicity_Method=="Single")&&(Step2_MultiplicityChoice=="Single"))
     {
-        if (UseNEBULA==kFALSE)
+        if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters>1)))
         {
-            if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&(nClusters_NeuLAND>1)))
-            {
-                SetExpMarksOnSignals(fArrayPrimSignals_SingleReconstruction_NeuLAND);
-                DuplicatePrimaryHits(fArrayPrimSignals_SingleReconstruction_NeuLAND);
-            }
-        }
-        else
-        {
-            if ((Include_SingleClusterEvents==kTRUE)||((Include_SingleClusterEvents==kFALSE)&&((nClusters_NeuLAND+nClusters_NEBULA)>1)))
-            {
-                SetExpMarksOnSignals(fArrayPrimSignals_SingleReconstruction_Combined);
-                DuplicatePrimaryHits(fArrayPrimSignals_SingleReconstruction_Combined);
-            }
+            SetExpMarksOnSignals(fArrayPrimSignals_SingleReconstruction);
+            DuplicatePrimaryHits(fArrayPrimSignals_SingleReconstruction);
         }
     }
     else
@@ -821,14 +726,11 @@ void R3BRecoTranslator::UpdateEfficiencyMatrixSignals(TClonesArray* &PrimSignals
     }
 }    
 
-void R3BRecoTranslator::UpdateEfficiencyMatrixClusters(TClonesArray* &PrimSignals, Double_t** &EffMatrix, TString const Detector)
+void R3BRecoTranslator::UpdateEfficiencyMatrixClusters(TClonesArray* &PrimSignals, Double_t** &EffMatrix)
 {
     // Updates the efficiency matrix for clusters. Define parameters:
-    Int_t nClusters = 0;
+    Int_t nClusters = fArrayClusters->GetEntries();
     Int_t nPrims = PrimSignals->GetEntries();
-    if (Detector=="NeuLAND") {nClusters = fArrayClusters->GetEntries();}
-    if (Detector=="NEBULA") {nClusters = fArrayNEBULAClusters->GetEntries();}
-    if (Detector=="Combined") {nClusters = fArrayClusters->GetEntries() + fArrayNEBULAClusters->GetEntries();}
     
     // Declare what we need:
     R3BSignalCluster* ThisCluster;
@@ -844,13 +746,7 @@ void R3BRecoTranslator::UpdateEfficiencyMatrixClusters(TClonesArray* &PrimSignal
     for (Int_t kclus = 0; kclus<nClusters; ++kclus)
     {
         // Retrieve the current cluster:
-        if (Detector=="Combined")
-        {
-            if (kclus<fArrayClusters->GetEntries()) {ThisCluster = (R3BSignalCluster*) fArrayClusters->At(kclus);}
-            else {ThisCluster = (R3BSignalCluster*) fArrayNEBULAClusters->At(kclus - fArrayClusters->GetEntries());}
-        }
-        if (Detector=="NeuLAND") {ThisCluster = (R3BSignalCluster*) fArrayClusters->At(kclus);}
-        if (Detector=="NEBULA") {ThisCluster = (R3BSignalCluster*) fArrayNEBULAClusters->At(kclus);}
+        ThisCluster = (R3BSignalCluster*) fArrayClusters->At(kclus);
         
         // Retrieve the cluster size:
         ClusterSize = ThisCluster->GetSize();
@@ -1115,37 +1011,28 @@ void R3BRecoTranslator::Finish()
     // Then, write the efficiency matrices to a .txt-file:
     if (SimulationData_IsAvailable==kTRUE)
     {
-        TString FileName = OutputPath + "/Reconstruction_Efficiency_Matrices.txt";
+        TString Detector_Prefix = "";
+        if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+        if ((ThisDetector=="Combined")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "Combined_";}
+        
+        TString FileName = OutputPath + "/" + Detector_Prefix + "Reconstruction_Efficiency_Matrices.txt";
         WriteTextFile = std::ofstream(FileName.Data(), std::ofstream::out);
     
         // Export matrices:
-        WriteOneMatrix(EffMatrix_TradMed_Clusters_CutsMult,"Traditional Reconstruction with Multiplicity from TDR Cuts");
-        WriteOneMatrix(EffMatrix_TradMed_Clusters_DNNMult,"Traditional Reconstruction with Multiplicity from DNN");
-        WriteOneMatrix(EffMatrix_TradMed_Clusters_PerfectMult,"Traditional Reconstruction with MC Detected Multiplicity");
-        WriteOneMatrix(EffMatrix_ScoringPlus_Signals_CutsMult,"Scoring+ Signal Reconstruction with Multiplicity from TDR Cuts");
-        WriteOneMatrix(EffMatrix_ScoringPlus_Signals_DNNMult,"Scoring+ Signal Reconstruction with Multiplicity from DNN");
-        WriteOneMatrix(EffMatrix_ScoringPlus_Signals_PerfectMult,"Scoring+ Signal Reconstruction with MC Detected Multiplicity");
-        WriteOneMatrix(EffMatrix_ScoringPlus_Clusters_CutsMult,"Scoring+ Cluster Reconstruction with Multiplicity from TDR Cuts");
-        WriteOneMatrix(EffMatrix_ScoringPlus_Clusters_DNNMult,"Scoring+ Cluster Reconstruction with Multiplicity from DNN");
-        WriteOneMatrix(EffMatrix_ScoringPlus_Clusters_PerfectMult,"Scoring+ Cluster Reconstruction with MC Detected Multiplicity");
-        WriteOneMatrix(EffMatrix_DNNScoringPlus,"Scoring++ (DNN computation) Cluster Reconstruction with Multiplicity from DNN");
-        WriteOneMatrix(EffMatrix_DNNScoringPlus_SingleTOF,"Scoring++ (DNN computation) Cluster Rec. with Mult. from DNN & if Mult==1, Take simply smallest TOF cluster.");
-        WriteOneMatrix(EffMatrix_DNNScoringPlus_Max,"Scoring++ (Max. possible computation) Cluster Reconstruction with Multiplicity from DNN");
-        WriteOneMatrix(EffMatrix_BetaReconstruction_NeuLAND,"NeuLAND Beta Reconstruction with Multiplicity from the same procedure:");
-        
-        if (UseNEBULA==kTRUE)
-        {
-            WriteOneMatrix(EffMatrix_BetaReconstruction_NEBULA,"NEBULA Beta Reconstruction with Multiplicity from the same procedure:");
-            WriteOneMatrix(EffMatrix_BetaReconstruction_Combined,"COMBINED Beta Reconstruction with Multiplicity from the same procedure:");
-        }
-        
-        WriteOneMatrix(EffMatrix_SingleReconstruction_NeuLAND,"NeuLAND Single Reconstruction with Multiplicity from the same procedure:");
-        
-        if (UseNEBULA==kTRUE)
-        {
-            WriteOneMatrix(EffMatrix_SingleReconstruction_NEBULA,"NEBULA Single Reconstruction with Multiplicity from the same procedure:");
-            WriteOneMatrix(EffMatrix_SingleReconstruction_Combined,"COMBINED Single Reconstruction with Multiplicity from the same procedure:");
-        }
+        WriteOneMatrix(EffMatrix_TradMed_Clusters_CutsMult,ThisDetector+"Traditional Reconstruction with Multiplicity from TDR Cuts");
+        WriteOneMatrix(EffMatrix_TradMed_Clusters_DNNMult,ThisDetector+"Traditional Reconstruction with Multiplicity from DNN");
+        WriteOneMatrix(EffMatrix_TradMed_Clusters_PerfectMult,ThisDetector+"Traditional Reconstruction with MC Detected Multiplicity");
+        WriteOneMatrix(EffMatrix_ScoringPlus_Signals_CutsMult,ThisDetector+"Scoring+ Signal Reconstruction with Multiplicity from TDR Cuts");
+        WriteOneMatrix(EffMatrix_ScoringPlus_Signals_DNNMult,ThisDetector+"Scoring+ Signal Reconstruction with Multiplicity from DNN");
+        WriteOneMatrix(EffMatrix_ScoringPlus_Signals_PerfectMult,ThisDetector+"Scoring+ Signal Reconstruction with MC Detected Multiplicity");
+        WriteOneMatrix(EffMatrix_ScoringPlus_Clusters_CutsMult,ThisDetector+"Scoring+ Cluster Reconstruction with Multiplicity from TDR Cuts");
+        WriteOneMatrix(EffMatrix_ScoringPlus_Clusters_DNNMult,ThisDetector+"Scoring+ Cluster Reconstruction with Multiplicity from DNN");
+        WriteOneMatrix(EffMatrix_ScoringPlus_Clusters_PerfectMult,ThisDetector+"Scoring+ Cluster Reconstruction with MC Detected Multiplicity");
+        WriteOneMatrix(EffMatrix_DNNScoringPlus,ThisDetector+"Scoring++ (DNN computation) Cluster Reconstruction with Multiplicity from DNN");
+        WriteOneMatrix(EffMatrix_DNNScoringPlus_SingleTOF,ThisDetector+"Scoring++ (DNN computation) Cluster Rec. with Mult. from DNN & if Mult==1, Take simply smallest TOF cluster.");
+        WriteOneMatrix(EffMatrix_DNNScoringPlus_Max,ThisDetector+"Scoring++ (Max. possible computation) Cluster Reconstruction with Multiplicity from DNN");
+        WriteOneMatrix(EffMatrix_BetaReconstruction,ThisDetector+"Beta Reconstruction with Multiplicity from the same procedure:");
+        WriteOneMatrix(EffMatrix_SingleReconstruction,ThisDetector+"Single Reconstruction with Multiplicity from the same procedure:");
     
         // Close the .txt-file:
         WriteTextFile.close();
@@ -1186,15 +1073,6 @@ void R3BRecoTranslator::WriteOneMatrix(Double_t** &EffMatrix, TString const Meth
         }
         WriteTextFile << "\n";
     }
-    
-    /*
-    for (Int_t kcol = 0; kcol<(EffMatrix_nMaxHits+1); ++kcol)
-    {
-        if (kcol==0) {WriteTextFile << "Counts:      " << ": ";}
-        WriteTextFile << EffMatrix[EffMatrix_nMaxHits+1][kcol] << " ";
-    }
-    WriteTextFile << "\n";
-    */
     
     Double_t Avg = 0.0;
     for (Int_t k = 0; k<(EffMatrix_nMaxHits+1); ++k)

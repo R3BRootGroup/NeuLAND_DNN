@@ -22,7 +22,6 @@ void R3BTradMethClass::DoMultipleOptimizations(Int_t const nTimes)
         {
             // Do the optimization:
             InitializeCuts();
-            Optimization_IncludeZero();
             OptimizeCuts();
         
             // Then, update the averages:
@@ -31,6 +30,7 @@ void R3BTradMethClass::DoMultipleOptimizations(Int_t const nTimes)
                 Avg_Kappa = Avg_Kappa + Kappa;
                 for (Int_t k = 0; k<Max_Multiplicity; ++k) {Avg_Ethresholds[k] = Avg_Ethresholds[k] + Ethresholds[k];}
                 Take_Along = Take_Along + 1;
+                cout << "ONE SUCCESS!!\n";
             }
             
             // Give some output:

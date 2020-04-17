@@ -38,6 +38,8 @@ R3BDNNScoreApplier::R3BDNNScoreApplier() : FairTask("R3BDNNScoreApplier")
     fArrayPrims_Max = new TClonesArray("R3BSignal");
     
     // Set input parameters:
+    ThisDetector = "NeuLAND";
+    UseNEBULA = kFALSE;
     MaxMultiplicity = 1;
     NmaxClusters = 1;
     OutputPath = "./";
@@ -98,6 +100,7 @@ InitStatus R3BDNNScoreApplier::Init()
     }
     
     // Obtain required inputs:
+    UseNEBULA = Inputs->GetInputBoolian("NEBULA_Include_in_SETUP");
     MaxMultiplicity = Inputs->GetInputInteger("ParticleGun_Multiplicity");
     NmaxClusters = Inputs->GetInputInteger("NeuLAND_DNNTextFile_MaxNumberOfClusters");
     OutputPath = Inputs->GetInputString("TheOutputPath");
@@ -106,27 +109,55 @@ InitStatus R3BDNNScoreApplier::Init()
     nOutputNeurons = Inputs->GetInputInteger("NeuLAND_DNNTextFile_Step2_nOutputFlags_PerCluster");
     
     // Obtain the R3BSignalClusters:
-    if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3BDNNScoreApplier::Init No Clusters!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("NEBULAClusters") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BDNNScoreApplier::Init No NEBULA Clusters!\n\n";
+            return kFATAL;
+        }
+        fArrayClusters = (TClonesArray*)ioman->GetObject("NEBULAClusters");
     }
-    fArrayClusters = (TClonesArray*)ioman->GetObject("Clusters");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("Clusters") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BDNNScoreApplier::Init No Clusters!\n\n";
+            return kFATAL;
+        }
+        fArrayClusters = (TClonesArray*)ioman->GetObject("Clusters");
+    }
     
     // Obtain the DNN multiplicity:
-    if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity") == nullptr)
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE))
     {
-        cout << "I/O-manager FATAL: R3BDNNScoreApplier::Init No DNN Multiplicity!\n\n";
-        return kFATAL;
+        if ((TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BDNNScoreApplier::Init No DNN NEBULA Multiplicity!\n\n";
+            return kFATAL;
+        }
+        fArrayDNNMult = (TClonesArray*)ioman->GetObject("DNN_NEBULA_Multiplicity");
     }
-    fArrayDNNMult = (TClonesArray*)ioman->GetObject("DNN_Multiplicity");
+    else
+    {
+        if ((TClonesArray*)ioman->GetObject("DNN_Multiplicity") == nullptr)
+        {
+            cout << "I/O-manager FATAL: R3BDNNScoreApplier::Init No DNN Multiplicity!\n\n";
+            return kFATAL;
+        }
+        fArrayDNNMult = (TClonesArray*)ioman->GetObject("DNN_Multiplicity");
+    }
     
     // Register the reconstruction outcomes:
-    ioman->Register("PrimaryHits_DNNScoringPlus","R3BSignal",fArrayPrims,kTRUE);
-    ioman->Register("PrimaryHits_DNNScoringPlus_SingleTOF","R3BSignal",fArrayPrims_SingleTOF,kTRUE);
-    ioman->Register("PrimaryHits_DNNScoringPlus_Max","R3BSignal",fArrayPrims_Max,kTRUE);
+    TString Detector_Prefix = "";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Detector_Prefix = "NEBULA_";}
+    ioman->Register(Detector_Prefix+"PrimaryHits_DNNScoringPlus","R3BSignal",fArrayPrims,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_DNNScoringPlus_SingleTOF","R3BSignal",fArrayPrims_SingleTOF,kTRUE);
+    ioman->Register(Detector_Prefix+"PrimaryHits_DNNScoringPlus_Max","R3BSignal",fArrayPrims_Max,kTRUE);
     
     // Next, initialize the scoring class:
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {TheScorers->SetDetector("NEBULA");}
+    else                                              {TheScorers->SetDetector("NeuLAND");}
     TheScorers->LinkInputsClass(Inputs);
     Bool_t ScoreTest = TheScorers->Initialize();
     
@@ -140,6 +171,8 @@ InitStatus R3BDNNScoreApplier::Init()
     TotalNumberOfScorers = TheScorers->GetNumberOfClusterScores();
     
     // Ititialize a TextFileGenerator, so we can obtain the cluster boundaries:
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {FileGen->SetDetector("NEBULA");}
+    else                                              {FileGen->SetDetector("NeuLAND");}
     FileGen->LinkInputClass(Inputs);
     FileGen->LinkIOManager(ioman);
     FileGen->SetSubFolder("DNN_Stupid");
@@ -151,6 +184,7 @@ InitStatus R3BDNNScoreApplier::Init()
     
     // Link to the required .txt-files:
     TString MultName = OutputPath + "/PredictedMultiplicities.txt";
+    if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {MultName = OutputPath + "/Predicted_NEBULA_Multiplicities.txt";}
     TString Step2_Name = "";
     TString st = "";
     TString kstr = "";
@@ -163,6 +197,7 @@ InitStatus R3BDNNScoreApplier::Init()
     {
         kstr = st.Itoa(k+1,10);
         Step2_Name = OutputPath + "/PredictedClusters_Mult" + kstr + ".txt";
+        if ((ThisDetector=="NEBULA")&&(UseNEBULA==kTRUE)) {Step2_Name = OutputPath + "/Predicted_NEBULA_Clusters_Mult" + kstr + ".txt";}
         DNN_Step2_TextFile[k].open(Step2_Name.Data());
         if (!DNN_Step2_TextFile[k].is_open()) {cout << "The Step2 .txt-file for multiplicity " << k+1 << " could not be found!\n\n"; return kFATAL;}
          

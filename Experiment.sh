@@ -14,11 +14,13 @@ cd ../
 cd ./Macros/
 root -l -q GenerateOutputPath.cpp
 root -l -q GenerateMaxMultiplicity.cpp
+root -l -q GenerateUseNEBULA.cpp
 cd ../
 
 # And read it into bash:
 read TheOutputPath < ./InputFiles/OutputPath.txt
 read MaxMultiplicity < ./InputFiles/MaxMultiplicity.txt
+read NEBULAFLAG < ./InputFiles/NEBULA_Presence.txt
 
 # Add the training and validation parts:
 TrainingOutputPath="${TheOutputPath}/DNN_Training/"
@@ -65,6 +67,17 @@ echo 'ERROR: You cannot do exp. processing without CutsFile.txt!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/NEBULA_CutsFile.txt" ]
+then
+cp "${TrainingOutputPath}/NEBULA_CutsFile.txt" "${ExpOutputPath}/NEBULA_CutsFile.txt"
+else
+echo 'ERROR: You cannot do exp. processing without NEBULA_CutsFile.txt!'
+return
+fi
+fi
+
 # Then, check if the required files exist:
 if [ -f "${TrainingOutputPath}/TimeFile.txt" ]
 then
@@ -74,6 +87,17 @@ echo 'ERROR: You cannot do exp. processing without TimeFile.txt!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/TimeFile_NEBULA.txt" ]
+then
+cp "${TrainingOutputPath}/TimeFile_NEBULA.txt" "${ExpOutputPath}/TimeFile_NEBULA.txt"
+else
+echo 'ERROR: You cannot do exp. processing without TimeFile_NEBULA.txt!'
+return
+fi
+fi
+
 # Then, check if the required files exist:
 if [ ! -f "${TrainingOutputPath}/TheMultNetwork_Final.h5" ]
 then
@@ -81,6 +105,16 @@ echo 'ERROR: You cannot do exp. processing without the final network file!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ ! -f "${TrainingOutputPath}/TheNEBULAMultNetwork_Final.h5" ]
+then
+echo 'ERROR: You cannot do exp. processing without the final NEBULA network file!'
+return
+fi
+fi
+
+# Check scorers files:
 if [ -f "${TrainingOutputPath}/NeuLAND_TheScorersFile.root" ]
 then
 cp "${TrainingOutputPath}/NeuLAND_TheScorersFile.root" "${ExpOutputPath}/NeuLAND_TheScorersFile.root"
@@ -89,12 +123,34 @@ echo 'ERROR: You cannot do exp. processing without NeuLAND_TheScorersFile.root!'
 return
 fi
 
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/NEBULA_TheScorersFile.root" ]
+then
+cp "${TrainingOutputPath}/NEBULA_TheScorersFile.root" "${ExpOutputPath}/NEBULA_TheScorersFile.root"
+else
+echo 'ERROR: You cannot do exp. processing without NEBULA_TheScorersFile.root!'
+return
+fi
+fi
+
 if [ -f "${TrainingOutputPath}/NormParams.txt" ]
 then
 cp "${TrainingOutputPath}/NormParams.txt" "${ExpOutputPath}/NormParams.txt"
 else
 echo 'NOTE: NormParams.txt is missing. But technically we could do without.'
 # NOTE: No return command.
+fi
+
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+if [ -f "${TrainingOutputPath}/NEBULA_NormParams.txt" ]
+then
+cp "${TrainingOutputPath}/NEBULA_NormParams.txt" "${ExpOutputPath}/NEBULA_NormParams.txt"
+else
+echo 'NOTE: NEBULA_NormParams.txt is missing. But technically we could do without.'
+# NOTE: No return command.
+fi
 fi
 
 ####################################################################################
@@ -134,6 +190,12 @@ source /home/christiaan/Desktop/TensorFlow/bin/activate
 fi
 
 python ./GenerateMultOutput.py
+
+if [[ "${NEBULAFLAG}" = "1" ]]
+then
+python ./GenerateNEBULAMultOutput.py
+fi
+
 cd ../../Macros
     
 # Next, convert the output to ROOT data:
@@ -149,6 +211,11 @@ for ((nMult=0; nMult<${MaxMultiplicity}; ++nMult))
 do
     ThisMult=`expr ${nMult} + 1`
     python ./GenerateStep2OneCluster.py ${ThisMult}
+    
+    if [[ "${NEBULAFLAG}" = "1" ]]
+    then
+    python ./GenerateNEBULAStep2OneCluster.py ${ThisMult}
+    fi
 done
 
 # Then, continue with the analysis:

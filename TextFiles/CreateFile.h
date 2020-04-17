@@ -27,7 +27,7 @@ void R3BTextFileGenerator::CreateFile()
     if (N_outputs<1) {FileTest = kFALSE; ErrorMessage("You tried to create a file with less than 1 output!");}
     
     // Next, create the real file:
-    if (FileTest = kTRUE)
+    if (FileTest==kTRUE)
     {
         // Then, it is safe to generate the file. However, we must first set the counters to their proper
         // values depending on the multithreading.
