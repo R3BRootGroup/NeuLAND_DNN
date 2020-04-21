@@ -85,6 +85,7 @@
 #pragma link C++ class DNNDataPoint+;
 #pragma link C++ class DNNDataGraph+;
 #pragma link C++ class DNNDataHist+;
+#pragma link C++ class R3BVETO+;
 
 #endif
 
