@@ -317,6 +317,7 @@ void R3BVETO::Exec(Option_t *option)
                 }
                 
                 // Now, obtain the track SignalTime:
+                SignalTime = -1.0;
                 if (SignalIndex>=0)
                 {
                     if (SignalIndex<fArrayNeuLANDSignals->GetEntries())
