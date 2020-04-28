@@ -11,7 +11,7 @@ void Make4nRadiusHists()
     ScaleDef[0] = 0.829; ScaleDef[1] = 0.830; ScaleDef[2] = 0.823; ScaleDef[3] = 0.832; ScaleDef[4] = 0.822;
     
     // Collect histograms:
-    TString ThePath = "/media/christiaan/DATA/Scenario_Summary/30dp_600MeV/2ndINCLXX/ScatterRadius/";
+    TString ThePath = "/media/christiaan/DATA/Christiaan/ENSAR/Scenario_Summary/30dp_600MeV/2ndINCLXX/ScatterRadius/";
     
     TFile* f_10cm = new TFile(ThePath + "/10cm/" + "TetraNeutron_InvMass.root","read");
     TH1D*  h_10cm = (TH1D*) f_10cm->Get("NeutronTracks_PerfectMethod_Signals_MassHistogram");

@@ -1,5 +1,6 @@
 // Every CXX-file includes its own header file:
 #include "InvMass_4n.h"
+#include "LABAngleTest.h"
 
 // Default constructor definition:
 InvMass_4n::InvMass_4n() : FairTask("InvMass_4n")
@@ -22,6 +23,9 @@ InvMass_4n::InvMass_4n() : FairTask("InvMass_4n")
     Inputs = 0;
     SimulationData_IsAvailable = kFALSE;
     LimitToMC = kFALSE;
+    AllowMaxTargetAngle = kFALSE;
+    LABMaxTargetAngle = 1000.0;
+    MaxMultiplicity = 1;
     
     // Initialize Nuclear dataBase:
     TheNuclei = new Nuclei();
@@ -68,8 +72,11 @@ InitStatus InvMass_4n::Init()
     }
     
     // Obtain all required inputs:
+    MaxMultiplicity = Inputs->GetInputInteger("ParticleGun_Multiplicity");
     OutputPath = Inputs->GetInputString("TheOutputPath");
     SimulationData_IsAvailable = Inputs->GetInputBoolian("NeuLAND_TranslateToSignals_Mark_TruePrimarySignals");
+    AllowMaxTargetAngle = Inputs->GetInputBoolian("NeuLAND_Translator_Neutron_TargetScatteringAngle_AllowMax");
+    LABMaxTargetAngle = Inputs->GetInputDouble("NeuLAND_Translator_Neutron_TargetScatteringAngle_MaxAngle","deg");
     
     // Obtain the reconstructed Neutron Tracks:
     if ((TClonesArray*)ioman->GetObject(BranchTitle.Data()) == nullptr)
@@ -129,10 +136,15 @@ void InvMass_4n::Exec(Option_t *option)
     // Begin by testing if the multiplicity is 4.
     // Otherwise, the data is unsuited for a tetraneutron experiment.
     Int_t Multiplicity = fArrayNeutronTracks->GetEntries();
+    if (Multiplicity>MaxMultiplicity) {Multiplicity = MaxMultiplicity;}
     Int_t CreationIndex = 0;
     
     Int_t TrueMultiplicity = -1;
-    if (SimulationData_IsAvailable==kTRUE) {TrueMultiplicity = fArrayMCNeutronTracks->GetEntries();}
+    if (SimulationData_IsAvailable==kTRUE) 
+    {
+        TrueMultiplicity = fArrayMCNeutronTracks->GetEntries();
+        if (TrueMultiplicity>MaxMultiplicity) {TrueMultiplicity = MaxMultiplicity;}
+    }
     
     // Do the multiplicity test:
     Bool_t MultiplicityTest = kTRUE;
@@ -148,9 +160,17 @@ void InvMass_4n::Exec(Option_t *option)
         if ((Multiplicity==4)&&(TrueMultiplicity==4)) {MultiplicityTest = kTRUE;}
         else {MultiplicityTest = kFALSE;}
     }
-        
+    
+    // Perform the answer-test:
+    Bool_t AngleTest = kTRUE;
+    
+    if (AllowMaxTargetAngle==kTRUE)
+    {
+        AngleTest = LABAngleTest(fArrayMCNeutronTracks,fArrayNeutronTracks);
+    }
+
     // Now, decide whether we can use the event:
-    if (MultiplicityTest==kTRUE)
+    if ((MultiplicityTest==kTRUE)&&(AngleTest==kTRUE))
     {
         // Then, we can move on. Extract all neutron tracks and add them up:
         TLorentzVector* Sumvector = new TLorentzVector();

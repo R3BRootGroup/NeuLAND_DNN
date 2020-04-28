@@ -14,6 +14,8 @@ void R3BNeuLANDTranslator::RetrieveInputs()
     MinimizationMarking_IncludeTime = Inputs->GetInputBoolian("NeuLAND_Translator_MinimizationMarking_IncludeTime");
     MinimizationMarking_AllowMaxDist = Inputs->GetInputBoolian("NeuLAND_Translator_MinimizationMarking_AllowMaxDist");
     MinimizationMarking_MaxDistance = Inputs->GetInputDouble("NeuLAND_Translator_MinimizationMarking_MaxDistance","cm");
+    AllowMaxTargetAngle = Inputs->GetInputBoolian("NeuLAND_Translator_Neutron_TargetScatteringAngle_AllowMax");
+    LABMaxTargetAngle = Inputs->GetInputDouble("NeuLAND_Translator_Neutron_TargetScatteringAngle_MaxAngle","deg");
     Target_PrimVolume_Thickness = Inputs->GetInputDouble("TARGET_PrimaryVolume_Thickness","cm");
     TargetX = Inputs->GetInputDouble("TARGET_center_x_position","cm");
     TargetY = Inputs->GetInputDouble("TARGET_center_y_position","cm");

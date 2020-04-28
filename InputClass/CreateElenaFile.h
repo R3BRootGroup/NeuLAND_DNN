@@ -194,16 +194,91 @@ void R3BInputClass::CreateElenaFile(TString const Name)
         
         // GLAD magnet. This one should not be rotated or shifted,
         // since the magnetic field map then has to be transformed along!
-        ++NLines; AddInputBoolian("GLAD_Magnet_IncludeInSetup",kTRUE);
+        ++NLines; AddInputBoolian("GLAD_Magnet_IncludeInSetup",kFALSE);
         ++NLines;  AddInputString("GLAD_Geometry_FileName","GLAD_Geometry.geo.root");
         ++NLines; AddInputBoolian("GLAD_MagneticField_IncludeInSetup",kTRUE);
         ++NLines;  AddInputDouble("GLAD_MagneticFieldScale","percent",100.0);
+        ++NLines;  AddInputDouble("GLAD_center_x_position","cm",0.0);
+        ++NLines;  AddInputDouble("GLAD_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("GLAD_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("GLAD_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("GLAD_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("GLAD_z_rotation_angle","deg",0.0);
         
         // Target:
+        ++NLines; AddInputBoolian("TARGET_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("TARGET_Geometry_FileName","TARGET_Geometry.root");
+        ++NLines;  AddInputString("Vacuum_Material","Liquid_Hydrogen");
         ++NLines;  AddInputDouble("TARGET_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("TARGET_center_y_position","cm",0.0);
         ++NLines;  AddInputDouble("TARGET_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("TARGET_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("TARGET_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("TARGET_z_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("TARGET_Thickness","cm",0.01);
+        ++NLines;  AddInputDouble("TARGET_Width","cm",1.5);
+        ++NLines;  AddInputDouble("TARGET_Height","cm",1.5);
         ++NLines;  AddInputDouble("TARGET_PrimaryVolume_Thickness","cm",1.0);
+        
+        // Vacuum Chamber:
+        ++NLines; AddInputBoolian("Vacuum_Chamber_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("Vacuum_Chamber_Geometry_FileName","Vacuum_Chamber_Geometry.root");
+        ++NLines;  AddInputDouble("Vacuum_Chamber_center_x_position","cm",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Chamber_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Chamber_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Chamber_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Chamber_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Chamber_z_rotation_angle","deg",0.0);
+        
+        // CALIFA:
+        ++NLines; AddInputBoolian("CALIFA_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("CALIFA_Geometry_FileName","CALIFA_Geometry.root");
+        ++NLines;  AddInputDouble("CALIFA_center_x_position","cm",0.0);
+        ++NLines;  AddInputDouble("CALIFA_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("CALIFA_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("CALIFA_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("CALIFA_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("CALIFA_z_rotation_angle","deg",0.0);
+        
+        // PSP:
+        ++NLines; AddInputBoolian("PSP_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("PSP_Geometry_FileName","PSP_Geometry.root");
+        ++NLines;  AddInputDouble("PSP_center_x_position","cm",0.0);
+        ++NLines;  AddInputDouble("PSP_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("PSP_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("PSP_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("PSP_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("PSP_z_rotation_angle","deg",0.0);
+        
+        // Vacuum Vessel:
+        ++NLines; AddInputBoolian("Vacuum_Vessel_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("Vacuum_Vessel_Geometry_FileName","Vacuum_Vessel_Geometry.root");
+        ++NLines;  AddInputDouble("Vacuum_Vessel_center_x_position","cm",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Vessel_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Vessel_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Vessel_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Vessel_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("Vacuum_Vessel_z_rotation_angle","deg",0.0);
+        
+        // StarTrack:
+        ++NLines; AddInputBoolian("STARTRACK_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("STARTRACK_Geometry_FileName","STARTRACK_Geometry.root");
+        ++NLines;  AddInputDouble("STARTRACK_center_x_position","cm",0.0);
+        ++NLines;  AddInputDouble("STARTRACK_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("STARTRACK_center_z_position","cm",0.0);
+        ++NLines;  AddInputDouble("STARTRACK_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("STARTRACK_y_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("STARTRACK_z_rotation_angle","deg",0.0);
+        
+        // TOF wall:
+        ++NLines; AddInputBoolian("TOFwall_IncludeInSetup",kFALSE);
+        ++NLines;  AddInputString("TOFwall_Geometry_FileName","TOFwall_Geometry.root");
+        ++NLines;  AddInputDouble("TOFwall_center_x_position","cm",-350.0);
+        ++NLines;  AddInputDouble("TOFwall_center_y_position","cm",0.0);
+        ++NLines;  AddInputDouble("TOFwall_center_z_position","cm",1430.0);
+        ++NLines;  AddInputDouble("TOFwall_x_rotation_angle","deg",0.0);
+        ++NLines;  AddInputDouble("TOFwall_y_rotation_angle","deg",-14.0);
+        ++NLines;  AddInputDouble("TOFwall_z_rotation_angle","deg",0.0);
         
         // NeuLAND Digitizer:
         ++NLines; AddInputInteger("NeuLAND_Digitizer_nDifferentRuns",1);
@@ -274,10 +349,12 @@ void R3BInputClass::CreateElenaFile(TString const Name)
         ++NLines; AddInputBoolian("NeuLAND_Translator_MinimizationMarking_IncludeTime",kFALSE); 
         ++NLines; AddInputBoolian("NeuLAND_Translator_MinimizationMarking_AllowMaxDist",kTRUE); 
         ++NLines;  AddInputDouble("NeuLAND_Translator_MinimizationMarking_MaxDistance","cm",50.0); 
+        ++NLines; AddInputBoolian("NeuLAND_Translator_Neutron_TargetScatteringAngle_AllowMax",kFALSE); 
+        ++NLines;  AddInputDouble("NeuLAND_Translator_Neutron_TargetScatteringAngle_MaxAngle","deg",5.0e10);
         ++NLines; AddInputInteger("NeuLAND_Translator_MaxMultiplicityPerCluster_JanClusters",2);
         ++NLines; AddInputBoolian("NeuLAND_Translator_BreakChannels_OnPurpose",kFALSE);
         ++NLines;  AddInputDouble("NeuLAND_Translator_BreakChannels_Percentage","probability",0.0);
-         ++NLines; AddInputBoolian("NeuLAND_Translator_AddNoisyChannels",kFALSE);
+        ++NLines; AddInputBoolian("NeuLAND_Translator_AddNoisyChannels",kFALSE);
         ++NLines;  AddInputDouble("NeuLAND_Translator_NoisyChannels_Percentage","probability",0.0);
         ++NLines;  AddInputString("NeuLAND_ClusterFile","NeuLAND_Cluster_File.root");
         ++NLines;  AddInputString("NeuLAND_FilteredClusterFile","NeuLAND_Filtered_Cluster_File.root");

@@ -199,6 +199,8 @@ class R3BNeuLANDTranslator : public FairTask
         Double_t NoiseProbability;          // Probability for adding a bar with a noise-signal.
         Bool_t AddNoisyChannes;             // Decides whether or not we add noise-signals.
         Bool_t DisplayNoise;                // Gives screen output for each added noise-channel.
+        Bool_t AllowMaxTargetAngle;         // Determines whether we allow for a max. in the neutron scattering angle uncertainty.
+        Double_t LABMaxTargetAngle;         // Gives the max. allowed value (deg) of the neutron scattering angle uncertainty;
         
         // NEBULA Geometry parameters:
         Double_t NEBULA_Center_X;

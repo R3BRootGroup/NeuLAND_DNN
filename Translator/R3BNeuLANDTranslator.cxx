@@ -81,6 +81,8 @@ R3BNeuLANDTranslator::R3BNeuLANDTranslator() : FairTask("R3BNeuLANDTranslator")
     ValidationMode = kFALSE;
     NoiseProbability = 0.0;
     AddNoisyChannes = kFALSE;
+    AllowMaxTargetAngle = kFALSE;
+    LABMaxTargetAngle = 1000.0;
     
     // NEBULA Geometry parameters:
     NEBULA_Center_X = 0.0;
@@ -202,8 +204,6 @@ InitStatus R3BNeuLANDTranslator::Init()
     
     // Retrieve Input parameters:
     RetrieveInputs();    
-    
-    cout << NeuLAND_TotalBarThicknessXY << " <======================================================= \n";
     
     // Obtain R3BNeulandDigis:
     if ((TClonesArray*)ioman->GetObject("NeulandDigis"+OutputNameTag) == nullptr)

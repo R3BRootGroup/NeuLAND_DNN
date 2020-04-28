@@ -26,7 +26,7 @@ void ProcessHists()
     Bool_t PlotScoringPlus = kFALSE;
     
     // Define OutputPath:
-    TString OutputPath = "/media/christiaan/DATA/DNN_Data/8dp_600MeV/DNN_Validation/";
+    TString OutputPath = "/media/christiaan/DATA/DNN_Data/30dp_600MeV//DNN_Validation/";
     if (OutputPath.Contains("/DNN_Training/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Training/","");}
     if (OutputPath.Contains("/DNN_Validation/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Validation/","");}
     if (OutputPath.Contains("/DNN_Experiment/")==kTRUE) {OutputPath.ReplaceAll("/DNN_Experiment/","");}
@@ -70,28 +70,55 @@ void ProcessHists()
         if (k==3) {HistMethod = "DNN mult & TDR rec";}
         if (k==4) {HistMethod = "Perfect (MC) rec";}
         
-        FitGauss[k] = new TF1("FitGauss","[0]*TMath::Exp(-0.5*((x-[1])/[2])*((x-[1])/[2]))",0.2,0.55);
+        FitGauss[k] = new TF1("FitGauss","[0]*TMath::Exp(-0.5*((x-[1])/[2])*((x-[1])/[2]))",0.25,0.55);
         FitGauss[k]->SetParameter(0,TheHists.at(k)->GetMaximum());
         FitGauss[k]->SetParameter(1,0.45);
         FitGauss[k]->SetParameter(2,0.1);
-        FitStatus[k] = TheHists.at(k)->Fit(FitGauss[k],"RS0Q");
-        cout << "Histogram Nr. " << k << ": <" << HistMethod << "> Mean = " 
-             << FitStatus[k]->Parameter(1) << " +/- " << FitStatus[k]->ParError(1) 
-             << " [MeV] Chi^2 = " << FitStatus[k]->Chi2() << " & NDF = " << FitGauss[k]->GetNDF() << "\n";
+        
+        if (TheHists.at(k)->Integral()>1.0)
+        {
+            FitStatus[k] = TheHists.at(k)->Fit(FitGauss[k],"RS0Q");
+            cout << "Histogram Nr. " << k << ": <" << HistMethod << "> | Mean = " 
+             << FitStatus[k]->Parameter(1) << " +/- " << FitStatus[k]->ParError(1) << " [MeV] | "
+            << "Sigma = " << FitStatus[k]->Parameter(2) << "+/-" << FitStatus[k]->ParError(2) << " [MeV] | "
+             << "Chi^2 = " << FitStatus[k]->Chi2() << " & NDF = " << FitGauss[k]->GetNDF() << "\n";
+        }
+        else
+        {
+            FitGauss[k]->SetParameter(0,0.0);
+            cout << "Histogram Nr. " << k << ": <" << HistMethod << "> Could not be fitted, because it was empty!\n";
+        }
         FitGauss[k]->SetNpx(100);
         FitGauss[k]->SetLineWidth(8.0);
     }
         
     // Next, make some plots:
+    // Find the maximum:
+    Int_t MaxIndex = 4;
+    Double_t MaxIntegral = 0.0;
+    
+    for (Int_t k = 0; k<TheHists.size(); ++k)
+    {
+        if (MaxIntegral<TheHists.at(k)->Integral())
+        {
+            MaxIndex = k;
+            MaxIntegral = TheHists.at(k)->Integral();
+        }
+    }
+    
     gROOT->SetBatch(kTRUE);
-    TCanvas* c1 = DrawHistDouma(TheHists.at(4),"Tetraneutron Reconstruction Performance","Invariant Mass Difference [MeV]","Counts",1,kFALSE);
-    Double_t Xmin = TheHists.at(4)->GetXaxis()->GetXmin();
-    Double_t Xmax = TheHists.at(4)->GetXaxis()->GetXmax();
-    Double_t Ymin = TheHists.at(4)->GetMinimum();
-    Double_t Ymax = TheHists.at(4)->GetMaximum();
-    if (PlotGausses==kTRUE) {FitGauss[4]->SetLineColor(kGray+2); FitGauss[4]->Draw("csame");}
+    TCanvas* c1 = DrawHistDouma(TheHists.at(MaxIndex),"Tetraneutron Reconstruction Performance","Invariant Mass Difference [MeV]","Counts",0,kFALSE);
+    Double_t Xmin = TheHists.at(MaxIndex)->GetXaxis()->GetXmin();
+    Double_t Xmax = TheHists.at(MaxIndex)->GetXaxis()->GetXmax();
+    Double_t Ymin = TheHists.at(MaxIndex)->GetMinimum();
+    Double_t Ymax = TheHists.at(MaxIndex)->GetMaximum();
     
     // Add other plots:
+    TheHists.at(4)->SetLineColor(1);   // Perfect result
+    TheHists.at(4)->SetLineWidth(4.0);
+    TheHists.at(4)->Draw("histsame");
+    if (PlotGausses==kTRUE) {FitGauss[4]->SetLineColor(kBlack); FitGauss[4]->Draw("csame");}
+    
     TheHists.at(0)->SetLineColor(2);   // DNN result
     TheHists.at(0)->SetLineWidth(4.0);
     TheHists.at(0)->Draw("histsame");
@@ -163,7 +190,7 @@ void ProcessHists()
         text5->Draw("same");
     }
     
-    c1->SaveAs(OutputPath + "/TetraNeutron.png");
+    c1->SaveAs(OutputPath + "/TetraNeutron_New.png");
     c1->Close();
 }
 

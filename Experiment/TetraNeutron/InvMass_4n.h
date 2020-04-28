@@ -53,6 +53,7 @@ class InvMass_4n : public FairTask
         // Other member functions:
         void LimitToMCMultiplicity() {LimitToMC = kTRUE;}
         void ReleaseMCMultiplicity() {LimitToMC = kFALSE;}
+        Bool_t LABAngleTest(TClonesArray* fArrayMCNeutronTracks, TClonesArray* fArrayNeutronTracks);
 
     private:
         // Class content:
@@ -69,6 +70,9 @@ class InvMass_4n : public FairTask
         Int_t nEvents;
         Bool_t SimulationData_IsAvailable;
         Bool_t LimitToMC;
+        Bool_t AllowMaxTargetAngle;
+        Double_t LABMaxTargetAngle;
+        Int_t MaxMultiplicity;
         
         // Auxillary classes:
         R3BInputClass* Inputs;

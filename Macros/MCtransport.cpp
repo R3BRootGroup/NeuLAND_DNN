@@ -140,61 +140,62 @@ void MCtransport(Int_t const TotalNumberOfThreads = 1, Int_t const CurrentThread
         run->AddModule(new R3BGeoGDML(TheVMC + "/DNN/Geometry/SAMURAI_MagnetSystem.gdml", TGeoTranslation(SAMURAI_xpos,SAMURAI_ypos,SAMURAI_zpos)));
     }
     
+    // Add Vacuum chamber:
+    Bool_t Chamber_InSETUP = Inputs->GetInputBoolian("Vacuum_Chamber_IncludeInSetup");
+    if (Chamber_InSETUP==kTRUE)
+    {
+        run->AddModule(new R3BdTof(TheOutputPath + Inputs->GetInputString("Vacuum_Chamber_Geometry_FileName")));
+    }
+    
     // GLAD magnet; This should not be moved or rotated, since one then has to
     // transform the magnetic field too.
     Bool_t IncludeGLADmagnet = Inputs->GetInputBoolian("GLAD_Magnet_IncludeInSetup");
     if (IncludeGLADmagnet==kTRUE)
     {
-        // run->AddModule(new R3BGladMagnet(TheOutputPath + Inputs->GetInputString("GLAD_Geometry_FileName")));
-        // run->AddModule(new R3BGladMagnet(TheVMC + "/geometry/" + "glad_v17_flange.geo.root"));
+       run->AddModule(new R3BGladMagnet(TheOutputPath + Inputs->GetInputString("GLAD_Geometry_FileName")));
     }
     
-    // --------------------
+    // Add Target:
+    Bool_t IncludeTarget = Inputs->GetInputBoolian("TARGET_IncludeInSetup");
+    if (IncludeTarget==kTRUE)
+    {
+       run->AddModule(new R3BTarget("LiH",TheOutputPath + Inputs->GetInputString("TARGET_Geometry_FileName")));
+    }
     
-    /*
+    // Add PSP:
+    Bool_t IncludePSP = Inputs->GetInputBoolian("PSP_IncludeInSetup");
+    if (IncludePSP==kTRUE)
+    {
+        run->AddModule(new R3BPsp(TheOutputPath + Inputs->GetInputString("PSP_Geometry_FileName")));
+    }
     
-    // Target
-    run->AddModule(new R3BTarget(targetType, "target_" + targetType + ".geo.root"));
-
-    // GLAD
-    run->AddModule(new R3BGladMagnet("glad_v17_flange.geo.root")); // GLAD should not be moved or rotated
-
-    // PSP
-    run->AddModule(new R3BPsp("psp_v13a.geo.root", {}, -221., -89., 94.1));
-
-    // R3B SiTracker Cooling definition
-    run->AddModule(new R3BVacVesselCool(targetType, "vacvessel_v14a.geo.root"));
-
-    // STaRTrack
-    run->AddModule(new R3BStartrack("startrack_v16-300_2layers.geo.root", { 0., 0., 20. }));
-    //run->AddModule(new R3BSTaRTra("startra_v16-300_2layers.geo.root", { 0., 0., 20. }));
-
-    // CALIFA
-    R3BCalifa* califa = new R3BCalifa("califa_10_v8.11.geo.root");
-    califa->SelectGeometryVersion(10);
-    // Selecting the Non-uniformity of the crystals (1 means +-1% max deviation)
-    califa->SetNonUniformity(1.0);
-    run->AddModule(califa);
+    // Add STaRTrack:
+    Bool_t IncludeStarTrack = Inputs->GetInputBoolian("STARTRACK_IncludeInSetup");
+    if (IncludeStarTrack==kTRUE)
+    {
+       run->AddModule(new R3BStartrack(TheOutputPath + Inputs->GetInputString("STARTRACK_Geometry_FileName")));
+    }
     
-    // Fi4 detector
-    run->AddModule(new R3BFi4("fi4_v17a.geo.root", {-73.274339-TMath::Tan(TMath::DegToRad()*16.7)*100, 0.069976, 513.649524+100.}, {"" ,-90.,16.7,90.}));
-
-    // Fi6 detector
-    run->AddModule(new R3BFi6("fi6_v17a.geo.root", {-73.274339-TMath::Tan(TMath::DegToRad()*16.7)*500, 0.069976, 513.649524+500.}, {"" ,-90.,16.7,90.}));
-
-    // Fi5 detector
-    run->AddModule(new R3BFi5("fi5_v17a.geo.root", {-73.274339-TMath::Tan(TMath::DegToRad()*16.7)*300, 0.069976, 513.649524+300.}, {"" ,-90.,16.7,90.}));
-
-    // sfi detector
-    run->AddModule(new R3Bsfi("sfi_v17a.geo.root", {0, 0, -200}));
-
-    // Tof
-    run->AddModule(new R3BTof("tof_v17a.geo.root", { -417.359574, 2.400000, 960.777114 }, { "", -90., +31., 90. }));
-
-    // dTof
-    run->AddModule(new R3BdTof("dtof_v17a.geo.root", { -155.824045+(2.7*10)*TMath::Cos(16.7*TMath::DegToRad()), 0.523976, 761.870346 }, { "", -90., +16.7, 90. }));
-
-    */
+    // Add Vacuum Vessel:
+    Bool_t IncludeVacVessel = Inputs->GetInputBoolian("Vacuum_Vessel_IncludeInSetup");
+    if (IncludeVacVessel==kTRUE)
+    {
+        run->AddModule(new R3BVacVesselCool("LiH",TheOutputPath + Inputs->GetInputString("Vacuum_Vessel_Geometry_FileName")));
+    }
+    
+    // Add CALIFA:
+    Bool_t IncludeCALIFA = Inputs->GetInputBoolian("CALIFA_IncludeInSetup");
+    if (IncludeCALIFA==kTRUE)
+    {
+        run->AddModule(new R3BCalifa(TheOutputPath + Inputs->GetInputString("CALIFA_Geometry_FileName")));
+    }
+    
+    // Add TOF wall:
+    Bool_t IncludeTOF = Inputs->GetInputBoolian("TOFwall_IncludeInSetup");
+    if (IncludeTOF==kTRUE)
+    {
+        run->AddModule(new R3BTof(TheOutputPath + Inputs->GetInputString("TOFwall_Geometry_FileName")));
+    }
 
     // ------------------------------------------------------------------------
     

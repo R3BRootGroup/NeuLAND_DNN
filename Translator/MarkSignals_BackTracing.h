@@ -27,6 +27,11 @@ void R3BNeuLANDTranslator::MarkSignals_BackTracing()
     Int_t MinDist_Index;
     Int_t MinDist_Counter;
     Bool_t MinDist_Check;
+    R3BMCTrack* CurrentMCTrack;
+    Double_t MCpx, MCpy, MCpz;
+    Double_t Recpx, Recpy, Recpz;
+    Double_t InProduct;
+    Double_t LAB_Angle;
     
     // Declare markers for the points:
     Bool_t* Point_IsValid = new Bool_t[nPoints];
@@ -267,14 +272,68 @@ void R3BNeuLANDTranslator::MarkSignals_BackTracing()
                             }
                         }
                     }
-                
-                    // Next, only mark the matching signal as a primary, if the min.
-                    // distance is below a certain threshold, when that threshold has to be used:
-                    if ((MinimizationMarking_AllowMaxDist==kFALSE)||((MinimizationMarking_AllowMaxDist==kTRUE)&&(MinDist<MinimizationMarking_MaxDistance)))
+                    
+                    // Also, compute the angle between the reconstructed neutron track and the MC neutron track. Begin by retrieving the current MC neutron track
+                    // corresponding to this shower-head:
+                    CurrentMCTrack = (R3BMCTrack*) fArrayMCPoints->At(ktrack);
+                    
+                    // Obtain the corresponding vector-components:
+                    MCpx = CurrentMCTrack->GetPx();
+                    MCpy = CurrentMCTrack->GetPy();
+                    MCpz = CurrentMCTrack->GetPz();
+                    
+                    // Next, reconstruct the vector between the signal and the target:
+                    Recpx = ThisSignal->GetPositionX() - TargetX;
+                    Recpy = ThisSignal->GetPositionY() - TargetY;
+                    Recpz = ThisSignal->GetPositionZ() - TargetZ;
+                    
+                    // Then, copute inner product:
+                    InProduct = MCpx*Recpx + MCpy*Recpy + MCpz*Recpz;
+                    
+                    // Divide by vector lengths:
+                    InProduct = InProduct/TMath::Sqrt(MCpx*MCpx + MCpy*MCpy + MCpz*MCpz);
+                    InProduct = InProduct/TMath::Sqrt(Recpx*Recpx + Recpy*Recpy + Recpz*Recpz);
+                    
+                    // Obtain the LAB-Angle:
+                    LAB_Angle = TMath::ACos(InProduct);
+                    LAB_Angle = LAB_Angle*180.0/TMath::Pi();
+                    
+                    // Next, decide whether or not to mark our signal:
+                    if ((MinimizationMarking_AllowMaxDist==kFALSE)&&(AllowMaxTargetAngle==kFALSE))
                     {
-                        // Then, mark the signal:
+                        // Then, always mark it:
                         ThisSignal->SetPrimarySim();
                     }
+                    else if ((MinimizationMarking_AllowMaxDist==kTRUE)&&(AllowMaxTargetAngle==kFALSE))
+                    {
+                        // then, mark it if it is below the distance:
+                        if (MinDist<MinimizationMarking_MaxDistance)
+                        {
+                            ThisSignal->SetPrimarySim();
+                        }
+                    }
+                    else if ((MinimizationMarking_AllowMaxDist==kFALSE)&&(AllowMaxTargetAngle==kTRUE))
+                    {
+                        // then, mark it if the angle if below the cut:
+                        if (LAB_Angle<LABMaxTargetAngle)
+                        {
+                            ThisSignal->SetPrimarySim();
+                        }
+                    }
+                    else if ((MinimizationMarking_AllowMaxDist==kTRUE)&&(AllowMaxTargetAngle==kTRUE))
+                    {
+                        // Then, mark if it matches both:
+                        if ((MinDist<MinimizationMarking_MaxDistance)&&(LAB_Angle<LABMaxTargetAngle))
+                        {
+                            ThisSignal->SetPrimarySim();
+                        }
+                    }
+                    else
+                    {
+                        cout << "### R3BNeuLANDTranslator FATAL ERROR: this option with max. distanes & angles should never occur!\n";
+                    }
+                
+                    // Done.
                 }
             }
         }
