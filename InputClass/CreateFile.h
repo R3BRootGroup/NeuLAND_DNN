@@ -54,7 +54,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines; AddInputBoolian("R3BRoot_Cave_IsVacuum",kFALSE);
         
         // Particle Gun:
-        ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","SnData_500keV");
+        ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","NewlyGenerated");
         ++NLines;  AddInputString("ParticleGun_ASCII_FileName","Current_ASCII_File.dat");
         ++NLines;  AddInputString("ParticleGun_ParticleType","neutron");
         ++NLines; AddInputInteger("ParticleGun_Multiplicity",5);

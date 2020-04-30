@@ -41,6 +41,24 @@ void MakeLABAngle_MultGraphs()
     Double_t Perfect_4n [6] = {31.1,53.0,68.9,74.9,77.8,83.0};
     Double_t Perfect_5n [6] = {21.3,43.8,61.5,68.2,71.3,77.3};
     
+    /*
+    Double_t PercentScale = 50.0;
+    for (Int_t k = 0; k<6; ++k)
+    {
+        TDR_Res_1n[k] = PercentScale*TDR_Res_1n[k]/Perfect_1n[k];
+        TDR_Res_2n[k] = PercentScale*TDR_Res_2n[k]/Perfect_2n[k];
+        TDR_Res_3n[k] = PercentScale*TDR_Res_3n[k]/Perfect_3n[k];
+        TDR_Res_4n[k] = PercentScale*TDR_Res_4n[k]/Perfect_4n[k];
+        TDR_Res_5n[k] = PercentScale*TDR_Res_5n[k]/Perfect_5n[k];
+        
+        DNN_Res_1n[k] = PercentScale*DNN_Res_1n[k]/Perfect_1n[k];
+        DNN_Res_2n[k] = PercentScale*DNN_Res_2n[k]/Perfect_2n[k];
+        DNN_Res_3n[k] = PercentScale*DNN_Res_3n[k]/Perfect_3n[k];
+        DNN_Res_4n[k] = PercentScale*DNN_Res_4n[k]/Perfect_4n[k];
+        DNN_Res_5n[k] = PercentScale*DNN_Res_5n[k]/Perfect_5n[k];
+    }
+    */
+    
     // Finally, other values:
     Double_t Xvalues [6] = {0.2,0.5,1.0,1.5,2.0,1e99};
     Double_t DispX [6] = {1.0,2.0,3.0,4.0,5.0,6.0};
