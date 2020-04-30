@@ -13,3 +13,4 @@ root -l -q PSP_BuildGeometry.cpp
 root -l -q StarTrack_BuildGeometry.cpp
 root -l -q VacuumVessel_BuildGeometry.cpp
 root -l -q CALIFA_BuildGeometry.cpp
+root -l -q TOFwall_BuildGeometry.cpp
