@@ -122,8 +122,8 @@ else
     
     # Then, merge he outcome as well:
     cd ../MT
-    root -l -q "MergeFiles.cpp($1,4)"
-    root -l -q "MergeHists.cpp($1,4)"
+    # root -l -q "MergeFiles.cpp($1,4)"
+    # root -l -q "MergeHists.cpp($1,4)"
     
     # Compute the traditional method cuts:
     cd ../Macros
