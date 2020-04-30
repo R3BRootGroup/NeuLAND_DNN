@@ -144,7 +144,7 @@ void MCtransport(Int_t const TotalNumberOfThreads = 1, Int_t const CurrentThread
     Bool_t Chamber_InSETUP = Inputs->GetInputBoolian("Vacuum_Chamber_IncludeInSetup");
     if (Chamber_InSETUP==kTRUE)
     {
-        run->AddModule(new R3BdTof(TheOutputPath + Inputs->GetInputString("Vacuum_Chamber_Geometry_FileName")));
+        run->AddModule(new R3BFi4(TheOutputPath + Inputs->GetInputString("Vacuum_Chamber_Geometry_FileName")));
     }
     
     // GLAD magnet; This should not be moved or rotated, since one then has to
