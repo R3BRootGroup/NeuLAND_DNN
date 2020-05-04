@@ -14,7 +14,8 @@ Step 2: Open the master CMakeLists.txt file of R3BRoot. Add a
 Step 3: Recompile R3BRoot.
 
 Step 4: Install the Keras neural network framework in a python virtual
-        environment, along with the TensorFlow backend.
+        environment (Use python version 3.6.9; no higher and no lower!), 
+        along with the TensorFlow backend.
         There is good documentation available for this
         on the internet, but here is a quick set of instructions:
         a: open a terminal window
