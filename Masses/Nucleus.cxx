@@ -81,8 +81,14 @@ Nucleus::~Nucleus()
     Double_t Nucleus::GetBindingEnergy(TString const mode, TString const Unit)
     {
         if ((mode=="Total")&&(Unit=="MeV")) {return E_Bind*((Int_t) A);}                          // NOTE: Return the total amount of binding energy in MeV.
+        else if ((mode=="Total")&&(Unit=="keV")) {return 1000.0*E_Bind*((Int_t) A);}              // NOTE: Return the total amount of binding energy in keV.
+        else if ((mode=="Total")&&(Unit=="eV")) {return 1e6*E_Bind*((Int_t) A);}                  // NOTE: Return the total amount of binding energy in eV.
+        else if ((mode=="Total")&&(Unit=="GeV")) {return 1e-3*E_Bind*((Int_t) A);}                // NOTE: Return the total amount of binding energy in GeV.
         else if ((mode=="Total")&&(Unit=="J")) {return (E_Bind*((Int_t) A))*PhysConst.q_eVJ*1e6;} // NOTE: Return the total amount of binding energy in J.
         else if ((mode=="PerN")&&(Unit=="MeV")) {return E_Bind;}                                  // NOTE: Return the binding energy per nucleon in MeV.
+        else if ((mode=="PerN")&&(Unit=="keV")) {return 1000.0*E_Bind;}                           // NOTE: Return the binding energy per nucleon in keV.
+        else if ((mode=="PerN")&&(Unit=="eV")) {return 1e6*E_Bind;}                               // NOTE: Return the binding energy per nucleon in eV.
+        else if ((mode=="PerN")&&(Unit=="GeV")) {return 1e-3*E_Bind;}                             // NOTE: Return the binding energy per nucleon in GeV.
         else if ((mode=="PerN")&&(Unit=="J")) {return E_Bind*PhysConst.q_eVJ*1e6;}                // NOTE: Return the binding energy per nucleon in J.
         else
         {
@@ -94,6 +100,9 @@ Nucleus::~Nucleus()
     Double_t Nucleus::GetSp(TString const Unit)
     {
         if (Unit=="MeV") {return Sp;}
+        else if (Unit=="GeV") {return 1e-3*Sp;}
+        else if (Unit=="keV") {return 1e3*Sp;}
+        else if (Unit=="eV") {return 1e6*Sp;}
         else if (Unit=="J") {return Sp*PhysConst.q_eVJ*1e6;}
         else
         {
@@ -105,6 +114,9 @@ Nucleus::~Nucleus()
     Double_t Nucleus::GetSn(TString const Unit)
     {
         if (Unit=="MeV") {return Sn;}
+        else if (Unit=="GeV") {return 1e-3*Sn;}
+        else if (Unit=="keV") {return 1e3*Sn;}
+        else if (Unit=="eV") {return 1e6*Sn;}
         else if (Unit=="J") {return Sn*PhysConst.q_eVJ*1e6;}
         else
         {
@@ -116,9 +128,15 @@ Nucleus::~Nucleus()
     Double_t Nucleus::GetMass(TString const mode, TString const Unit)
     {
         if ((mode=="clean")&&(Unit=="MeV")) {return Mass;}                                                                                                           // NOTE: Returns the total nuclear mass in MeV.
+        else if ((mode=="clean")&&(Unit=="GeV")) {return 1e-3*Mass;}                                                                                                 // NOTE: Returns the total nuclear mass in GeV.
+        else if ((mode=="clean")&&(Unit=="keV")) {return 1e3*Mass;}                                                                                                  // NOTE: Returns the total nuclear mass in keV.
+        else if ((mode=="clean")&&(Unit=="eV")) {return 1e6*Mass;}                                                                                                   // NOTE: Returns the total nuclear mass in eV.
         else if ((mode=="clean")&&(Unit=="u")) {return Mass*PhysConst.q_MeVJ/(PhysConst.Mu_kg*PhysConst.cc_ms*PhysConst.cc_ms);}                                     // NOTE: Returns the total nuclear mass in u.
         else if ((mode=="clean")&&(Unit=="kg")) {return Mass*PhysConst.q_MeVJ/(PhysConst.cc_ms*PhysConst.cc_ms);}                                                    // NOTE: Returns the total nuclear mass in kg.
         else if ((mode=="e-")&&(Unit=="MeV")) {return Mass+(((Int_t) Z)*PhysConst.Me_MeV);}                                                                          // NOTE: Returns the total atomic mass in MeV.
+        else if ((mode=="e-")&&(Unit=="GeV")) {return 1e-3*Mass + (((Int_t) Z)*PhysConst.Me_MeV);}                                                                   // NOTE: Returns the total atomic mass in GeV.
+        else if ((mode=="e-")&&(Unit=="keV")) {return 1e3*Mass + (((Int_t) Z)*PhysConst.Me_MeV);}                                                                    // NOTE: Returns the total atomic mass in keV.
+        else if ((mode=="e-")&&(Unit=="eV")) {return 1e6*Mass + (((Int_t) Z)*PhysConst.Me_MeV);}                                                                     // NOTE: Returns the total atomic mass in eV.
         else if ((mode=="e-")&&(Unit=="u")) {return (Mass+(((Int_t) Z)*PhysConst.Me_MeV))*PhysConst.q_MeVJ/(PhysConst.Mu_kg*PhysConst.cc_ms*PhysConst.cc_ms);}       // NOTE: Returns the total atomic mass in u.
         else if ((mode=="e-")&&(Unit=="kg")) {return (Mass+(((Int_t) Z)*PhysConst.Me_MeV))*PhysConst.q_MeVJ/(PhysConst.cc_ms*PhysConst.cc_ms);}                      // NOTE: Returns the total atomic mass in kg.
         else
@@ -198,10 +216,40 @@ Nucleus::~Nucleus()
             // this is easy, we want to specify the mass in MeV:
             Mass = m;
         }
+        else if ((Unit=="GeV")&&(mode=="clean"))
+        {
+            // this is easy, we want to specify the mass in MeV:
+            Mass = m*1e3;
+        }
+        else if ((Unit=="keV")&&(mode=="clean"))
+        {
+            // this is easy, we want to specify the mass in MeV:
+            Mass = m/1e3;
+        }
+        else if ((Unit=="eV")&&(mode=="clean"))
+        {
+            // this is easy, we want to specify the mass in MeV:
+            Mass = m/1e6;
+        }
         else if ((Unit=="MeV")&&(mode=="e-"))
         {
             // Then we have to subtract the electron mass first (in MeV):
             Mass = m - ((Int_t) TMath::Abs(Z))*PhysConst.Me_MeV;
+        }
+        else if ((Unit=="GeV")&&(mode=="e-"))
+        {
+            // Then we have to subtract the electron mass first (in MeV):
+            Mass = 1e3*m - ((Int_t) TMath::Abs(Z))*PhysConst.Me_MeV;
+        }
+        else if ((Unit=="keV")&&(mode=="e-"))
+        {
+            // Then we have to subtract the electron mass first (in MeV):
+            Mass = 1e-3*m - ((Int_t) TMath::Abs(Z))*PhysConst.Me_MeV;
+        }
+        else if ((Unit=="eV")&&(mode=="e-"))
+        {
+            // Then we have to subtract the electron mass first (in MeV):
+            Mass = 1e-6*m - ((Int_t) TMath::Abs(Z))*PhysConst.Me_MeV;
         }
         else if ((Unit=="u")&&(mode=="clean"))
         {
@@ -265,20 +313,40 @@ Nucleus::~Nucleus()
             // This is easy:
             E_Bind = E;
         }
+        else if ((mode=="PerN")&&(Unit=="GeV"))
+        {
+            // This is easy:
+            E_Bind = E*1e3;
+        }
+        else if ((mode=="PerN")&&(Unit=="keV"))
+        {
+            // This is easy:
+            E_Bind = E*1e-3;
+        }
+        else if ((mode=="PerN")&&(Unit=="eV"))
+        {
+            // This is easy:
+            E_Bind = E*1e-6;
+        }
         else if ((mode=="Total")&&(Unit=="MeV"))
         {
             // Then divide by A:
             E_Bind = E/((Int_t) A);
         }
-        else if ((mode=="PerN")&&(Unit=="keV"))
-        {
-            // This is easy:
-            E_Bind = E/1000.0;
-        }
-        else if ((mode=="Total")&&(Unit=="MeV"))
+        else if ((mode=="Total")&&(Unit=="keV"))
         {
             // Then divide by A:
             E_Bind = (E/1000.0)/((Int_t) A);
+        }
+        else if ((mode=="Total")&&(Unit=="GeV"))
+        {
+            // Then divide by A:
+            E_Bind = (E*1000.0)/((Int_t) A);
+        }
+        else if ((mode=="Total")&&(Unit=="eV"))
+        {
+            // Then divide by A:
+            E_Bind = (E/1e6)/((Int_t) A);
         }
         else if ((mode=="PerN")&&(Unit=="J"))
         {
@@ -307,6 +375,9 @@ Nucleus::~Nucleus()
     void Nucleus::SetSp(TString const Unit, Double_t const E)
     {
         if (Unit=="MeV") {Sp = E;}
+        else if (Unit=="GeV") {Sp = E*1e3;}
+        else if (Unit=="keV") {Sp = E*1e-3;}
+        else if (Unit=="eV") {Sp = E*1e-6;}
         else if (Unit=="J") {Sp = E/(PhysConst.q_eVJ*1e6);}
         else
         {
@@ -318,6 +389,9 @@ Nucleus::~Nucleus()
     void Nucleus::SetSn(TString const Unit, Double_t const E)
     {
         if (Unit=="MeV") {Sn = E;}
+        else if (Unit=="GeV") {Sn = 1e3*E;}
+        else if (Unit=="keV") {Sn = 1e-3*E;}
+        else if (Unit=="eV") {Sn = 1e-6*E;}
         else if (Unit=="J") {Sn = E/(PhysConst.q_eVJ*1e6);}
         else
         {

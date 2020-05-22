@@ -45,6 +45,12 @@ void Nucleus::AddLevelGamma(Int_t const Key, Double_t const EE, Double_t const I
             NewGamma.E_gamma = EE/1000.0;
             UnitSucces = kTRUE;
         }
+        else if (Unit=="GeV")
+        {
+            NewGamma.E_final = Ef*1000.0;
+            NewGamma.E_gamma = EE*1000.0;
+            UnitSucces = kTRUE;
+        }
         else if (Unit=="J")
         {
             NewGamma.E_final = Ef/PhysConst.q_MeVJ;

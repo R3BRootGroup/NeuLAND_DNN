@@ -39,7 +39,11 @@
             if ((TheNuclei.at(k).GetA()==A)&&(TheNuclei.at(k).GetZ()==Z)) {return TheNuclei.at(k).GetName();}
         }
         
-        return "";
+        TString st = "";
+        TString Zstr = st.Itoa(Z,10);
+        TString Astr = st.Itoa(A,10);
+        
+        return "Nucleus of Z = "+Zstr+" & A = "+Astr+" was not found!";
     }
     
     // NOTE: returns the Z of a nucleus.
@@ -250,6 +254,7 @@
         // Then, implement the units:
         if (Unit=="MeV") {Answer = Answer*1.0;}
         else if (Unit=="keV") {Answer = Answer*1000.0;}
+        else if (Unit=="GeV") {Answer = Answer/1000.0;}
         else if (Unit=="eV") {Answer = Answer*1e6;}
         else if (Unit=="J") {Answer = Answer*PhysConst.q_eVJ*1e6;}
         else {cout << "### ERROR: The unit " << Unit << " was not supported in the code!\n\n";}

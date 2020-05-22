@@ -51,6 +51,7 @@ R3BInputClass::~R3BInputClass()
 #include "CreateFile.h"
 #include "CreateElenaFile.h"
 #include "CreateSAMURAIFile.h"
+#include "CreateSnAumannFile.h"
 #include "ReadFile.h"
 #include "GetInput.h"
 #include "WriteFile.h"

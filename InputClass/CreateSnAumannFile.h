@@ -1,4 +1,4 @@
-void R3BInputClass::CreateFile(TString const Name)
+void R3BInputClass::CreateSnAumannFile(TString const Name)
 {
     // Creates a new InputFile. But only if it does not yet exist!
     
@@ -54,7 +54,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines; AddInputBoolian("R3BRoot_Cave_IsVacuum",kFALSE);
         
         // Particle Gun:
-        ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","SnData_500keV");
+        ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","ExGenerated");
         ++NLines;  AddInputString("ParticleGun_ASCII_FileName","Current_ASCII_File.dat");
         ++NLines;  AddInputString("ParticleGun_ParticleType","neutron");
         ++NLines; AddInputInteger("ParticleGun_Multiplicity",5);
@@ -69,18 +69,18 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("ParticleGun_x_direction","cm",0.0);
         ++NLines;  AddInputDouble("ParticleGun_y_direction","cm",0.0);
         ++NLines;  AddInputDouble("ParticleGun_z_direction","cm",1.0);
-        ++NLines;  AddInputDouble("ParticleGun_AngularSpread","degree",4.0);
-        ++NLines;  AddInputString("ParticleGun_AngularSpread_Pattern","Uniform");
-        ++NLines;  AddInputDouble("ParticleGun_MinimalKineticEnergy","MeV/u",599.0);
-        ++NLines;  AddInputDouble("ParticleGun_MaximalKineticEnergy","MeV/u",601.0);
+        ++NLines;  AddInputDouble("ParticleGun_AngularSpread","degree",3.0);
+        ++NLines;  AddInputString("ParticleGun_AngularSpread_Pattern","Native_Central");
+        ++NLines;  AddInputDouble("ParticleGun_MinimalKineticEnergy","MeV/u",399.0);
+        ++NLines;  AddInputDouble("ParticleGun_MaximalKineticEnergy","MeV/u",401.0);
         ++NLines; AddInputInteger("ParticleGun_StartEventReading_SnDataFiles",0);
         ++NLines; AddInputInteger("ParticleGun_EndEventReading_SnDataFiles",9999);
         ++NLines; AddInputBoolian("ParticleGun_IncludeSnNucleus_SnDataFiles",kTRUE);
         ++NLines; AddInputBoolian("ParticleGun_RandomRotateNeutrons_SnDataFiles",kTRUE);
-        ++NLines; AddInputBoolian("ParticleGun_ExGenerator_DegradeEnergy_MultipleTracks",kFALSE);
-        ++NLines;  AddInputString("ParticleGun_ExGenerator_BeamIsotope","proton");
-        ++NLines;  AddInputString("ParticleGun_ExGenerator_TargetIsotope","In132");
-        ++NLines;  AddInputDouble("ParticleGun_ExGenerator_BeamEnergy","MeV/u",600.0);
+        ++NLines; AddInputBoolian("ParticleGun_ExGenerator_DegradeEnergy_MultipleTracks",kTRUE);
+        ++NLines;  AddInputString("ParticleGun_ExGenerator_BeamIsotope","Sn124");
+        ++NLines;  AddInputString("ParticleGun_ExGenerator_TargetIsotope","proton");
+        ++NLines;  AddInputDouble("ParticleGun_ExGenerator_BeamEnergy","MeV/u",400.0);
         ++NLines;  AddInputDouble("ParticleGun_ExGenerator_Recoil_ExcitationEnergy","MeV",0.0);
         
         // NeuLAND:
@@ -95,7 +95,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("NeuLAND_AluminiumFrame_Width","cm",5.0);
         ++NLines;  AddInputDouble("NeuLAND_AluminiumFrame_Thickness","cm",0.05);
         ++NLines; AddInputInteger("NeuLAND_Number_of_Bars_per_plane",50);
-        ++NLines; AddInputInteger("NeuLAND_Number_of_DoublePlanes",30);
+        ++NLines; AddInputInteger("NeuLAND_Number_of_DoublePlanes",8);
         ++NLines;  AddInputDouble("NeuLAND_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("NeuLAND_center_y_position","cm",0.0);
         ++NLines;  AddInputDouble("NeuLAND_front_z_position","cm",1400.0);
@@ -193,10 +193,10 @@ void R3BInputClass::CreateFile(TString const Name)
         
         // GLAD magnet. This one should not be rotated or shifted,
         // since the magnetic field map then has to be transformed along!
-        ++NLines; AddInputBoolian("GLAD_Magnet_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("GLAD_Magnet_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("GLAD_Geometry_FileName","GLAD_Geometry.geo.root");
         ++NLines; AddInputBoolian("GLAD_MagneticField_IncludeInSetup",kTRUE);
-        ++NLines;  AddInputDouble("GLAD_MagneticFieldScale","percent",100.0);
+        ++NLines;  AddInputDouble("GLAD_MagneticFieldScale","percent",75.0);
         ++NLines;  AddInputDouble("GLAD_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("GLAD_center_y_position","cm",0.0);
         ++NLines;  AddInputDouble("GLAD_center_z_position","cm",0.0);
@@ -220,7 +220,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("TARGET_PrimaryVolume_Thickness","cm",1.0);
         
         // Vacuum Chamber:
-        ++NLines; AddInputBoolian("Vacuum_Chamber_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("Vacuum_Chamber_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("Vacuum_Chamber_Geometry_FileName","Vacuum_Chamber_Geometry.root");
         ++NLines;  AddInputDouble("Vacuum_Chamber_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("Vacuum_Chamber_center_y_position","cm",0.0);
@@ -230,7 +230,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("Vacuum_Chamber_z_rotation_angle","deg",0.0);
         
         // CALIFA:
-        ++NLines; AddInputBoolian("CALIFA_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("CALIFA_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("CALIFA_Geometry_FileName","CALIFA_Geometry.root");
         ++NLines;  AddInputDouble("CALIFA_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("CALIFA_center_y_position","cm",0.0);
@@ -240,7 +240,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("CALIFA_z_rotation_angle","deg",0.0);
         
         // PSP:
-        ++NLines; AddInputBoolian("PSP_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("PSP_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("PSP_Geometry_FileName","PSP_Geometry.root");
         ++NLines;  AddInputDouble("PSP_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("PSP_center_y_position","cm",0.0);
@@ -250,7 +250,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("PSP_z_rotation_angle","deg",0.0);
         
         // Vacuum Vessel:
-        ++NLines; AddInputBoolian("Vacuum_Vessel_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("Vacuum_Vessel_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("Vacuum_Vessel_Geometry_FileName","Vacuum_Vessel_Geometry.root");
         ++NLines;  AddInputDouble("Vacuum_Vessel_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("Vacuum_Vessel_center_y_position","cm",0.0);
@@ -260,7 +260,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("Vacuum_Vessel_z_rotation_angle","deg",0.0);
         
         // StarTrack:
-        ++NLines; AddInputBoolian("STARTRACK_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("STARTRACK_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("STARTRACK_Geometry_FileName","STARTRACK_Geometry.root");
         ++NLines;  AddInputDouble("STARTRACK_center_x_position","cm",0.0);
         ++NLines;  AddInputDouble("STARTRACK_center_y_position","cm",0.0);
@@ -270,7 +270,7 @@ void R3BInputClass::CreateFile(TString const Name)
         ++NLines;  AddInputDouble("STARTRACK_z_rotation_angle","deg",0.0);
         
         // TOF wall:
-        ++NLines; AddInputBoolian("TOFwall_IncludeInSetup",kFALSE);
+        ++NLines; AddInputBoolian("TOFwall_IncludeInSetup",kTRUE);
         ++NLines;  AddInputString("TOFwall_Geometry_FileName","TOFwall_Geometry.root");
         ++NLines;  AddInputDouble("TOFwall_center_x_position","cm",-350.0);
         ++NLines;  AddInputDouble("TOFwall_center_y_position","cm",0.0);

@@ -28,6 +28,7 @@ void Nucleus::AddEnergyLevel(Int_t const Key, Double_t const Energy, TString con
         // Set the energy:
         if (Unit=="MeV") {NewLevel.Energy = Energy;}
         else if (Unit=="keV") {NewLevel.Energy = Energy/1000.0;}
+        else if (Unit=="GeV") {NewLevel.Energy = Energy*1000.0;}
         else if (Unit=="J") {NewLevel.Energy = Energy/PhysConst.q_MeVJ;}
         else 
         {

@@ -37,7 +37,7 @@ void R3BInputClass::CreateElenaFile(TString const Name)
         
         // General:
         ++NLines; AddInputBoolian("MT_Merge_MCFile",kFALSE);
-        ++NLines;  AddInputString("TheOutputPath",TheVMC + "/NeuLAND_DNN/OutputFiles/");
+        ++NLines;  AddInputString("TheOutputPath",TheVMC + "/DNN/OutputFiles/");
         ++NLines;  AddInputString("TheVMCFolder",TheVMC);
         ++NLines;  AddInputString("R3BRoot_MonteCarlo_OutputFile","MC_File.root");
         ++NLines;  AddInputString("R3BRoot_MonteCarlo_ParFile","Par_File.root");

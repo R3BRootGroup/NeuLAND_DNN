@@ -47,6 +47,7 @@ public:
     void CreateFile(TString const Name);                                                                      // Creates a new input file from scratch with default input values.
     void CreateElenaFile(TString const Name);                                                                 // Creates a new input file from scratch with input values as in Elena's thesis.
     void CreateSAMURAIFile(TString const Name);                                                               // Creates a new input file from scratch with input values corresponding to SAMURAI.
+    void CreateSnAumannFile(TString const Name);                                                              // Creates a new input file from scratch corresponding to T. Aumanns Sn experiment.
     void ReadFile();                                                                                          // Adds the content to the linked file to the vectors in the class.
     void WriteFile();                                                                                         // Overwrites the linked file with the content of the class.
     void CheckPhysicsList();                                                                                  // Checks whether the Physics List input matches an allowed option.

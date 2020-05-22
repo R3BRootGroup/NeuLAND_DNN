@@ -84,16 +84,21 @@ void R3BASCIIFileGenerator::WriteOneExEvent(Int_t const ThisEvent)
     Double_t LeftFunctionValue = Bisection_Function(LeftEnergy,Bisection_Multiplicity);
     
     Int_t TotalA = TheNuclei->GetA(ParticleGun_ExGenerator_TargetIsotope) + TheNuclei->GetA(ParticleGun_ExGenerator_BeamIsotope);
-    Double_t RightEnergy = ParticleGun_ExGenerator_BeamEnergy*1.3;
+    Double_t RightEnergy = ParticleGun_ExGenerator_BeamEnergy*1.3*((Int_t) TotalA);
     Double_t RightFunctionValue = Bisection_Function(RightEnergy,Bisection_Multiplicity);
     
     Double_t MiddleEnergy = 0.0;
     Double_t MiddleFunctionValue = 0.0;
     
+    Int_t RecoilZ = TheNuclei->GetZ(ParticleGun_ExGenerator_BeamIsotope) + TheNuclei->GetZ(ParticleGun_ExGenerator_TargetIsotope) - ParticleGun_ExGenerator_NeutronMultiplicity*TheNuclei->GetZ(ParticleGun_ParticleType);
+    Int_t RecoilA = TheNuclei->GetA(ParticleGun_ExGenerator_BeamIsotope) + TheNuclei->GetA(ParticleGun_ExGenerator_TargetIsotope) - ParticleGun_ExGenerator_NeutronMultiplicity*TheNuclei->GetA(ParticleGun_ParticleType);
+    TString RecoilIsotope = TheNuclei->FindNucleus(RecoilZ,RecoilA);
+    
+    if (Display_Bisection==kTRUE) {cout << "==> RecoilIsotope = " << RecoilIsotope << "\n";}
     if (Display_Bisection==kTRUE) {cout << "Bisection: Left [MeV]   = " << LeftEnergy << " && Right [MeV]   = " << RightEnergy << "\n";}
     if (Display_Bisection==kTRUE) {cout << "Bisection: Left f-value = " << LeftFunctionValue << " && Right f-value = " << RightFunctionValue << "\n";}
     
-    for (Int_t k = 0; k<30; ++k) // 30 Ensures a precision of at least 1 keV
+    for (Int_t k = 0; k<38; ++k) // 30 Ensures a precision of at least 1 eV
     {
         // Update value:
         MiddleEnergy = (LeftEnergy+RightEnergy)/2.0;
@@ -167,10 +172,6 @@ void R3BASCIIFileGenerator::WriteOneExEvent(Int_t const ThisEvent)
     TargetTrack.SetY(0.0);
     TargetTrack.SetZ(0.0);
     
-    Int_t RecoilZ = TheNuclei->GetZ(ParticleGun_ExGenerator_BeamIsotope) + TheNuclei->GetZ(ParticleGun_ExGenerator_TargetIsotope) - ParticleGun_ExGenerator_NeutronMultiplicity*TheNuclei->GetZ(ParticleGun_ParticleType);
-    Int_t RecoilA = TheNuclei->GetA(ParticleGun_ExGenerator_BeamIsotope) + TheNuclei->GetA(ParticleGun_ExGenerator_TargetIsotope) - ParticleGun_ExGenerator_NeutronMultiplicity*TheNuclei->GetA(ParticleGun_ParticleType);
-    TString RecoilIsotope = TheNuclei->FindNucleus(RecoilZ,RecoilA);
-    
     Double_t RecoilMass = TheNuclei->GetMass(RecoilIsotope,"MeV");
     TLorentzVector RecoilTrack;
     
@@ -191,7 +192,7 @@ void R3BASCIIFileGenerator::WriteOneExEvent(Int_t const ThisEvent)
     Double_t pBeam = 0.0;
     Double_t bpar = 0.0;
     
-    if (Include_SnNucleus==kTRUE)
+    if ((Include_SnNucleus==kTRUE)&&(ParticleGun_ExGenerator_DegradeEnergy_MultipleTracks==kTRUE))
     {
         ASCII_File << "    " << ThisEvent << "    " << ParticleGun_ExGenerator_NeutronMultiplicity+1 << "    " << pBeam << "    " << bpar << "\n";
     }

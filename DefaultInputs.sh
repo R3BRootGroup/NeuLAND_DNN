@@ -7,4 +7,5 @@ rm -rf ./OutputPath.txt
 cd ../Macros
 root -l -q GenerateInputs.cpp
 #root -l -q GenerateSAMURAIInputs.cpp
+#root -l -q GenerateSnAumannInputs.cpp
 cd ../
