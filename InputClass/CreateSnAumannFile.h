@@ -57,7 +57,7 @@ void R3BInputClass::CreateSnAumannFile(TString const Name)
         ++NLines;  AddInputString("ParticleGun_ASCII_GunChoice","ExGenerated");
         ++NLines;  AddInputString("ParticleGun_ASCII_FileName","Current_ASCII_File.dat");
         ++NLines;  AddInputString("ParticleGun_ParticleType","neutron");
-        ++NLines; AddInputInteger("ParticleGun_Multiplicity",5);
+        ++NLines; AddInputInteger("ParticleGun_Multiplicity",4);
         ++NLines; AddInputBoolian("ParticleGun_Randomize_Multiplicity",kTRUE);
         ++NLines; AddInputBoolian("ParticleGun_Uniformize_Detected_Multiplicity",kFALSE);
         ++NLines;  AddInputString("ParticleGun_MultDistribution","Default");
@@ -78,7 +78,7 @@ void R3BInputClass::CreateSnAumannFile(TString const Name)
         ++NLines; AddInputBoolian("ParticleGun_IncludeSnNucleus_SnDataFiles",kTRUE);
         ++NLines; AddInputBoolian("ParticleGun_RandomRotateNeutrons_SnDataFiles",kTRUE);
         ++NLines; AddInputBoolian("ParticleGun_ExGenerator_DegradeEnergy_MultipleTracks",kTRUE);
-        ++NLines;  AddInputString("ParticleGun_ExGenerator_BeamIsotope","Sn124");
+        ++NLines;  AddInputString("ParticleGun_ExGenerator_BeamIsotope","Sn120");
         ++NLines;  AddInputString("ParticleGun_ExGenerator_TargetIsotope","proton");
         ++NLines;  AddInputDouble("ParticleGun_ExGenerator_BeamEnergy","MeV/u",400.0);
         ++NLines;  AddInputDouble("ParticleGun_ExGenerator_Recoil_ExcitationEnergy","MeV",0.0);

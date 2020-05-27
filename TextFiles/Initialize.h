@@ -36,6 +36,8 @@ Bool_t R3BTextFileGenerator::Initialize(Int_t const Local_nEvents)
             MaxMultiplicity = Inputs->GetInputInteger("ParticleGun_Multiplicity");
             NbarsPerPlane = Inputs->GetInputInteger("NeuLAND_Number_of_Bars_per_plane");
             NDoublePlanes = Inputs->GetInputInteger("NeuLAND_Number_of_DoublePlanes");
+            NPlanesPerModule = Inputs->GetInputInteger("NeuLAND_DoublePlanes_PerModule");
+            DistanceBetweenModules = Inputs->GetInputDouble("NeuLAND_Distance_BetweenModules","cm");
             ParticleType = Inputs->GetInputString("NeuLAND_ParticleType_ToBeDetected");
             NeutronMass = TheNuclei->GetMass(ParticleType,"MeV"); 
             TimeNormalization_Option = Inputs->GetInputString("NeuLAND_DNNTextFile_TimeNormaliation_Method");
@@ -89,6 +91,8 @@ Bool_t R3BTextFileGenerator::Initialize(Int_t const Local_nEvents)
                 NeuLAND_Total_Bar_Length = Inputs->GetInputDouble("NEBULA_Total_BarLength","cm");
                 NeuLAND_TotalBarThicknessXY = Inputs->GetNEBULATotalPaddleThickness();
                 NeuLAND_TotalBarThicknessZ = Inputs->GetNEBULATotalPaddleThickness();
+                NPlanesPerModule = 1;
+                DistanceBetweenModules = Inputs->GetInputDouble("NEBULA_Distance_BetweenModules","cm");
             }
             
             // Obtain local inputs needed only inside this function:

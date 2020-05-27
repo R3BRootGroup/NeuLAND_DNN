@@ -1,4 +1,5 @@
 #include "./NuclearData/Sn134.h"
+#include "./NuclearData/Sn133.h"
 #include "./NuclearData/Sn132.h"
 #include "./NuclearData/Sn131.h"
 #include "./NuclearData/Sn130.h"
@@ -6,10 +7,18 @@
 #include "./NuclearData/Sn128.h"
 #include "./NuclearData/Sn127.h"
 #include "./NuclearData/Sn126.h"
+#include "./NuclearData/Sn125.h"
 #include "./NuclearData/Sn124.h"
+#include "./NuclearData/Sn123.h"
 #include "./NuclearData/Sn122.h"
+#include "./NuclearData/Sn121.h"
+#include "./NuclearData/Sn120.h"
+#include "./NuclearData/Sn119.h"
 #include "./NuclearData/Sn118.h"
+#include "./NuclearData/Sn117.h"
 #include "./NuclearData/Sn116.h"
+#include "./NuclearData/Sn115.h"
+#include "./NuclearData/Sn114.h"
 
 #include "./NuclearData/C13.h"
 #include "./NuclearData/C12.h"
@@ -82,6 +91,8 @@
 #include "./NuclearData/Sb118.h"
 #include "./NuclearData/Sb117.h"
 #include "./NuclearData/Sb116.h"
+#include "./NuclearData/Sb115.h"
+#include "./NuclearData/Sb114.h"
 
 #include "./NuclearData/In106.h"
 #include "./NuclearData/In108.h"
@@ -111,6 +122,7 @@ void Nuclei::BuildDataBase()
     
     // Then add all nuclei that we want to our DataBase:
     TheNuclei.push_back(Sn134());
+    TheNuclei.push_back(Sn133());
     TheNuclei.push_back(Sn132());
     TheNuclei.push_back(Sn131());
     TheNuclei.push_back(Sn130());
@@ -118,10 +130,18 @@ void Nuclei::BuildDataBase()
     TheNuclei.push_back(Sn128());
     TheNuclei.push_back(Sn127());
     TheNuclei.push_back(Sn126());
+    TheNuclei.push_back(Sn125());
     TheNuclei.push_back(Sn124());
+    TheNuclei.push_back(Sn123());
     TheNuclei.push_back(Sn122());
+    TheNuclei.push_back(Sn121());
+    TheNuclei.push_back(Sn120());
+    TheNuclei.push_back(Sn119());
     TheNuclei.push_back(Sn118());
+    TheNuclei.push_back(Sn117());
     TheNuclei.push_back(Sn116());
+    TheNuclei.push_back(Sn115());
+    TheNuclei.push_back(Sn114());
 
     TheNuclei.push_back(C13());
     TheNuclei.push_back(N13());

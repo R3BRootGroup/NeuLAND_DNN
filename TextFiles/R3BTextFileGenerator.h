@@ -223,6 +223,8 @@ private:
     Bool_t ComputeSingleClusterRatio;
     Bool_t DataTimeNormaliation_UsePrimTimes;
     TString ThisDetector;
+    Int_t NPlanesPerModule;
+    Double_t DistanceBetweenModules;
     
     // Scoring+ method:
     AllScorers* TheScorers;

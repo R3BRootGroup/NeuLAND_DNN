@@ -78,6 +78,8 @@ R3BTextFileGenerator::R3BTextFileGenerator()
     ParentOutputPath = "./";
     ComputeSingleClusterRatio = kFALSE;
     ThisDetector = "NeuLAND";
+    NPlanesPerModule = 30;
+    DistanceBetweenModules = 0.0;
     
     PrintErrors = kTRUE;
     Errors.clear();

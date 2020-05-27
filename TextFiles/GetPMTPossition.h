@@ -5,12 +5,18 @@ Double_t R3BTextFileGenerator::GetPMTPossition(R3BSignal* ThisSignal)
 {
     // Declare the Answers:
 
-    
     // Begin by declaring new points & shifting. We will do exactly the reverse of the geometry
     // building file:
     Double_t xpoint = ThisSignal->GetPositionX() - NeuLAND_Center_X; 
-    Double_t ypoint = ThisSignal->GetPositionX() - NeuLAND_Center_Y; 
-    Double_t zpoint = ThisSignal->GetPositionX() - NeuLAND_Front_Z - NeuLAND_TotalBarThicknessZ*((Int_t) NDoublePlanes); 
+    Double_t ypoint = ThisSignal->GetPositionY() - NeuLAND_Center_Y; 
+    Double_t zpoint = ThisSignal->GetPositionZ() - NeuLAND_Front_Z - NeuLAND_TotalBarThicknessZ*((Int_t) NDoublePlanes); 
+    
+    // Take care of separate modules:
+    Double_t nGabs_d = (Int_t) NDoublePlanes;
+    nGabs_d = nGabs_d/((Int_t) NPlanesPerModule);
+    nGabs_d = nGabs_d - 0.9999;
+    Int_t nGabs = (Int_t) nGabs_d;
+    zpoint = zpoint - 0.5*DistanceBetweenModules;
 
     // Now, NeuLAND is in the origin. Anti-rotate:
     TVector3 pos;
@@ -28,6 +34,7 @@ Double_t R3BTextFileGenerator::GetPMTPossition(R3BSignal* ThisSignal)
     
     // Now, NeuLAND is at the origin. next, shift so that z starts at zero:
     zpoint = zpoint + NeuLAND_TotalBarThicknessZ*((Int_t) NDoublePlanes);
+    zpoint = zpoint + 0.5*DistanceBetweenModules;
     
     // Next, extract whether we have a horizontal bar or not:
     Bool_t IsHorizontal = ThisSignal->IsHorPaddle("NeuLAND",NbarsPerPlane);
