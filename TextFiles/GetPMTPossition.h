@@ -43,6 +43,7 @@ Double_t R3BTextFileGenerator::GetPMTPossition(R3BSignal* ThisSignal)
     Double_t ThePosition = 0.0;
     if (IsHorizontal==kTRUE)  {ThePosition = xpoint;}
     if (IsHorizontal==kFALSE) {ThePosition = ypoint;}
+    if (ThisDetector=="NEBULA") {ThePosition = ypoint;}
     
     // return the answer:
     return ThePosition;
