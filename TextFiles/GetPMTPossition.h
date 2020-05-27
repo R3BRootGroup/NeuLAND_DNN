@@ -14,7 +14,7 @@ Double_t R3BTextFileGenerator::GetPMTPossition(R3BSignal* ThisSignal)
     // Take care of separate modules:
     Double_t nGabs_d = (Int_t) NDoublePlanes;
     nGabs_d = nGabs_d/((Int_t) NPlanesPerModule);
-    nGabs_d = nGabs_d - 0.9999;
+    nGabs_d = nGabs_d - 0.0001;
     Int_t nGabs = (Int_t) nGabs_d;
     zpoint = zpoint - 0.5*DistanceBetweenModules;
 
