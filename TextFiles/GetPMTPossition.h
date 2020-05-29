@@ -16,7 +16,7 @@ Double_t R3BTextFileGenerator::GetPMTPossition(R3BSignal* ThisSignal)
     nGabs_d = nGabs_d/((Int_t) NPlanesPerModule);
     nGabs_d = nGabs_d - 0.0001;
     Int_t nGabs = (Int_t) nGabs_d;
-    zpoint = zpoint - 0.5*DistanceBetweenModules;
+    zpoint = zpoint - 0.5*DistanceBetweenModules*((Int_t) nGabs);
 
     // Now, NeuLAND is in the origin. Anti-rotate:
     TVector3 pos;
@@ -34,7 +34,7 @@ Double_t R3BTextFileGenerator::GetPMTPossition(R3BSignal* ThisSignal)
     
     // Now, NeuLAND is at the origin. next, shift so that z starts at zero:
     zpoint = zpoint + NeuLAND_TotalBarThicknessZ*((Int_t) NDoublePlanes);
-    zpoint = zpoint + 0.5*DistanceBetweenModules;
+    zpoint = zpoint + 0.5*DistanceBetweenModules*((Int_t) nGabs);
     
     // Next, extract whether we have a horizontal bar or not:
     Bool_t IsHorizontal = ThisSignal->IsHorPaddle("NeuLAND",NbarsPerPlane);
